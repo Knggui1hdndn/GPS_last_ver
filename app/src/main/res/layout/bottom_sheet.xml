@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/border1"
+    android:orientation="vertical"
+    android:padding="15dp"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+    <RelativeLayout
+        android:id="@+id/a3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/timeStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Trip_23/05/2023_15:40:46"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+
+
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/imgDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="5dp"
+            android:layout_toLeftOf="@id/imgShare"
+            android:drawableStart="@drawable/baseline_delete_outline_24"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/imgShare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="20dp"
+            android:drawableStart="@drawable/baseline_share_24"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/x"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/a3"
+        android:layout_margin="15dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/baseline_location_on_24"
+            android:drawableTint="#40B645"
+            android:text="Bắt đầu"
+            android:textColor="#40B645"
+            android:textSize="20sp" />
+
+
+        <TextView
+            android:id="@+id/a"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtAddressStart"
+            android:gravity="center_vertical"
+            android:maxLines="5"
+            android:text=".\n."
+            android:textColor="#FF0459"
+            android:textSize="20sp"
+
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/a"
+            android:drawableStart="@drawable/baseline_location_on_241"
+            android:text="Dừng"
+            android:textColor="#FF0459"
+            android:textSize="20sp" />
+
+
+        <TextView
+            android:id="@+id/txtAddressStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/start"
+            android:layout_marginStart="30dp"
+            android:layout_toRightOf="@id/start"
+            android:singleLine="true"
+            android:text="gfsfxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            android:textColor="#9A9494" />
+
+        <TextView
+            android:id="@+id/txtAddressEnd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txtAddressStart"
+            android:layout_alignStart="@id/txtAddressStart"
+            android:layout_alignTop="@id/end"
+            android:layout_toRightOf="@id/end"
+            android:singleLine="true"
+            android:text="gfsfxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            android:textColor="#9A9494"
+
+            />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/x"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="10">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_margin="5dp"
+                android:layout_weight="5"
+                android:background="@drawable/border"
+                android:orientation="vertical"
+                app:cornerRadius="5dp"
+                app:strokeColor="@color/white"
+                app:strokeWidth="2dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:text="Tốc độ tối đa"
+                    android:textColor="#9A9494" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/txtSpeed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:text="5km/h"
+                        android:textSize="20dp"
+                        android:textColor="@color/teal_200" />
+
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+
+                android:layout_height="80dp"
+                android:layout_margin="5dp"
+                android:layout_weight="5"
+                android:background="@drawable/border"
+                android:orientation="vertical"
+                app:cornerRadius="5dp"
+                app:strokeColor="@color/white"
+                app:strokeWidth="2dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:text="Tốc độ trung bình"
+                    android:textColor="#9A9494" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/txtAverageSpeed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="20dp"
+
+                        android:singleLine="true"
+                        android:text="5"
+                        android:textColor="@color/teal_200" />
+
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="10">
+
+            <LinearLayout
+                android:layout_width="0dp"
+
+                android:layout_height="80dp"
+                android:layout_margin="5dp"
+                android:layout_weight="5"
+                android:background="@drawable/border"
+                android:orientation="vertical"
+                app:cornerRadius="5dp"
+                app:strokeColor="@color/white"
+                app:strokeWidth="2dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:text="Khoảng cách"
+                    android:textColor="#9A9494" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/txtDistance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="20dp"
+
+                        android:singleLine="true"
+                        android:text="5km/h"
+
+                        android:textColor="@color/teal_200" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+
+                android:layout_height="80dp"
+                android:layout_margin="5dp"
+                android:layout_weight="5"
+                android:background="@drawable/border"
+                android:orientation="vertical"
+                app:cornerRadius="5dp"
+                app:strokeColor="@color/white"
+                app:strokeWidth="2dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:text="Thơì lượng"
+                    android:textColor="#9A9494" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/txtTime"
+                        android:textSize="20dp"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:text="00 : 00 : 00"
+                        android:textColor="@color/teal_200" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>
