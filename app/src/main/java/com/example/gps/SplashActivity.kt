@@ -15,17 +15,8 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         createTimer(4L)
-Log.d("ssssss", "onCreate"+isMyServiceRunning(MyService::class.java))
-    }
-    private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
-        val manager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
-        for (service in manager.getRunningServices(Int.MAX_VALUE)) {
-            if (serviceClass.name == service.service.className) {
-                return true
-            }
-        }
-        return false
-    }
+     }
+
     private fun createTimer(seconds: Long) {
         val countDownTimer: CountDownTimer = object : CountDownTimer(seconds * 1000, 1000) {
             override fun onTick(millisUntilFinished: Long) {

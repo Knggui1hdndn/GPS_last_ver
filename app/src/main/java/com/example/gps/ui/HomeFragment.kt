@@ -3,7 +3,6 @@ package com.example.gps.ui
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.example.gps.R
 import com.example.gps.SharedData
 import com.example.gps.databinding.FragmentHomeBinding
@@ -16,15 +15,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     // onDestroyView.
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentHomeBinding.bind(view)
-        with(binding) {
 
+        var timePrevious=System.currentTimeMillis()
+        with(binding) {
             SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) {
                 var speed1 = String.format("%.1f", it)
                 speed1 = speed1.replace(",", ".");
-                this!!.speed.setSpeedAt(speed1.toFloat())
-
+                this!!.speed.speedTo(speed1.toFloat(), System.currentTimeMillis() - timePrevious)
+                timePrevious=System.currentTimeMillis()
             }
-
         }
     }
 

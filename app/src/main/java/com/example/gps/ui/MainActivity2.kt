@@ -72,6 +72,7 @@ class MainActivity2 : AppCompatActivity() {
             locationCallback1,
             Looper.getMainLooper()
         )
+
         requestPermissions(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 1)
         val appBarConfiguration = AppBarConfiguration(
             setOf(
