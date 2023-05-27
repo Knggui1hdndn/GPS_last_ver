@@ -1,14 +1,12 @@
-package com.example.gps
+package com.example.gps.ui
 
-import android.app.ActivityManager
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
-import com.example.gps.service.MyService
-import com.example.gps.ui.MainActivity2
-import com.example.gps.ui.ShowActivity
+import com.example.gps.MyApplication
+import com.example.gps.R
 
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

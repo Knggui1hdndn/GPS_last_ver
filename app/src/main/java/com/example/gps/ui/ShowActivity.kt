@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.maps.model.StyleSpan
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import java.lang.Exception
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -96,7 +97,7 @@ class ShowActivity : AppCompatActivity() {
         myDataBase = MyDataBase.getInstance(this)
         bottomSheet = bottom.bottomSheet
         val bottom2 = BottomSheetBehavior.from(bottomSheet).apply {
-            state=BottomSheetBehavior.STATE_EXPANDED
+            state = BottomSheetBehavior.STATE_EXPANDED
         }
         bottomSheet.post {
             bottom2.peekHeight = 220 //height is ready
@@ -104,7 +105,13 @@ class ShowActivity : AppCompatActivity() {
         val intent = intent
         val movementData = intent.extras?.getSerializable("movementData")
         setData(movementData as MovementData?)
-        FontUtils.setFont(this,bottom.txtSpeed,bottom.txtTime,bottom.txtDistance,bottom.txtAverageSpeed)
+        FontUtils.setFont(
+            this,
+            bottom.txtSpeed,
+            bottom.txtTime,
+            bottom.txtDistance,
+            bottom.txtAverageSpeed
+        )
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(callback)
 
@@ -167,7 +174,8 @@ class ShowActivity : AppCompatActivity() {
                 txtAddressStart.text =
                     if (getAddressLine(
                             movementData.startLatitude,
-                            movementData.startLongitude)
+                            movementData.startLongitude
+                        )
                         != null
                     ) getAddressLine(
                         movementData.startLatitude,
@@ -192,10 +200,14 @@ class ShowActivity : AppCompatActivity() {
     }
 
     private fun getAddressLine(endLatitude: Double, endLongitude: Double): String? {
-        val geocoder = Geocoder(
-            this@ShowActivity,
-            Locale.getDefault()
-        ).getFromLocation(endLatitude, endLongitude, 1)
-        return if (geocoder!!.size>0) geocoder[0].getAddressLine(0) else null
+        return try {
+            val geocoder = Geocoder(
+                this@ShowActivity,
+                Locale.getDefault()
+            ).getFromLocation(endLatitude, endLongitude, 1)
+            return geocoder?.get(0)?.getAddressLine(0)
+        } catch (e: Exception) {
+            null
+        }
     }
 }

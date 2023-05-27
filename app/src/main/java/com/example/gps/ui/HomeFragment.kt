@@ -15,7 +15,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     // onDestroyView.
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentHomeBinding.bind(view)
-
         var timePrevious=System.currentTimeMillis()
         with(binding) {
             SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) {

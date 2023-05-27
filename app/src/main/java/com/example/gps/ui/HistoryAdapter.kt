@@ -11,12 +11,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gps.databinding.ItemBinding
 import com.example.gps.model.MovementData
 import com.example.gps.utils.TimeUtils
+import java.lang.Exception
 import java.util.Calendar
 import java.util.Locale
 
 class HistoryAdapter() :
     RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder>() {
-    private   var list: MutableList<MovementData> = mutableListOf()
+    private var list: MutableList<MovementData> = mutableListOf()
+
     class HistoryViewHolder(private val binding: ItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
@@ -45,25 +47,34 @@ class HistoryAdapter() :
                         movementData.startLongitude.toDouble(),
                         1
                     ) {
-                        txtStart.text = it[0].getAddressLine(0)
+                        if (it.size > 0) {
+                            txtStart.text = it[0]
+                                .getAddressLine(0)
+                        } else {
+                            txtStart.text = "__"
+                        }
 
                     }
                 } else {
 
-                    val a = Geocoder(binding.root.context, Locale.getDefault()).getFromLocation(
+                    val a = getAddressLine(
                         movementData.startLatitude.toDouble(),
-                        movementData.startLongitude.toDouble(),
-                        1
+                        movementData.startLongitude.toDouble()
                     )
-
-                    if (a != null) {
-                        txtStart.text = a[0]
-                            .getAddressLine(0)
-                    }else{
-                        txtStart.text="__"
-                    }
-
+                    txtStart.text = if (a != null) a else null
                 }
+            }
+        }
+
+        private fun getAddressLine(endLatitude: Double, endLongitude: Double): String? {
+            return try {
+                val geocoder = Geocoder(
+                    binding.root.context,
+                    Locale.getDefault()
+                ).getFromLocation(endLatitude, endLongitude, 1)
+                return geocoder?.get(0)?.getAddressLine(0)
+            } catch (e: Exception) {
+                null
             }
         }
     }

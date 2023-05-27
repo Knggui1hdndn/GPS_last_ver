@@ -7,11 +7,15 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.gps.model.LocationData
 import com.example.gps.model.MovementData
+import com.example.gps.model.Speed
+import com.example.gps.model.Vehicle
 
-@Database(entities = [MovementData::class,LocationData::class], version = 1, exportSchema = false)
+@Database(entities = [MovementData::class,LocationData::class,Vehicle::class,Speed::class], version = 2 , exportSchema = false)
 abstract class MyDataBase : RoomDatabase() {
     abstract fun movementDao():MovementDataDao
     abstract fun locationDao():LocationDao
+    abstract fun vehicleDao():VehicleDao
+    abstract fun SpeedDao():SpeedDao
     companion object {
         @Volatile
         private var INSTANCE: MyDataBase? = null

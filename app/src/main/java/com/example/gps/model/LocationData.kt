@@ -1,5 +1,6 @@
 package com.example.gps.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
@@ -16,8 +17,13 @@ import androidx.room.PrimaryKey
 class LocationData (
     @PrimaryKey(autoGenerate = true)
     val id: Int,
+    @ColumnInfo(name = "latitude")
     val latitude: Double,
+
+    @ColumnInfo(name = "longitude")
     val longitude: Double,
+
+    @ColumnInfo(name = "movementDataId")
     val movementDataId: Int
 ){
     override fun toString(): String {

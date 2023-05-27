@@ -127,7 +127,6 @@ class Map() : SensorEventListener {
                     MyLocationConstants.DISTANCE,
                     (sharedPreferences.getInt(MyLocationConstants.DISTANCE, 0) + distance).toInt()
                 ).apply()
-
                 if (checkPause || checkStop) {
                     val movementData = myDataBase!!.movementDao().getLastMovementData()
                     movementData.endLatitude = lastLocation.latitude
@@ -155,9 +154,7 @@ class Map() : SensorEventListener {
     }
 
     private fun getCurrentSpeed(lastLocation: Location): Float {
-        if (acceleration < 2) {
-            return 0F
-        }
+
         val time = (System.currentTimeMillis() - milli) / 1000.0
         val s = nearestDistance(lastLocation)
         return ((s / time) * 3.6).toFloat()

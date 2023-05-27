@@ -2,6 +2,7 @@ package com.example.gps.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Typeface
@@ -14,6 +15,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -21,8 +23,11 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.gps.MyApplication
 import com.example.gps.R
+import com.example.gps.SettingConstants
 import com.example.gps.SharedData
+import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.ActivityMain2Binding
+import com.example.gps.model.Speed
 import com.example.gps.utils.TimeUtils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -74,12 +79,42 @@ class MainActivity2 : AppCompatActivity() {
         )
 
         requestPermissions(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 1)
+        val sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
+        if (!sharedPreferences.getBoolean(
+                SettingConstants.CHECK_OPEN,
+                false
+            )
+        ) {
+            val myDataBase = MyDataBase.getInstance(this)
+            val builder = AlertDialog.Builder(this)
+            val list = arrayOf("Mph", "Km", "Knot")
+            builder.setTitle("Chọn đơn vị đo").setItems(
+                list
+            ) { dialog, which ->
+                sharedPreferences.edit().apply {
+                    putBoolean(SettingConstants.CHECK_OPEN, true)
+                    putInt(SettingConstants.COLOR_DISPLAY, 2)
+                    putBoolean(SettingConstants.DISPLAY_SPEED, true)
+                    putBoolean(SettingConstants.TRACK_ON_MAP, true)
+                    putBoolean(SettingConstants.SHOW_RESET_BUTTON, true)
+                    putBoolean(SettingConstants.SPEED_ALARM, true)
+                }.apply()
+                myDataBase.SpeedDao().insertSpeed(Speed(1, which + 1 == 1))
+                myDataBase.SpeedDao().insertSpeed(Speed(2, which + 1 == 2))
+                myDataBase.SpeedDao().insertSpeed(Speed(3, which + 1 == 3))
+                insert(myDataBase)
+                dialog.cancel()
+            }
+            builder.create().show()
+        }
+
+
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
             )
         )
-         setupActionBarWithNavController(navController, appBarConfiguration)
+        setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         navController.addOnDestinationChangedListener { _, _, _ ->
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_home_black_24dp)
@@ -95,6 +130,15 @@ class MainActivity2 : AppCompatActivity() {
         SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
     }
 
+    private fun insert(myDataBase: MyDataBase) {
+        for (i in 1..3) {
+            myDataBase.vehicleDao().insertVehicle(240, 100, 1, 1, i)
+            myDataBase.vehicleDao().insertVehicle(240, 20, 2, 0, i)
+            myDataBase.vehicleDao().insertVehicle(320, 100, 3, 0, i)
+        }
+
+    }
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.history, menu)
@@ -107,6 +151,4 @@ class MainActivity2 : AppCompatActivity() {
         }
         return true
     }
-
-
 }

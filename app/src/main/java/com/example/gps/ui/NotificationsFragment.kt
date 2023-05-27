@@ -99,7 +99,7 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
         }
     }
 
-    fun convertToListLatLng(): List<LatLng> {
+    private fun convertToListLatLng(): List<LatLng> {
         val listMovement = MyDataBase.getInstance(requireContext()).locationDao()
             .getLocationData(
                 MyDataBase.getInstance(requireContext()).movementDao()

@@ -21,16 +21,17 @@ class HistoryActivity : AppCompatActivity() {
     private lateinit var rcy: RecyclerView
     private lateinit var adapter: HistoryAdapter
     private lateinit var myDataBase: MyDataBase
-    private lateinit var mutableListMovementData : MutableList<MovementData>
-     @SuppressLint("MissingInflatedId")
+    private lateinit var mutableListMovementData: MutableList<MovementData>
+
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         toolbar = findViewById(R.id.mToolBar)
         rcy = findViewById(R.id.rcy)
         setSupportActionBar(toolbar)
-          supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
-         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         myDataBase = MyDataBase.getInstance(this)
         val mng = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -43,21 +44,23 @@ class HistoryActivity : AppCompatActivity() {
         rcy.layoutManager = mng
         rcy.adapter = adapter
     }
+
     private fun getDialog(): Dialog {
-        val mutableList=myDataBase.movementDao().getAllMovementData()
+        val mutableList = myDataBase.movementDao().getAllMovementData()
         return AlertDialog.Builder(this@HistoryActivity)
-            .setPositiveButton(if(mutableList.size>0) "Xóa" else "OK") { dialogInterface: DialogInterface, i: Int ->
-               myDataBase.movementDao().deleteAll()
+            .setPositiveButton(if (mutableList.size > 0) "Xóa" else "OK") { dialogInterface: DialogInterface, i: Int ->
+                myDataBase.movementDao().deleteAll()
                 adapter.notifyDataSetChanged(mutableListOf())
             }
             .setNegativeButton("Đóng") { dialogInterface: DialogInterface, i: Int -> dialogInterface.dismiss() }
             .setTitle("Thông báo !")
-            .setMessage(if(mutableList.size>0) "Xác nhận xóa tất cả?" else "Rỗng").create()
+            .setMessage(if (mutableList.size > 0) "Xác nhận xóa tất cả?" else "Rỗng").create()
     }
+
     @SuppressLint("NotifyDataSetChanged")
     override fun onResume() {
         super.onResume()
-        if (mutableListMovementData.size!=myDataBase.movementDao().getAllMovementData().size) {
+        if (mutableListMovementData.size != myDataBase.movementDao().getAllMovementData().size) {
             adapter.notifyDataSetChanged(myDataBase.movementDao().getAllMovementData())
 
         }
@@ -67,9 +70,10 @@ class HistoryActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.history_delete_all, menu)
         return true
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId==R.id.delete) getDialog().show()
-        if(item.itemId==android.R.id.home) finish()
+        if (item.itemId == R.id.delete) getDialog().show()
+        if (item.itemId == android.R.id.home) finish()
         return true
     }
 }
