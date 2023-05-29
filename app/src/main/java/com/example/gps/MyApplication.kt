@@ -136,14 +136,14 @@ class MyApplication :
                         isLoadingAd = false
                         loadTime = Date().time
                         Log.d(LOG_TAG, "onAdLoaded.")
-                        Toast.makeText(context, "onAdLoaded", Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(context, "onAdLoaded", Toast.LENGTH_SHORT).show()
                     }
 
          //load ad error
                     override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                         isLoadingAd = false
                         Log.d(LOG_TAG, "onAdFailedToLoad: " + loadAdError.message)
-                        Toast.makeText(context, "onAdFailedToLoad", Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(context, "onAdFailedToLoad", Toast.LENGTH_SHORT).show()
                     }
                 }
             )
@@ -213,7 +213,7 @@ class MyApplication :
                     appOpenAd = null
                     isShowingAd = false
                     Log.d(LOG_TAG, "onAdDismissedFullScreenContent.")
-                    Toast.makeText(activity, "onAdDismissedFullScreenContent", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(activity, "onAdDismissedFullScreenContent", Toast.LENGTH_SHORT).show()
                     onShowAdCompleteListener.onShowAdComplete()
                     loadAd(activity)
                 }
@@ -224,7 +224,7 @@ class MyApplication :
                     appOpenAd = null
                     isShowingAd = false
                     Log.d(LOG_TAG, "onAdFailedToShowFullScreenContent: " + adError.message)
-                    Toast.makeText(activity, "onAdFailedToShowFullScreenContent", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(activity, "onAdFailedToShowFullScreenContent", Toast.LENGTH_SHORT).show()
 
                     onShowAdCompleteListener.onShowAdComplete()
                     loadAd(activity)
@@ -234,7 +234,7 @@ class MyApplication :
                 //Được gọi khi nội dung toàn màn hình được hiển thị
                 override fun onAdShowedFullScreenContent() {
                     Log.d(LOG_TAG, "onAdShowedFullScreenContent.")
-                    Toast.makeText(activity, "onAdShowedFullScreenContent", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(activity, "onAdShowedFullScreenContent", Toast.LENGTH_SHORT).show()
                 }
             }
             isShowingAd = true

@@ -12,8 +12,8 @@ import com.example.gps.model.Vehicle
 
 @Dao
 interface SpeedDao {
-    @Query("Update Speed set isChecked=0  where type!=:i")
-    fun updateUnChecked(i: Int)
+    @Query("Update Speed set isChecked=0  ")
+    fun updateUnChecked(  )
 
     @Query("Update Speed set isChecked=1  where   type==:i")
     fun updateChecked(i: Int)
@@ -23,6 +23,9 @@ interface SpeedDao {
 
     @Query("SELECT * FROM Speed where isChecked = 1  ")
     fun getChecked(): Speed
+
+    @Query("SELECT * FROM Speed  ")
+    fun getAllSpeed(): MutableList<Speed>
 
     @Insert
     fun insertSpeed(

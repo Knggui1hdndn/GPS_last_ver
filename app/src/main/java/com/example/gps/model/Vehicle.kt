@@ -21,5 +21,9 @@ class Vehicle(
     var limitWarning: Int,
     var clockSpeed: Int,
     var isChecked: Boolean
-)
+){
+    override fun toString(): String {
+        return "Vehicle(id=$id, typeID=$typeID, type=$type, limitWarning=$limitWarning, clockSpeed=$clockSpeed, isChecked=$isChecked)"
+    }
+}
 

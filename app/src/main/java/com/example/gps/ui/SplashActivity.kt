@@ -1,19 +1,23 @@
 package com.example.gps.ui
 
+import android.Manifest
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.example.gps.MyApplication
 import com.example.gps.R
 
 class SplashActivity : AppCompatActivity() {
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-        createTimer(4L)
-     }
+        requestPermissions(arrayOf(Manifest.permission.ACTIVITY_RECOGNITION), 2)
+        createTimer(3L)}
 
     private fun createTimer(seconds: Long) {
         val countDownTimer: CountDownTimer = object : CountDownTimer(seconds * 1000, 1000) {

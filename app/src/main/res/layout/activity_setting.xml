@@ -270,8 +270,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="3"
                                 android:checked="true"
-
                                 android:padding="11dp"
+
                                 android:trackTintMode="add"
                                 tools:ignore="UseSwitchCompatOrMaterialXml" />
                         </LinearLayout>

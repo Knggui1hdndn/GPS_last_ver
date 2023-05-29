@@ -2,18 +2,16 @@ package com.example.gps.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.DialogInterface
+import android.app.PendingIntent
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.Looper
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -21,40 +19,29 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.example.gps.MyApplication
+import com.example.gps.MyReceiver
 import com.example.gps.R
 import com.example.gps.SettingConstants
 import com.example.gps.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.ActivityMain2Binding
 import com.example.gps.model.Speed
+import com.example.gps.ui.setting.Setting
 import com.example.gps.utils.TimeUtils
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
+import com.google.android.gms.location.ActivityRecognition
+import com.google.android.gms.location.ActivityRecognitionClient
+import com.google.android.gms.location.ActivityTransition
+import com.google.android.gms.location.ActivityTransitionRequest
+import com.google.android.gms.location.DetectedActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.onesignal.BuildConfig
 
 
 class MainActivity2 : AppCompatActivity() {
 
-    private val locationCallback1 = object : LocationCallback() {
-        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-        @SuppressLint("SuspiciousIndentation")
-        override fun onLocationResult(locationResult: LocationResult) {
-            val lastLocation = locationResult.lastLocation
-            Log.d("abcxyz", "lastLocation $lastLocation")
-        }
-    }
-    private val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 100)
-        .setWaitForAccurateLocation(true)
-        .setMinUpdateIntervalMillis(0)
-        .setMaxUpdateDelayMillis(0)
-        .build()
-    private var fusedLocationClient: FusedLocationProviderClient? = null
+
     private lateinit var binding: ActivityMain2Binding
+    private lateinit var activityRecognitionClient: ActivityRecognitionClient
 
     @RequiresApi(Build.VERSION_CODES.P)
     @SuppressLint("UseCompatLoadingForDrawables", "SetTextI18n", "MissingPermission", "InlinedApi")
@@ -69,16 +56,22 @@ class MainActivity2 : AppCompatActivity() {
         binding.times.text = "00 : 00 : 00"
         val navView: BottomNavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_activity_main2)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(applicationContext)
-        fusedLocationClient?.requestLocationUpdates(
-            locationRequest,
-            locationCallback1,
-            Looper.getMainLooper()
-        )
+
+//        val googleApiAvailability = GoogleApiAvailability.getInstance()
+//        val resultCode = googleApiAvailability.isGooglePlayServicesAvailable(this)
+//
+//        if (resultCode == ConnectionResult.SUCCESS) {
+//            // Thiết bị hỗ trợ hoạt động nhận dạng
+//            Log.d("ActivitySupport", "Thiết bị hỗ trợ hoạt động nhận dạng")
+//        } else {
+//            // Thiết bị không hỗ trợ hoạt động nhận dạng
+//            Log.d("ActivitySupport", "Thiết bị không hỗ trợ hoạt động nhận dạng")
+//        }
 
         requestPermissions(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 1)
+        requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 1)
+        requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+
         val sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         if (!sharedPreferences.getBoolean(
                 SettingConstants.CHECK_OPEN,
@@ -94,6 +87,7 @@ class MainActivity2 : AppCompatActivity() {
                 sharedPreferences.edit().apply {
                     putBoolean(SettingConstants.CHECK_OPEN, true)
                     putInt(SettingConstants.COLOR_DISPLAY, 2)
+
                     putBoolean(SettingConstants.DISPLAY_SPEED, true)
                     putBoolean(SettingConstants.TRACK_ON_MAP, true)
                     putBoolean(SettingConstants.SHOW_RESET_BUTTON, true)
@@ -103,6 +97,7 @@ class MainActivity2 : AppCompatActivity() {
                 myDataBase.SpeedDao().insertSpeed(Speed(2, which + 1 == 2))
                 myDataBase.SpeedDao().insertSpeed(Speed(3, which + 1 == 3))
                 insert(myDataBase)
+
                 dialog.cancel()
             }
             builder.create().show()
@@ -149,6 +144,7 @@ class MainActivity2 : AppCompatActivity() {
         if (item.itemId == R.id.history) {
             startActivity(Intent(this, HistoryActivity::class.java))
         }
+        if (item.itemId == android.R.id.home) startActivity(Intent(this, Setting::class.java))
         return true
     }
 }

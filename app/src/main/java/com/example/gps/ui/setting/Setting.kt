@@ -2,10 +2,13 @@ package com.example.gps.ui.setting
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
+import android.content.res.ColorStateList
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Switch
+import android.widget.Toast
 import com.example.gps.R
 import com.example.gps.SettingConstants
 import com.example.gps.dao.MyDataBase
@@ -13,6 +16,7 @@ import com.example.gps.dao.VehicleDao
 import com.example.gps.databinding.ActivitySettingBinding
 import com.example.gps.utils.ColorUtils
 import com.google.android.material.button.MaterialButton
+import java.lang.Exception
 
 class Setting : AppCompatActivity() {
     private lateinit var binding: ActivitySettingBinding
@@ -27,6 +31,8 @@ class Setting : AppCompatActivity() {
     private lateinit var swtShowSpeedInNoti: Switch
     private lateinit var swtTrackOnMap: Switch
     private lateinit var swtAlarm: Switch
+
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     private lateinit var swtClockDisplay: Switch
     private lateinit var swtShowReset: Switch
     private lateinit var btnColor1: MaterialButton
@@ -40,9 +46,9 @@ class Setting : AppCompatActivity() {
     private lateinit var btnWarningLimit: MaterialButton
     private lateinit var vehicleDao: VehicleDao
     private var colorPosition = 1
-    private var checkedOnclick = 0
-    private var check = 0
-   private lateinit var   myDataBase  :MyDataBase
+    private var checkUnitClick = 0
+
+    private lateinit var myDataBase: MyDataBase
 
     @SuppressLint("CommitPrefEdits")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,141 +60,128 @@ class Setting : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
-        val edit = sharedPreferences.edit()
         vehicleDao = MyDataBase.getInstance(this).vehicleDao()
-          myDataBase = MyDataBase.getInstance(this)
-        setBackgroundWhenOncrearte()
+        myDataBase = MyDataBase.getInstance(this)
+        checkUnitClick = myDataBase.SpeedDao().getChecked().type
+
+        colorPosition = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, 0)
+        setBackgroundALL()
 
 
-
-         checkStateSwitch(swtAlarm, SettingConstants.SPEED_ALARM)
-        checkStateSwitch(swtClockDisplay, SettingConstants.CLOCK_DISPLAY)
-        checkStateSwitch(swtShowSpeedInNoti, SettingConstants.DISPLAY_SPEED)
-        checkStateSwitch(swtShowReset, SettingConstants.SHOW_RESET_BUTTON)
-        checkStateSwitch(swtTrackOnMap, SettingConstants.TRACK_ON_MAP)
         btnOto.setOnClickListener {
-            checkedOnclick = 4
-            checkAndSetBackground()
-
+            setBackgroundButtonVehicle(btnOto)
+            myDataBase.vehicleDao().updateUnChecked(checkUnitClick)
+            myDataBase.vehicleDao().updateVehicle(1, checkUnitClick)
         }
         btnBicycle.setOnClickListener {
-            checkedOnclick = 5
-            checkAndSetBackground()
-
+            setBackgroundButtonVehicle(btnBicycle)
+            myDataBase.vehicleDao().updateUnChecked(checkUnitClick)
+            myDataBase.vehicleDao().updateVehicle(1, checkUnitClick)
         }
         btnTrain.setOnClickListener {
-            checkedOnclick = 6
-            checkAndSetBackground()
-
+            setBackgroundButtonVehicle(btnTrain)
+            myDataBase.vehicleDao().updateUnChecked(checkUnitClick)
+            myDataBase.vehicleDao().updateVehicle(1, checkUnitClick)
         }
         btnMph.setOnClickListener {
-            checkedOnclick = 1
-            checkAndSetBackground()
-            myDataBase.SpeedDao().updateUnChecked(1)
+            setBackgroundButtonUnit(btnMph)
+            myDataBase.SpeedDao().updateUnChecked()
             myDataBase.SpeedDao().updateChecked(1)
+            checkUnitClick = 1
         }
-
         btnKm.setOnClickListener {
-            checkedOnclick = 2
-            checkAndSetBackground()
-            myDataBase.SpeedDao().updateUnChecked(1)
-            myDataBase.SpeedDao().updateChecked(1)
+            setBackgroundButtonUnit(btnKm)
+            myDataBase.SpeedDao().updateUnChecked()
+            myDataBase.SpeedDao().updateChecked(2)
+            checkUnitClick = 2
         }
-
         btnKnot.setOnClickListener {
-            checkedOnclick = 3
-            checkAndSetBackground()
-            myDataBase.SpeedDao().updateUnChecked(1)
-            myDataBase.SpeedDao().updateChecked(1)
+            setBackgroundButtonUnit(btnKnot)
+            myDataBase.SpeedDao().updateUnChecked()
+            myDataBase.SpeedDao().updateChecked(3)
+            checkUnitClick = 3
         }
         onClickBtnColor(btnColor1, btnColor2, btnColor3, btnColor4, btnColor5, btnColor6, btnColor7)
     }
 
-    private fun setBackgroundSpeedWhenOnCreate() {
-        val type=myDataBase.SpeedDao().getChecked().type
-        when(type){
-            1 -> {
-                btnMph.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                setBackgroundVehicleWhenOnCreate(type)
-            }
-            2 -> {
-                btnMph.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                setBackgroundVehicleWhenOnCreate(type)
+    private fun setBackgroundButtonVehicle(btnTrain: MaterialButton) {
+        removeBackgroundButtonVehicle()
+        btnTrain.setBackgroundColor(ColorUtils.checkColor(colorPosition))
 
-            }
-            3 -> {
-                btnMph.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                setBackgroundVehicleWhenOnCreate(type)
-
-            }
-
-
-        }
     }
 
-    private fun setBackgroundVehicleWhenOnCreate(typeId:Int) {
-        when(myDataBase.vehicleDao().getVehicleChecked(typeId).type){
-
-            2 -> {
-                btnBicycle.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-            }
-            3 -> {
-                btnTrain.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-            }
-        }
-     }
-
-
-
-    private fun setBackgroundWhenOncrearte() {
-        setBackgroundSpeedWhenOnCreate()
+    private fun removeBackgroundButtonVehicle() {
+        btnBicycle.setBackgroundColor(Color.parseColor("#0d0d0d"))
+        btnOto.setBackgroundColor(Color.parseColor("#0d0d0d"))
+        btnTrain.setBackgroundColor(Color.parseColor("#0d0d0d"))
     }
 
-    private fun checkAndSetBackground() {
+    private fun setBackgroundButtonUnit(btn: MaterialButton) {
+        removeBackgroundButtonUnit()
+        btn.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+    }
+
+    private fun setBackgroundALL() {
         btnWarningLimit.setTextColor(ColorUtils.checkColor(colorPosition))
         btnMaxSpeepAnalog.setTextColor(ColorUtils.checkColor(colorPosition))
-        when (checkedOnclick) {
+        setBackgroundSpeedWhenOnCreate()
+        setColorSwt()
+    }
+
+    private fun removeBackgroundButtonUnit() {
+        btnKm.setBackgroundColor(Color.parseColor("#0d0d0d"))
+        btnMph.setBackgroundColor(Color.parseColor("#0d0d0d"))
+        btnKnot.setBackgroundColor(Color.parseColor("#0d0d0d"))
+    }
+
+    private fun setColorSwt() {
+        checkStateSwitch(swtAlarm, SettingConstants.SPEED_ALARM)
+        checkStateSwitch(swtClockDisplay, SettingConstants.CLOCK_DISPLAY)
+        checkStateSwitch(swtShowSpeedInNoti, SettingConstants.DISPLAY_SPEED)
+        checkStateSwitch(swtShowReset, SettingConstants.SHOW_RESET_BUTTON)
+        checkStateSwitch(swtTrackOnMap, SettingConstants.TRACK_ON_MAP)
+    }
+
+    private fun setBackgroundSpeedWhenOnCreate() {
+        val type = myDataBase.SpeedDao().getChecked().type
+
+        when (type) {
             1 -> {
-                btnKm.setBackgroundColor(Color.parseColor("#0d0d0d"))
                 btnMph.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                btnKnot.setBackgroundColor(Color.parseColor("#0d0d0d"))
+                setBackgroundVehicleWhenOnCreate(1)
             }
 
             2 -> {
-                btnMph.setBackgroundColor(Color.parseColor("#0d0d0d"))
                 btnKm.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                btnKnot.setBackgroundColor(Color.parseColor("#0d0d0d"))
+                setBackgroundVehicleWhenOnCreate(2)
+
             }
 
             3 -> {
-                btnMph.setBackgroundColor(Color.parseColor("#0d0d0d"))
-                btnKm.setBackgroundColor(Color.parseColor("#0d0d0d"))
                 btnKnot.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+                setBackgroundVehicleWhenOnCreate(3)
             }
-
-            4 -> {
-                btnBicycle.setBackgroundColor(Color.parseColor("#0d0d0d"))
-                btnOto.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                btnTrain.setBackgroundColor(Color.parseColor("#0d0d0d"))
-            }
-
-            5 -> {
-                btnTrain.setBackgroundColor(Color.parseColor("#0d0d0d"))
-                btnBicycle.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                btnOto.setBackgroundColor(Color.parseColor("#0d0d0d"))
-            }
-
-            6 -> {
-                btnBicycle.setBackgroundColor(Color.parseColor("#0d0d0d"))
-                btnTrain.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                btnOto.setBackgroundColor(Color.parseColor("#0d0d0d"))
-            }
-
-
         }
-
-
     }
+
+    private fun setBackgroundVehicleWhenOnCreate(typeId: Int) {
+        val x = myDataBase.vehicleDao().getVehicleChecked(typeId)
+        when (x.type) {
+            1 -> {
+                btnOto.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+            }
+
+            2 -> {
+                btnBicycle.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+            }
+
+            3 -> {
+                btnTrain.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+            }
+        }
+        Log.d("lslsl", myDataBase.vehicleDao().getVehicleChecked(1).type.toString())
+    }
+
 
     private fun onClickBtnColor(vararg btnColor: MaterialButton) {
         btnColor.forEach {
@@ -200,22 +193,18 @@ class Setting : AppCompatActivity() {
 
                     R.id.btnColor2 -> {
                         colorPosition = 2
-
                     }
 
                     R.id.btnColor3 -> {
                         colorPosition = 3
-
                     }
 
                     R.id.btnColor4 -> {
                         colorPosition = 4
-
                     }
 
                     R.id.btnColor5 -> {
                         colorPosition = 5
-
                     }
 
                     R.id.btnColor6 -> {
@@ -229,22 +218,24 @@ class Setting : AppCompatActivity() {
                     }
 
                 }
-
                 saveColorChecked()
-                checkAndSetBackground()
+                removeBackgroundButtonUnit()
+                removeBackgroundButtonVehicle()
+                setBackgroundALL()
 
             }
         }
     }
 
     private fun saveColorChecked() =
-        sharedPreferences.edit().putInt(SettingConstants.COLOR_DISPLAY, colorPosition)
+        sharedPreferences.edit().putInt(SettingConstants.COLOR_DISPLAY, colorPosition).apply()
 
     private fun checkStateSwitch(
         @SuppressLint("UseSwitchCompatOrMaterialCode") sw: Switch,
         constants: String
     ) {
         sw.isChecked = sharedPreferences.getBoolean(constants, false)
+        sw.trackTintList = ColorStateList.valueOf(ColorUtils.checkColor(colorPosition))
     }
 
     private fun initView() {
@@ -252,9 +243,9 @@ class Setting : AppCompatActivity() {
         {
             this@Setting.swtShowSpeedInNoti = this.swtShowSpeedInNoti
             this@Setting.swtAlarm = this.swtAlarm
-            this@Setting.swtShowReset = this.swtShowReset!!
+            this@Setting.swtShowReset = this.swtShowReset
             this@Setting.swtTrackOnMap = this.swtTrackOnMap
-            this@Setting.swtClockDisplay = this.swtClockDisplay!!
+            this@Setting.swtClockDisplay = this.swtClockDisplay
             this@Setting.btnKnot = this.btnKnot
             this@Setting.btnMph = this.btnMph
             this@Setting.btnKm = this.btnKm
