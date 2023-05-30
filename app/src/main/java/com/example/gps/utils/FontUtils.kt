@@ -13,28 +13,31 @@ class FontUtils() {
         fun setFont(context: Context, vararg textView: TextView) {
             textView.forEach {
                 it.typeface = Typeface.createFromAsset(context.assets, "font_lcd.ttf")
-
                 val spannableString = SpannableString(it.text.toString())
-                val position = it.text.toString().indexOf("k")
+                var position = it.text.toString().indexOf("k")
+                if (position < 0) {
+                    position = it.text.toString().indexOf("m")
+
+                }
                 if (position >= 0) {
-                    // Chỉ định kích thước mới cho kí tự
                     val newSize = 0.5f
-// Tạo một RelativeSizeSpan với kích thước mới
                     val sizeSpan = RelativeSizeSpan(newSize)
-Log.d("dfgvub", "$position")
-// Áp dụng RelativeSizeSpan cho kí tự tại vị trí đã chỉ định
+                    Log.d("dfgvub", "$position")
                     spannableString.setSpan(
                         sizeSpan,
                         position,
-                        it.text.toString().length ,
+                        it.text.toString().length,
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                     )
-
-// Sử dụng spannableString trong TextView
                     it.text = spannableString
                 }
             }
+        }
 
+        fun setTextColor(colorPosition: Int, vararg txt: TextView) {
+            txt.forEach {
+                it.setTextColor(ColorUtils.checkColor(colorPosition))
+            }
         }
     }
 }

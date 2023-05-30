@@ -99,6 +99,7 @@ class Map() : SensorEventListener {
                 }
                 val distance = getDistance(lastLocation)
                 val currentSpeed = getCurrentSpeed(lastLocation)
+                listSpeed.add(0F)
                 listSpeed.add(currentSpeed.toFloat())
                 val maxSpeed = getMaxSpeed()
                 val averageSpeed = getAverageSpeed()

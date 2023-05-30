@@ -3,8 +3,11 @@ package com.example.gps.ui
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.PendingIntent
+import android.app.Service
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
@@ -34,7 +37,6 @@ import com.google.android.gms.location.ActivityTransition
 import com.google.android.gms.location.ActivityTransitionRequest
 import com.google.android.gms.location.DetectedActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.onesignal.BuildConfig
 
 
 class MainActivity2 : AppCompatActivity() {
@@ -42,6 +44,7 @@ class MainActivity2 : AppCompatActivity() {
 
     private lateinit var binding: ActivityMain2Binding
     private lateinit var activityRecognitionClient: ActivityRecognitionClient
+    private lateinit var myDataBase: MyDataBase
 
     @RequiresApi(Build.VERSION_CODES.P)
     @SuppressLint("UseCompatLoadingForDrawables", "SetTextI18n", "MissingPermission", "InlinedApi")
@@ -87,7 +90,6 @@ class MainActivity2 : AppCompatActivity() {
                 sharedPreferences.edit().apply {
                     putBoolean(SettingConstants.CHECK_OPEN, true)
                     putInt(SettingConstants.COLOR_DISPLAY, 2)
-
                     putBoolean(SettingConstants.DISPLAY_SPEED, true)
                     putBoolean(SettingConstants.TRACK_ON_MAP, true)
                     putBoolean(SettingConstants.SHOW_RESET_BUTTON, true)
@@ -134,6 +136,28 @@ class MainActivity2 : AppCompatActivity() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        binding.navView.itemIconTintList =  getColorRes()
+     }
+
+    private fun getColorRes(): ColorStateList {
+        val intColor = getSharedPreferences(
+            SettingConstants.SETTING,
+            Service.MODE_PRIVATE
+        ).getInt(SettingConstants.COLOR_DISPLAY, 2)
+        Log.d("okookoo",intColor.toString())
+        when (intColor) {
+            1 -> return getColorStateList(R.color.color1)
+            3 -> return getColorStateList(R.color.color2)
+            2 -> return getColorStateList(R.color.color3)
+            4 -> return getColorStateList(R.color.color4)
+            5 -> return getColorStateList(R.color.color5)
+            6 -> return getColorStateList(R.color.color6)
+            7 -> return getColorStateList(R.color.color7)
+        }
+        return getColorStateList(R.color.color2)
+    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.history, menu)

@@ -2,6 +2,7 @@ package com.example.gps.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.location.Geocoder
 import android.os.Build
 import android.util.Log
@@ -10,21 +11,25 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gps.databinding.ItemBinding
 import com.example.gps.model.MovementData
+import com.example.gps.utils.ColorUtils
 import com.example.gps.utils.TimeUtils
 import java.lang.Exception
 import java.util.Calendar
 import java.util.Locale
 
-class HistoryAdapter() :
+class HistoryAdapter(private val i: Int) :
     RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder>() {
     private var list: MutableList<MovementData> = mutableListOf()
 
-    class HistoryViewHolder(private val binding: ItemBinding) :
+  inner  class HistoryViewHolder(private val binding: ItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
         fun bind(movementData: MovementData) {
 
             with(binding) {
+                btnSeeMore.strokeColor = ColorStateList.valueOf(ColorUtils.checkColor(i))
+                btnSeeMore.setTextColor(ColorUtils.checkColor(i))
+                a.setBackgroundColor(ColorUtils.checkColor(i))
                 binding.btnSeeMore.setOnClickListener {
                     val intent = Intent(it.context, ShowActivity::class.java)
                     intent.putExtra("movementData", movementData)

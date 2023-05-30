@@ -3,6 +3,7 @@ package com.example.gps.ui
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
+import android.app.Service
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
@@ -13,6 +14,7 @@ import android.widget.RelativeLayout
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.gps.R
+import com.example.gps.SettingConstants
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.ActivityShowBinding
 import com.example.gps.databinding.BottomSheetBinding
@@ -96,6 +98,7 @@ class ShowActivity : AppCompatActivity() {
         setContentView(binding.root)
         myDataBase = MyDataBase.getInstance(this)
         bottomSheet = bottom.bottomSheet
+        setBackgroundColor()
         val bottom2 = BottomSheetBehavior.from(bottomSheet).apply {
             state = BottomSheetBehavior.STATE_EXPANDED
         }
@@ -112,6 +115,10 @@ class ShowActivity : AppCompatActivity() {
             bottom.txtDistance,
             bottom.txtAverageSpeed
         )
+        with(bottom) {
+            txtSpeed
+            txtAverageSpeed
+        }
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(callback)
 
@@ -154,6 +161,16 @@ class ShowActivity : AppCompatActivity() {
             .setNegativeButton("Hủy") { dialogInterface: DialogInterface, i: Int -> dialogInterface.dismiss() }
             .setTitle("Thông báo !")
             .setMessage("Xác nhận xóa item?").create()
+    }
+
+    private fun setBackgroundColor() {
+        val intColor = getSharedPreferences(
+            SettingConstants.SETTING,
+            Service.MODE_PRIVATE
+        ).getInt(SettingConstants.COLOR_DISPLAY, 2)
+        with(bottom) {
+    FontUtils.setTextColor(intColor,txtSpeed,txtAverageSpeed,txtTime,txtDistance)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)

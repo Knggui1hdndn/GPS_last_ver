@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import com.example.gps.MyLocationConstants
 import com.example.gps.utils.FontUtils
 import com.example.gps.R
+import com.example.gps.SettingConstants
 import com.example.gps.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.FragmentDashboardBinding
@@ -22,6 +23,8 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         var allDistance = requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
             .getInt(MyLocationConstants.DISTANCE, 0)
         with(binding) {
+          setBackgroundColor()
+
             FontUtils.setFont(requireContext(), this!!.txtSpeed)
             SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) {
                 if(it==0F)  txtSpeed.text ="000"
@@ -42,6 +45,18 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
             }
             txtDistance1.text = allDistance.toString()
         }
+    }
+
+    override fun onResume() {
+        setBackgroundColor()
+        super.onResume()
+    }
+    private fun setBackgroundColor() {
+        val intColor = requireActivity().getSharedPreferences(
+            SettingConstants.SETTING,
+            Service.MODE_PRIVATE
+        ).getInt(SettingConstants.COLOR_DISPLAY, 2)
+        FontUtils.setTextColor(intColor, binding!!.txtSpeed, binding!!.txtKm4 )
     }
 
 

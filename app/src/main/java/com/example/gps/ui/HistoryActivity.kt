@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gps.R
+import com.example.gps.SettingConstants
 import com.example.gps.dao.MyDataBase
 import com.example.gps.model.MovementData
 
@@ -37,7 +38,7 @@ class HistoryActivity : AppCompatActivity() {
         val mng = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         mutableListMovementData = myDataBase.movementDao().getAllMovementData()
         mutableListMovementData.reverse()
-        adapter = HistoryAdapter()
+        adapter = HistoryAdapter(getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE).getInt(SettingConstants.COLOR_DISPLAY,2))
         adapter.notifyDataSetChanged(mutableListMovementData)
         val direction = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
         rcy.addItemDecoration(direction)

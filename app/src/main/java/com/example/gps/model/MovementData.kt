@@ -16,7 +16,8 @@ class MovementData(
     var maxSpeed: Float,
     var averageSpeed: Float,
     var distance: Float,
-    var time: Float
+    var time: Float,
+
 ) :Serializable{
 
 }

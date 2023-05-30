@@ -15,7 +15,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="25dp"
         android:layout_weight="5"
-        app:sv_backgroundCircleColor="@color/black"
+         app:sv_backgroundCircleColor="@color/black"
         app:sv_maxSpeed="280"
         app:sv_minSpeed="0"
         app:sv_speedTextPosition="CENTER"
