@@ -10,6 +10,8 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import com.example.gps.MyApplication
 import com.example.gps.R
+import com.example.gps.SharedData
+import com.example.gps.dao.MyDataBase
 
 class SplashActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -17,7 +19,9 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         requestPermissions(arrayOf(Manifest.permission.ACTIVITY_RECOGNITION), 2)
-        createTimer(3L)}
+        createTimer(3L)
+
+    }
 
     private fun createTimer(seconds: Long) {
         val countDownTimer: CountDownTimer = object : CountDownTimer(seconds * 1000, 1000) {

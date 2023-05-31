@@ -58,10 +58,9 @@ class Setting : AppCompatActivity() {
     private var colorPosition = 1
     private var checkUnitClick = 0
     private var checkVehicleClick = 0
-
     private lateinit var myDataBase: MyDataBase
 
-    @SuppressLint("CommitPrefEdits")
+    @SuppressLint("CommitPrefEdits", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingBinding.inflate(layoutInflater)
@@ -80,20 +79,20 @@ class Setting : AppCompatActivity() {
             MyLocationConstants.DISTANCE,
             0
         ).toString()
-        swtAlarm.setOnCheckedChangeListener { buttonView, isChecked ->
+        swtAlarm.setOnCheckedChangeListener { _, isChecked ->
             sharedPreferences.edit().putBoolean(SettingConstants.SPEED_ALARM, isChecked).apply()
         }
-        swtShowReset.setOnCheckedChangeListener { buttonView, isChecked ->
+        swtShowReset.setOnCheckedChangeListener { _, isChecked ->
             sharedPreferences.edit().putBoolean(SettingConstants.SHOW_RESET_BUTTON, isChecked)
                 .apply()
         }
-        swtClockDisplay.setOnCheckedChangeListener { buttonView, isChecked ->
+        swtClockDisplay.setOnCheckedChangeListener { _, isChecked ->
             sharedPreferences.edit().putBoolean(SettingConstants.CLOCK_DISPLAY, isChecked).apply()
         }
-        swtTrackOnMap.setOnCheckedChangeListener { buttonView, isChecked ->
+        swtTrackOnMap.setOnCheckedChangeListener { _, isChecked ->
             sharedPreferences.edit().putBoolean(SettingConstants.TRACK_ON_MAP, isChecked).apply()
         }
-        swtShowSpeedInNoti.setOnCheckedChangeListener { buttonView, isChecked ->
+        swtShowSpeedInNoti.setOnCheckedChangeListener { _, isChecked ->
             sharedPreferences.edit().putBoolean(SettingConstants.DISPLAY_SPEED, isChecked).apply()
         }
         btnMaxSpeepAnalog.setOnClickListener {
@@ -131,7 +130,7 @@ class Setting : AppCompatActivity() {
             checkVehicleClick = 3
         }
         btnMph.setOnClickListener {
-            SharedData.unitSpeed.value = "mph"
+            SharedData.toUnit  = "mph"
             myDataBase.SpeedDao().updateUnChecked()
             myDataBase.SpeedDao().updateChecked(1)
             setBackgroundSpeedAndVehicle()
@@ -139,14 +138,14 @@ class Setting : AppCompatActivity() {
 
         }
         btnKm.setOnClickListener {
-            SharedData.unitSpeed.value = "km/h"
+            SharedData.toUnit = "km/h"
             myDataBase.SpeedDao().updateUnChecked()
             myDataBase.SpeedDao().updateChecked(2)
             setBackgroundSpeedAndVehicle()
             checkUnitClick = 2
         }
         btnKnot.setOnClickListener {
-            SharedData.unitSpeed.value = "knot"
+            SharedData.toUnit  = "knot"
             myDataBase.SpeedDao().updateUnChecked()
             myDataBase.SpeedDao().updateChecked(3)
             setBackgroundSpeedAndVehicle()
@@ -158,6 +157,9 @@ class Setting : AppCompatActivity() {
     private fun getDialogSpeedAnalog(): AlertDialog.Builder {
         var item = 0
         val array = arrayOf(
+            "80",
+            "160",
+            "240",
             "320",
             "400",
             "480",
@@ -168,17 +170,17 @@ class Setting : AppCompatActivity() {
         return AlertDialog.Builder(this@Setting).apply {
             setTitle("Chọn Tốc độ Đông hồ Analog").setSingleChoiceItems(
                 array, position
-            ) { dialog, which ->
+            ) { _, which ->
                 item = array[which].toInt()
 
             }
-            setNegativeButton("Hủy Bỏ") { dialog: DialogInterface, i: Int ->
+            setNegativeButton("Hủy Bỏ") { dialog: DialogInterface, _: Int ->
                 dialog.dismiss()
             }
-            setPositiveButton("Đồng Ý") { dialog: DialogInterface, i: Int ->
-                Log.d("áaaaaa", "$checkUnitClick xx $checkVehicleClick")
+            setPositiveButton("Đồng Ý") { dialog: DialogInterface, _: Int ->
                 myDataBase.vehicleDao().updateMaxSpeed(checkUnitClick, checkVehicleClick, item)
                 btnMaxSpeepAnalog.text = item.toString()
+                SharedData.speedAnalog.value=item
                 dialog.cancel()
             }
         }
@@ -188,8 +190,8 @@ class Setting : AppCompatActivity() {
         val vehicleChecked = myDataBase.vehicleDao().getVehicleChecked(typeId)
         btnMaxSpeepAnalog.text = vehicleChecked.clockSpeed.toString()
         btnWarningLimit.text = vehicleChecked.limitWarning.toString()
-        Log.d("áaaaaa", "setSpecifications" + vehicleChecked)
-    }
+        SharedData.speedAnalog.value=vehicleChecked.clockSpeed
+     }
 
 
     private fun removeBackgroundButtonVehicle() {
@@ -210,7 +212,6 @@ class Setting : AppCompatActivity() {
     }
 
     private fun removeBackgroundButtonUnit() {
-
         btnKm.setBackgroundColor(Color.parseColor("#0d0d0d"))
         btnMph.setBackgroundColor(Color.parseColor("#0d0d0d"))
         btnKnot.setBackgroundColor(Color.parseColor("#0d0d0d"))

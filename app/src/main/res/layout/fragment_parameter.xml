@@ -55,15 +55,6 @@
                     android:text="0"
                     android:textColor="@color/teal_200"
                     android:textSize="20dp" />
-                <TextView
-                    android:id="@+id/txtkm1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="bottom"
-                    android:singleLine="true"
-                    android:text="km"
-                    android:textColor="@color/teal_200"
-                    android:textSize="15dp" />
             </LinearLayout>
         </RelativeLayout>
 
@@ -103,15 +94,6 @@
         android:text="0"
         android:textColor="@color/teal_200"
         android:textSize="20dp" />
-    <TextView
-        android:id="@+id/txtkm2"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
- android:gravity="bottom"
-        android:singleLine="true"
-        android:text="km"
-        android:textColor="@color/teal_200"
-        android:textSize="15dp" />
 </LinearLayout>
 
 
@@ -154,15 +136,6 @@
                     android:text="0"
                     android:textColor="@color/teal_200"
                     android:textSize="20dp" />
-                <TextView
-                    android:id="@+id/txtkm3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="bottom"
-                    android:singleLine="true"
-                    android:text="km"
-                    android:textColor="@color/teal_200"
-                    android:textSize="15dp" />
             </LinearLayout>
 
     </RelativeLayout>

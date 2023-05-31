@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import com.example.gps.R
 import com.example.gps.SettingConstants
 import com.example.gps.SharedData
+import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.FragmentHomeBinding
 import com.example.gps.utils.ColorUtils
 
@@ -24,18 +25,29 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentHomeBinding.bind(view)
 
-        sharedPreferences = view.context.getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
+        sharedPreferences =
+            view.context.getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
 
         var timePrevious = System.currentTimeMillis()
         with(binding) {
+            try {
+                var myDataBase = MyDataBase.getInstance(requireContext())
+                val maxSpeedAnalog =
+                    myDataBase.vehicleDao().getVehicleChecked(myDataBase.SpeedDao().getChecked().type)
+                speed.maxSpeed=maxSpeedAnalog.clockSpeed.toFloat()
+            } catch (e: Exception) {
+
+            }
             // change ring color, have fun with this method
+            SharedData.speedAnalog.observe(viewLifecycleOwner) {
+                speed.maxSpeed = it.toFloat()
+            }
             changeBackGroundSpeedView()
             SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) {
                 var speed1 = String.format("%.1f", it)
                 speed1 = speed1.replace(",", ".");
                 this.speed.speedTo(speed1.toFloat(), System.currentTimeMillis() - timePrevious)
                 timePrevious = System.currentTimeMillis()
-
             }
         }
     }

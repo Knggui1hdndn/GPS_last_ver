@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
@@ -18,6 +19,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -25,6 +27,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.gps.MyReceiver
 import com.example.gps.R
 import com.example.gps.SettingConstants
+import com.example.gps.SettingConstants.Companion.CLOCK_DISPLAY
 import com.example.gps.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.ActivityMain2Binding
@@ -43,8 +46,8 @@ class MainActivity2 : AppCompatActivity() {
 
 
     private lateinit var binding: ActivityMain2Binding
-    private lateinit var activityRecognitionClient: ActivityRecognitionClient
-    private lateinit var myDataBase: MyDataBase
+
+    private lateinit var sharedPreferences: SharedPreferences
 
     @RequiresApi(Build.VERSION_CODES.P)
     @SuppressLint("UseCompatLoadingForDrawables", "SetTextI18n", "MissingPermission", "InlinedApi")
@@ -55,6 +58,7 @@ class MainActivity2 : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_home_black_24dp)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         binding.times.typeface = Typeface.createFromAsset(assets, "font_lcd.ttf")
         binding.times.text = "00 : 00 : 00"
         val navView: BottomNavigationView = binding.navView
@@ -75,7 +79,7 @@ class MainActivity2 : AppCompatActivity() {
         requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 1)
         requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
 
-        val sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
+        binding.times.isVisible = sharedPreferences.getBoolean(CLOCK_DISPLAY, true)
         if (!sharedPreferences.getBoolean(
                 SettingConstants.CHECK_OPEN,
                 false
@@ -99,12 +103,26 @@ class MainActivity2 : AppCompatActivity() {
                 myDataBase.SpeedDao().insertSpeed(Speed(2, which + 1 == 2))
                 myDataBase.SpeedDao().insertSpeed(Speed(3, which + 1 == 3))
                 insert(myDataBase)
-
+                val unit = MyDataBase.getInstance(this).SpeedDao().getChecked().type
+                SharedData.fromUnit = if (unit == 1) {
+                    "mph";
+                } else if (unit == 2) "km/h" else "knot"
+                if (unit == 1 || unit == 2) {
+                    SharedData.speedAnalog.value = 240
+                } else {
+                    SharedData.speedAnalog.value = 320
+                }
+                SharedData.toUnit = SharedData.fromUnit
                 dialog.cancel()
             }
             builder.create().show()
         }
-
+        val speed = MyDataBase.getInstance(this).SpeedDao().getChecked()
+        if (speed != null) {
+            val unit = speed.type
+            SharedData.fromUnit = if (unit == 1) "mph" else if (unit == 2) "km/h" else "knot"
+            SharedData.toUnit = SharedData.fromUnit
+        }
 
         val appBarConfiguration = AppBarConfiguration(
             setOf(
@@ -138,15 +156,17 @@ class MainActivity2 : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        binding.navView.itemIconTintList =  getColorRes()
-     }
+        binding.navView.itemIconTintList = getColorRes()
+        binding.times.isVisible = sharedPreferences.getBoolean(CLOCK_DISPLAY, true)
+
+    }
 
     private fun getColorRes(): ColorStateList {
         val intColor = getSharedPreferences(
             SettingConstants.SETTING,
             Service.MODE_PRIVATE
         ).getInt(SettingConstants.COLOR_DISPLAY, 2)
-        Log.d("okookoo",intColor.toString())
+        Log.d("okookoo", intColor.toString())
         when (intColor) {
             1 -> return getColorStateList(R.color.color1)
             3 -> return getColorStateList(R.color.color2)

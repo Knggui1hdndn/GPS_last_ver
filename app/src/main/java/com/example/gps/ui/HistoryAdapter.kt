@@ -87,6 +87,8 @@ class HistoryAdapter(private val i: Int) :
     fun notifyDataSetChanged(mutableList: MutableList<MovementData>) {
         list.clear()
         list.addAll(mutableList)
+        Log.d("NotifyDataSetChanged", "onResume${list.size}   ")
+
         notifyDataSetChanged()
     }
 

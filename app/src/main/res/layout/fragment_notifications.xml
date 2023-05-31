@@ -110,17 +110,15 @@ android:gravity="bottom"
                         android:ellipsize="end"
                         android:lines="1"
                         android:text="0"
+
+                        app:autoSizeTextType="uniform"
+                        app:autoSizeMinTextSize="12sp"
+                        app:autoSizeMaxTextSize="100sp"
+                        app:autoSizeStepGranularity="2sp"
                         android:textColor="@color/teal_200"
                         android:textSize="25sp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="bottom"
-                        android:text="KM/H"
-                        android:id="@+id/a"
-                        android:textColor="@color/teal_200"
-                        android:textSize="12sp" />
+
                 </LinearLayout>
             </LinearLayout>
 

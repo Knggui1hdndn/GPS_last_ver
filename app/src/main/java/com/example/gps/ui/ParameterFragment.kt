@@ -10,6 +10,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.gps.MyLocationConstants
 import com.example.gps.R
@@ -26,63 +27,47 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) {
     private var intColor: Int = 0
     private var check = false
     private var sharedPreferences: SharedPreferences? = null
-    private var difference: Double = 1.0
     private var unit: Int = 0
-    private var unitDistance: Int = 0
-    private var unitCurrent: String = ""
     private lateinit var myDataBase: MyDataBase
-    private var u = 0.0
-    private var v = 0.0
-    private var vMax = 0.0
+    var checkUnit = ""
 
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentParameterBinding.bind(view)
         sharedPreferences = requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
         myDataBase = MyDataBase.getInstance(requireContext())
-        unit = myDataBase.SpeedDao().getChecked().type
-
-
+        checkUnit = SharedData.toUnit
         if (!isMyServiceRunning(MyService::class.java)) setState(MyLocationConstants.STOP)
         with(binding) {
             setBackGround()
-
-            SharedData.unitSpeed.observe(viewLifecycleOwner) {
-                txtkm1.text = it.toString()
-                txtkm3.text = it.toString()
-                if (it != "km") txtkm2.text = "mi" else txtkm2.text = "km"
-                convertKmTo(it)
-                convertToKm()
-
-            }
+            this.txtMaxSpeed.text = "0" + SharedData.toUnit
+            this.txtDistance.text = "0" + if (SharedData.toUnit != "km/h") "mi" else "km"
+            this.txtAverageSpeed.text = "0" + SharedData.toUnit
             SharedData.maxSpeedLiveData.observe(viewLifecycleOwner) {
-                vMax = it.toDouble()
-                this.txtMaxSpeed.text =
-                    if (it <= 0) "0" else String.format(
-                        "%.0f",
-                        it
-                    )
+                this.txtMaxSpeed.text = if (it <= 0) "0" + SharedData.toUnit else String.format(
+                    "%.0f",
+                    SharedData.convertSpeed(it)
+                ) + SharedData.toUnit
                 setFont(binding)
             }
+
             SharedData.distanceLiveData.observe(viewLifecycleOwner) {
-                this.txtDistance.text = String.format("%.2f", it)
+                 this.txtDistance.text = if (SharedData.toUnit != "km/h") "${(it * 0.6214).toInt()}mi" else "${(it * 1.60934).toInt()}km"
                 setFont(binding)
-
             }
-            SharedData.averageSpeedLiveData.observe(viewLifecycleOwner) {
-                v = it.toDouble()
-                this.txtAverageSpeed.text =
-                    if (it <= 0) "0" else String.format(
-                        "%.0f",
-                        it
-                    ) + ""
-                setFont(binding)
 
+            SharedData.averageSpeedLiveData.observe(viewLifecycleOwner) {
+                this.txtAverageSpeed.text =
+                    if (it <= 0) "0" + SharedData.toUnit else String.format(
+                        "%.0f",
+                        SharedData.convertSpeed(it)
+                    ) + SharedData.toUnit
+                setFont(binding)
             }
 
             showOrHideView()
-            setFont(binding!!)
-            this!!.btnStart.setOnClickListener {
+            setFont(binding)
+            this.btnStart.setOnClickListener {
                 setState(MyLocationConstants.START)
                 hideBtnStart()
                 startService(MyLocationConstants.START)
@@ -103,52 +88,9 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) {
                 hideBtnStop()
                 startService(MyLocationConstants.STOP)
 
+
             }
         }
-    }
-
-    private fun convertToKm() {
-        when (unitCurrent) {
-            "km" -> {
-                v = v
-            }
-
-            "knot" -> {
-                v *= 1.852
-            }
-
-            "mph" -> {
-                v *= 1.609344
-            }
-        }
-    }
-
-    private fun convertKmTo(it: String):Int {
-        with(binding) {
-            when (it) {
-                "km" -> {
-                    txtAverageSpeed.text = v.toString()
-                    txtMaxSpeed.text = vMax.toString()
-                }
-
-                "knot" -> {
-
-                    txtAverageSpeed.text =
-                        (v / 0.539957).toInt().toString()
-                    txtMaxSpeed.text =
-                        (vMax / 0.539957).toInt().toString()
-
-                }
-
-                "mph" -> {
-                    txtAverageSpeed.text =
-                        (v / 0.621).toInt().toString()
-                    txtMaxSpeed.text = (vMax / 0.621).toInt().toString()
-
-                }
-            }
-        }
-
     }
 
 
@@ -158,7 +100,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) {
             Context.MODE_PRIVATE
         ).getInt(SettingConstants.COLOR_DISPLAY, 2)
         with(binding) {
-            FontUtils.setTextColor(intColor, this!!.txtMaxSpeed, txtAverageSpeed, txtDistance)
+            FontUtils.setTextColor(intColor, this.txtMaxSpeed, txtAverageSpeed, txtDistance)
             btnStart.setBackgroundColor(ColorUtils.checkColor(intColor))
             btnPause.setBackgroundColor(ColorUtils.checkColor(intColor))
             btnResume.setBackgroundColor(ColorUtils.checkColor(intColor))
@@ -259,13 +201,34 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) {
 
     override fun onResume() {
         super.onResume()
+        setBackgroundWhenComeBack()
+        setDataWhenComeBack()
+    }
 
+    private fun setDataWhenComeBack() {
+        if (SharedData.toUnit != checkUnit) {
+            with(binding) {
+                numberSeparation(txtDistance)
+                val distance = numberSeparation(txtDistance)
+                this.txtDistance.text = if (SharedData.toUnit != "km/h") "${(distance * 0.6214).toInt()}mi" else "${(distance * 1.60934).toInt()}km"
+                var averageSpeed = numberSeparation(txtAverageSpeed)
+                txtAverageSpeed.text = if (averageSpeed !=  0 ) SharedData.convertSpeed(averageSpeed.toFloat()).toInt().toString() + SharedData.toUnit else "0${SharedData.toUnit}"
+                var speed=numberSeparation(txtMaxSpeed)
+                this.txtMaxSpeed.text = if (speed !=  0 ) SharedData.convertSpeed(speed .toFloat()).toInt().toString() + SharedData.toUnit else "0${SharedData.toUnit}"
+            }
+            setFont(binding)
+            checkUnit=SharedData.toUnit }
+    }
+
+    private fun setBackgroundWhenComeBack() {
         val i = requireActivity().getSharedPreferences(
             SettingConstants.SETTING,
             Context.MODE_PRIVATE
         ).getInt(SettingConstants.COLOR_DISPLAY, 2)
-        unit = myDataBase.SpeedDao().getChecked().type
-        if (intColor != i) {
+        if((myDataBase.SpeedDao().getChecked() !=null)){
+            unit = myDataBase.SpeedDao().getChecked().type
+        }
+         if (intColor != i) {
             with(binding) {
                 FontUtils.setTextColor(i, this.txtMaxSpeed, txtAverageSpeed, txtDistance)
                 btnStart.setBackgroundColor(ColorUtils.checkColor(i))
@@ -273,7 +236,10 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) {
                 btnResume.setBackgroundColor(ColorUtils.checkColor(i))
             }
         }
+    }
 
+    private fun numberSeparation(txt: TextView) :Int{
+return txt.text.toString().filter { it.isDigit() }.toInt()
     }
 
     override fun onDestroy() {

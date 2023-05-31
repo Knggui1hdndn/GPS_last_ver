@@ -11,6 +11,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.location.Location
+import android.media.RingtoneManager
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -24,6 +25,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+
 
 interface LocationChangeListener {
     fun onLocationChanged(km: String, distance: String, maxSpeed: String)
@@ -158,7 +160,13 @@ class Map() : SensorEventListener {
         if (!lastLocation.hasSpeed()) return 0F
         val time = (System.currentTimeMillis() - milli) / 1000.0
         val s = nearestDistance(lastLocation)
-        return ((s / time) * 3.6).toFloat()
+        val notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
+        val r = RingtoneManager.getRingtone(context, notification)
+        var speed = ((s / time) * 3.6).toFloat()
+        when (SharedData.convertSpeed(speed)) {
+
+        }
+        return speed
     }
 
     private fun getMaxSpeed(): Float {

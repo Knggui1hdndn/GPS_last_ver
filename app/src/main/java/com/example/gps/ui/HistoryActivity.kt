@@ -6,6 +6,7 @@ import android.app.Dialog
 import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
@@ -58,12 +59,12 @@ class HistoryActivity : AppCompatActivity() {
             .setMessage(if (mutableList.size > 0) "Xác nhận xóa tất cả?" else "Rỗng").create()
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    override fun onResume() {
+     override fun onResume() {
         super.onResume()
+        Log.d("NotifyDataSetChanged", "onResume${mutableListMovementData.size}   ${myDataBase.movementDao().getAllMovementData().size}")
         if (mutableListMovementData.size != myDataBase.movementDao().getAllMovementData().size) {
             adapter.notifyDataSetChanged(myDataBase.movementDao().getAllMovementData())
-
+            adapter.notifyDataSetChanged()
         }
     }
 

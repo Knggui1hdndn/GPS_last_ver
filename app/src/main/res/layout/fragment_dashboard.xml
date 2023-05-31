@@ -23,8 +23,11 @@
             android:gravity="center"
             android:lines="1"
             android:ellipsize="end"
-            android:scaleX="14"
-            android:scaleY="15"
+            app:autoSizeTextType="uniform"
+             app:autoSizeMinTextSize="12sp"
+            app:autoSizeMaxTextSize="150sp"
+            app:autoSizeStepGranularity="2sp"
+
             android:text="000"
             android:textColor="@color/teal_200" />
     </LinearLayout>

@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.gps.R
 import com.example.gps.SettingConstants
+import com.example.gps.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.ActivityShowBinding
 import com.example.gps.databinding.BottomSheetBinding
@@ -34,6 +35,7 @@ import com.google.android.gms.maps.model.StyleSpan
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.lang.Exception
 import java.text.DateFormat
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -198,10 +200,10 @@ class ShowActivity : AppCompatActivity() {
                         movementData.startLatitude,
                         movementData.startLongitude
                     ) else "__"
-                txtSpeed.text = "${movementData.maxSpeed}km/h"
-                txtAverageSpeed.text = "${movementData.averageSpeed}km/h"
+                txtSpeed.text = "${SharedData.convertSpeed(movementData.maxSpeed).toInt()}"+SharedData.toUnit
+                txtAverageSpeed.text ="${SharedData.convertSpeed(movementData.averageSpeed).toInt()}"+SharedData.toUnit
                 txtTime.text = TimeUtils.formatTime(movementData.time.toLong())
-                txtDistance.text = "${String.format("%f0.3", movementData.distance)}km"
+                txtDistance.text = DecimalFormat("#.##").format(SharedData.convertSpeed(movementData.distance)) +SharedData.toUnit
             }
         }
     }

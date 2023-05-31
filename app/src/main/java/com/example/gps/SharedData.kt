@@ -1,7 +1,7 @@
 package com.example.gps
 
-import android.app.Service
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 
 object SharedData {
@@ -10,20 +10,35 @@ object SharedData {
     val currentSpeedLiveData = MutableLiveData<Float>()
     val distanceLiveData = MutableLiveData<Float>()
     val locationLiveData = MutableLiveData<Location>()
-
+    val speedAnalog = MutableLiveData<Int>()
     val time = MutableLiveData<Long>(0)
-    var unitSpeed = MutableLiveData<String>()
+    var fromUnit = ""
+    var toUnit = ""
+    var checkUnit = ""
 
-    var conversionRates = mutableMapOf(
-        "km/h" to 1.0, // Đơn vị mặc định: km/h
-        "mph" to 0.62137119,
-        "knot" to 0.5399568
-    )
+    val conversionRates = mapOf(
+        "knot" to mapOf(
+            "km/h" to 1.852, "mph" to 1.15078, "knot" to 1.0
+
+        ),
+        "km/h" to mapOf(
+            "knot" to 0.539957, "mph" to 0.621371, "km/h" to 1.0
+        ),
+        "mph" to mapOf(
+            "knot" to 0.868976, "km/h" to 1.60934, "mph" to 1.0
+        ),
+
+        )
+
 
     // Hàm chuyển đổi vận tốc
-    fun convertSpeed(speed: Double, fromUnit: String, toUnit: String): Double {
-        val conversionRate = conversionRates[fromUnit] ?: return speed
-        val conversionFactor = conversionRates[toUnit] ?: return speed
-        return speed * conversionFactor / conversionRate
+    fun convertSpeed(speed: Float): Double {
+        try {
+            val sp =speed * conversionRates[fromUnit]!![toUnit]!!
+             return sp
+        } catch (e: Exception) {
+        }
+        fromUnit = toUnit
+        return 1.0
     }
 }

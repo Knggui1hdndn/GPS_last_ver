@@ -66,7 +66,6 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
         if (binding != null) {
             with(binding) {
 
-
                 this?.imgChange?.setOnClickListener {
                     map?.let { it1 -> MapUtils.setStStyleMap(it1) }
                 }
@@ -99,7 +98,7 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
 
                 SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) { Speed ->
                     this!!.txtAverageSpeed.text =
-                        String.format(Locale.getDefault(), "%.0f", Speed)
+                        String.format(Locale.getDefault(), "%.0fkm", Speed)
                 }
             }
         }
@@ -136,7 +135,7 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
                 this!!.longitude,
                 latitude,
                 txtAverageSpeed,
-                a,
+
                 txtAverageSpeed
             )
         }
