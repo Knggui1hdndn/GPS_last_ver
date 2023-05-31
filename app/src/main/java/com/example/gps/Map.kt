@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
+import android.content.Context.AUDIO_SERVICE
 import android.content.Intent
 import android.content.SharedPreferences
 import android.hardware.Sensor
@@ -11,11 +12,15 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.location.Location
+import android.media.AudioManager
+import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.provider.MediaStore.Video.Media
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat.getSystemService
 import com.example.gps.dao.MyDataBase
 import com.example.gps.model.MovementData
 import com.example.gps.service.MyService
@@ -52,15 +57,14 @@ class Map() : SensorEventListener {
     var checkStop: Boolean = false
     private lateinit var locationChangeListener: LocationChangeListener
     private lateinit var context: Context
-
+    var mediaPlayer: MediaPlayer? =null
     constructor(context: Context, locationChangeListener: LocationChangeListener) : this() {
         this.locationChangeListener = locationChangeListener
         this.context = context
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
         myDataBase = MyDataBase.getInstance(context)
         sharedPreferences = context.getSharedPreferences("state", Service.MODE_PRIVATE)
-        notificationManager =
-            context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager =context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
         sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         sensor = sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 
@@ -160,12 +164,24 @@ class Map() : SensorEventListener {
         if (!lastLocation.hasSpeed()) return 0F
         val time = (System.currentTimeMillis() - milli) / 1000.0
         val s = nearestDistance(lastLocation)
-        val notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
-        val r = RingtoneManager.getRingtone(context, notification)
-        var speed = ((s / time) * 3.6).toFloat()
-        when (SharedData.convertSpeed(speed)) {
 
+        var speed = ((s / time) * 3.6).toFloat()
+
+        val convertedSpeed = SharedData.convertSpeed(speed)
+        when {
+            convertedSpeed > myDataBase!!.vehicleDao().getVehicleChecked(myDataBase!!.SpeedDao().getChecked().type).limitWarning -> {
+              if(!mediaPlayer!!.isPlaying|| mediaPlayer==null) {
+                  mediaPlayer = MediaPlayer.create(context, R.raw.wraning)
+                  val audioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
+                  audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 100, 0)
+                  val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+                  audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0)
+                  mediaPlayer?.start()
+              }
+            }
+            else  ->{ mediaPlayer!!.stop()}
         }
+
         return speed
     }
 

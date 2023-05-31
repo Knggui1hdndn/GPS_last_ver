@@ -94,12 +94,11 @@ class MyService : Service(),LocationChangeListener {
         val notificationLayout = RemoteViews(packageName, R.layout.notification_custom)
         val intent = Intent(applicationContext, MainActivity2::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-
         val pendingIntent = PendingIntent.getActivity(
             this,
             0,
             intent,
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) PendingIntent.FLAG_UPDATE_CURRENT else PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         notificationLayout.setTextViewText(R.id.txtKm, km)
         notificationLayout.setTextViewText(R.id.txtDistance, distance)

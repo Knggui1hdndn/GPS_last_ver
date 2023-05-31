@@ -62,18 +62,23 @@ private var unit=""
 
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setDataWhenComBack() {
-        Log.d("UNIT1",SharedData.toUnit+"        "+SharedData.fromUnit+"      "+unit+ "${SharedData.toUnit != unit}")
 
         if (SharedData.toUnit != unit) {
-             Log.d("UNIT",SharedData.toUnit+"        "+SharedData.fromUnit)
-
              with(binding) {
                 this!!.txtKm3.text = if (SharedData.toUnit != "km/h") "mi" else "km"
                 txtKm4.text = SharedData.toUnit
-                txtSpeed.text = if (txtSpeed.text.toString() != "000") SharedData.convertSpeed(
-                    txtSpeed.text.toString().toFloat()
-                ).toString() else "000"
+                 when (txtSpeed.text.length) {
+                     1 -> {
+                         txtSpeed.text = "00" + SharedData.convertSpeed(txtSpeed.text.toString().toFloat()).toInt()
+                     }
+                     2 -> {
+                         txtSpeed.text ="0" + SharedData.convertSpeed(txtSpeed.text.toString().toFloat()).toInt()
+                     }
+                     else -> txtSpeed.text = "" + SharedData.convertSpeed(txtSpeed.text.toString().toFloat()).toInt()
+                 }
+
                 this.txtDistance1.text =
                     SharedData.convertSpeed(txtDistance1.text.toString().toFloat()).toInt()
                         .toString()

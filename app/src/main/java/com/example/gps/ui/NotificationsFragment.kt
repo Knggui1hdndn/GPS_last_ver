@@ -70,12 +70,10 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
                     map?.let { it1 -> MapUtils.setStStyleMap(it1) }
                 }
 
-                val shaPreferences =
-                    requireActivity().getSharedPreferences("state", Context.MODE_PRIVATE)
+                val shaPreferences = requireActivity().getSharedPreferences("state", Context.MODE_PRIVATE)
                 val state = shaPreferences.getString(MyLocationConstants.STATE, null)
                 if (state == MyLocationConstants.START || state == MyLocationConstants.PAUSE || state == MyLocationConstants.RESUME) {
-                    polylineOptions.addAll(convertToListLatLng())
-                        .color(Color.GREEN).width(15f)
+                    polylineOptions.addAll(convertToListLatLng()) .color(Color.GREEN).width(15f)
                 }
                 SharedData.locationLiveData.observe(viewLifecycleOwner) { location ->
                     if (location == null) {
@@ -143,7 +141,13 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
 
     override fun onResume() {
         setBackgroundColor()
+        setDataWhenComeBack()
         super.onResume()
+    }
+
+    private fun setDataWhenComeBack() {
+
+        SharedData.convertSpeed(binding?.txtAverageSpeed?.text.toString().toFloat()).toInt()
     }
 
     override fun onPause() {
