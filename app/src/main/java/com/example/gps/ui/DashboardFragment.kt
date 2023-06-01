@@ -69,14 +69,14 @@ private var unit=""
              with(binding) {
                 this!!.txtKm3.text = if (SharedData.toUnit != "km/h") "mi" else "km"
                 txtKm4.text = SharedData.toUnit
-                 when (txtSpeed.text.length) {
+                 when (SharedData.convertSpeed(txtSpeed.text.toString().toFloat()).toInt()) {
                      1 -> {
                          txtSpeed.text = "00" + SharedData.convertSpeed(txtSpeed.text.toString().toFloat()).toInt()
                      }
                      2 -> {
                          txtSpeed.text ="0" + SharedData.convertSpeed(txtSpeed.text.toString().toFloat()).toInt()
                      }
-                     else -> txtSpeed.text = "" + SharedData.convertSpeed(txtSpeed.text.toString().toFloat()).toInt()
+                     else -> txtSpeed.text = "000"
                  }
 
                 this.txtDistance1.text =

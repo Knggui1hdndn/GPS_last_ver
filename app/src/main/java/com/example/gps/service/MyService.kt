@@ -7,37 +7,19 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
-import android.location.Location
-import android.os.Build
-import android.os.Handler
 import android.os.IBinder
-import android.os.Looper
-import android.util.Log
 import android.widget.RemoteViews
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.example.gps.LocationChangeListener
 import com.example.gps.Map
 import com.example.gps.MyLocationConstants
 import com.example.gps.R
+import com.example.gps.SettingConstants
 import com.example.gps.SharedData
-import com.example.gps.dao.MyDataBase
-import com.example.gps.model.MovementData
 import com.example.gps.ui.MainActivity2
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
 
 
-class MyService : Service(),LocationChangeListener {
+class MyService : Service(), LocationChangeListener {
     private lateinit var map: Map
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -45,12 +27,12 @@ class MyService : Service(),LocationChangeListener {
 
     override fun onCreate() {
         super.onCreate()
-        map = Map(applicationContext,this)
+        map = Map(applicationContext, this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         handle(intent?.action)
-         return START_NOT_STICKY
+        return START_NOT_STICKY
     }
 
     private fun handle(action: String?) {
@@ -72,14 +54,13 @@ class MyService : Service(),LocationChangeListener {
                 map.checkPause = true
                 map.postDelayed()
                 map.startCallBack()
-
             }
 
             MyLocationConstants.STOP -> {
                 map.checkStop = true
                 map.removeHandler()
                 SharedData.time.value = 0
-           }
+            }
         }
     }
 
@@ -100,9 +81,32 @@ class MyService : Service(),LocationChangeListener {
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        notificationLayout.setTextViewText(R.id.txtKm, km)
-        notificationLayout.setTextViewText(R.id.txtDistance, distance)
-        notificationLayout.setTextViewText(R.id.txtMaxSpeed, maxSpeed)
+        val sharedPreferences =
+            application.getSharedPreferences(SettingConstants.SETTING, Context.MODE_PRIVATE)
+        val checkHide = sharedPreferences.getBoolean(SettingConstants.DISPLAY_SPEED, true)
+
+        notificationLayout.setTextViewText(
+            R.id.txtKm, if (checkHide)
+                SharedData.convertSpeed(km.toFloat()).toInt().toString() else ""
+        )
+
+
+        notificationLayout.setTextViewText(
+            R.id.txtCurrentSp, if (checkHide)
+                "Tốc độ hiện tại" else ""
+        )
+
+        notificationLayout.setTextViewText(
+            R.id.txtDistance,
+            SharedData.convertSpeed(distance.toFloat()).toInt().toString()
+        )
+        notificationLayout.setTextViewText(
+            R.id.txtMaxSpeed,
+            SharedData.convertSpeed(maxSpeed.toFloat()).toInt().toString()
+        )
+        notificationLayout.setTextViewText(R.id.unit1,if (checkHide) SharedData.toUnit else "")
+        notificationLayout.setTextViewText(R.id.unit2, SharedData.toUnit)
+        notificationLayout.setTextViewText(R.id.unit3, SharedData.toUnit)
         return NotificationCompat.Builder(this, "1")
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentIntent(pendingIntent)
@@ -116,7 +120,7 @@ class MyService : Service(),LocationChangeListener {
     }
 
     override fun onLocationChanged(km: String, distance: String, maxSpeed: String) {
-         updateNotification(km, distance, maxSpeed)
+        updateNotification(km, distance, maxSpeed)
     }
 
 

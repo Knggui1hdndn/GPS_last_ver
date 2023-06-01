@@ -1,18 +1,23 @@
 package com.example.gps.ui
 
 import android.content.Context.MODE_PRIVATE
+import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.example.gps.MyLocationConstants
 import com.example.gps.R
 import com.example.gps.SettingConstants
 import com.example.gps.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.FragmentHomeBinding
+import com.example.gps.service.MyService
 import com.example.gps.utils.ColorUtils
+import com.google.android.gms.ads.RequestConfiguration
 
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
@@ -27,20 +32,39 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         sharedPreferences =
             view.context.getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
-
         var timePrevious = System.currentTimeMillis()
         with(binding) {
             try {
-                var myDataBase = MyDataBase.getInstance(requireContext())
+                imgRotateScreen!!.setOnClickListener {
+                    requireActivity().requestedOrientation =
+                        ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                }
+
+                val myDataBase = MyDataBase.getInstance(requireContext())
+                imgReset!!.setOnClickListener {
+                    val status = view.context.getSharedPreferences("state", MODE_PRIVATE)
+                        .getString(MyLocationConstants.STATE, null)
+                    if (status != MyLocationConstants.STOP && status != null) {
+                        val intent = Intent(requireContext(), MyService::class.java)
+                        intent.action = MyLocationConstants.STOP
+                        requireActivity().startService(intent)
+                        SharedData.checkService = true
+                        val i = Intent(requireContext(), ShowActivity::class.java)
+                        i.putExtra("movementData", myDataBase.movementDao().getLastMovementData())
+                        startActivity(i)
+                    }
+                }
                 val maxSpeedAnalog =
-                    myDataBase.vehicleDao().getVehicleChecked(myDataBase.SpeedDao().getChecked().type)
-                speed.maxSpeed=maxSpeedAnalog.clockSpeed.toFloat()
+                    myDataBase.vehicleDao()
+                        .getVehicleChecked(myDataBase.SpeedDao().getChecked().type)
+                speed.maxSpeed = maxSpeedAnalog.clockSpeed.toFloat()
+                speed.unit = SharedData.toUnit
             } catch (e: Exception) {
 
             }
             // change ring color, have fun with this method
             SharedData.speedAnalog.observe(viewLifecycleOwner) {
-                speed.maxSpeed = it.toFloat()
+                speed.maxSpeed = SharedData.convertSpeed(it.toFloat()).toFloat()
             }
             changeBackGroundSpeedView()
             SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) {
@@ -54,6 +78,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun changeBackGroundSpeedView() {
         try {
+            binding.speed.unit = SharedData.toUnit
             val positionsColor = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, 2)
             if (positionsColor == 1) binding.speed.trianglesColor = Color.BLUE
             binding.speed.setSpeedometerColor(ColorUtils.checkColor(positionsColor));

@@ -25,6 +25,7 @@ import com.example.gps.dao.MyDataBase
 import com.example.gps.model.MovementData
 import com.example.gps.service.MyService
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.Granularity
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -57,14 +58,16 @@ class Map() : SensorEventListener {
     var checkStop: Boolean = false
     private lateinit var locationChangeListener: LocationChangeListener
     private lateinit var context: Context
-    var mediaPlayer: MediaPlayer? =null
+    var mediaPlayer: MediaPlayer? = null
+
     constructor(context: Context, locationChangeListener: LocationChangeListener) : this() {
         this.locationChangeListener = locationChangeListener
         this.context = context
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
         myDataBase = MyDataBase.getInstance(context)
         sharedPreferences = context.getSharedPreferences("state", Service.MODE_PRIVATE)
-        notificationManager =context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager =
+            context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
         sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         sensor = sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 
@@ -168,20 +171,27 @@ class Map() : SensorEventListener {
         var speed = ((s / time) * 3.6).toFloat()
 
         val convertedSpeed = SharedData.convertSpeed(speed)
-        when {
-            convertedSpeed > myDataBase!!.vehicleDao().getVehicleChecked(myDataBase!!.SpeedDao().getChecked().type).limitWarning -> {
-              if(!mediaPlayer!!.isPlaying|| mediaPlayer==null) {
-                  mediaPlayer = MediaPlayer.create(context, R.raw.wraning)
-                  val audioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
-                  audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 100, 0)
-                  val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-                  audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0)
-                  mediaPlayer?.start()
-              }
-            }
-            else  ->{ mediaPlayer!!.stop()}
-        }
+        val sharedPreferences =
+            context.getSharedPreferences(SettingConstants.SETTING, Context.MODE_PRIVATE)
+        if (sharedPreferences.getBoolean(SettingConstants.SPEED_ALARM, true)) {
+            when {
+                convertedSpeed > myDataBase!!.vehicleDao()
+                    .getVehicleChecked(myDataBase!!.SpeedDao().getChecked().type).limitWarning -> {
+                    if (mediaPlayer==null||(  !mediaPlayer!!.isPlaying)) {
+                        mediaPlayer = MediaPlayer.create(context, R.raw.wraning)
+                        val audioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
+                        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 100, 0)
+                        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+                        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0)
+                       // mediaPlayer?.start()
+                    }
+                }
 
+                else -> {
+                   if(mediaPlayer!=null )  mediaPlayer!!.stop()
+                }
+            }
+        }
         return speed
     }
 
@@ -227,9 +237,10 @@ class Map() : SensorEventListener {
     }
 
 
-    private val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 100)
-        .setWaitForAccurateLocation(true).setMinUpdateIntervalMillis(100)
-        .setMaxUpdateDelayMillis(100).build()
+    private val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10)
+        .setWaitForAccurateLocation(true).setMinUpdateIntervalMillis(10)
+        .setGranularity(Granularity.GRANULARITY_FINE)
+        .setMaxUpdateDelayMillis(10).build()
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (event != null && event.sensor.type == Sensor.TYPE_ACCELEROMETER) {

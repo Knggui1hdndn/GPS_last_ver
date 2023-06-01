@@ -7,10 +7,12 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.gps.MyLocationConstants
 import com.example.gps.R
@@ -51,8 +53,10 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) {
                 setFont(binding)
             }
 
+
             SharedData.distanceLiveData.observe(viewLifecycleOwner) {
-                 this.txtDistance.text = if (SharedData.toUnit != "km/h") "${(it * 0.6214).toInt()}mi" else "${(it * 1.60934).toInt()}km"
+                this.txtDistance.text =
+                    if (SharedData.toUnit != "km/h") "${(it * 0.6214).toInt()}mi" else "${(it * 1.60934).toInt()}km"
                 setFont(binding)
             }
 
@@ -189,6 +193,10 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) {
     override fun onPause() {
         super.onPause()
         check = false
+        if (SharedData.checkService) {
+            hideBtnStop();setState(MyLocationConstants.STOP);SharedData.checkService =
+                false
+        }
     }
 
     private fun setFont(binding: FragmentParameterBinding) {
@@ -210,14 +218,20 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) {
             with(binding) {
                 numberSeparation(txtDistance)
                 val distance = numberSeparation(txtDistance)
-                this.txtDistance.text = if (SharedData.toUnit != "km/h") "${(distance * 0.6214).toInt()}mi" else "${(distance * 1.60934).toInt()}km"
+                this.txtDistance.text =
+                    if (SharedData.toUnit != "km/h") "${(distance * 0.6214).toInt()}mi" else "${(distance * 1.60934).toInt()}km"
                 var averageSpeed = numberSeparation(txtAverageSpeed)
-                txtAverageSpeed.text = if (averageSpeed !=  0 ) SharedData.convertSpeed(averageSpeed.toFloat()).toInt().toString() + SharedData.toUnit else "0${SharedData.toUnit}"
-                var speed=numberSeparation(txtMaxSpeed)
-                this.txtMaxSpeed.text = if (speed !=  0 ) SharedData.convertSpeed(speed .toFloat()).toInt().toString() + SharedData.toUnit else "0${SharedData.toUnit}"
+                txtAverageSpeed.text =
+                    if (averageSpeed != 0) SharedData.convertSpeed(averageSpeed.toFloat()).toInt()
+                        .toString() + SharedData.toUnit else "0${SharedData.toUnit}"
+                var speed = numberSeparation(txtMaxSpeed)
+                this.txtMaxSpeed.text =
+                    if (speed != 0) SharedData.convertSpeed(speed.toFloat()).toInt()
+                        .toString() + SharedData.toUnit else "0${SharedData.toUnit}"
             }
             setFont(binding)
-            checkUnit=SharedData.toUnit }
+            checkUnit = SharedData.toUnit
+        }
     }
 
     private fun setBackgroundWhenComeBack() {
@@ -225,10 +239,10 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) {
             SettingConstants.SETTING,
             Context.MODE_PRIVATE
         ).getInt(SettingConstants.COLOR_DISPLAY, 2)
-        if((myDataBase.SpeedDao().getChecked() !=null)){
+        if ((myDataBase.SpeedDao().getChecked() != null)) {
             unit = myDataBase.SpeedDao().getChecked().type
         }
-         if (intColor != i) {
+        if (intColor != i) {
             with(binding) {
                 FontUtils.setTextColor(i, this.txtMaxSpeed, txtAverageSpeed, txtDistance)
                 btnStart.setBackgroundColor(ColorUtils.checkColor(i))
@@ -238,12 +252,23 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) {
         }
     }
 
-    private fun numberSeparation(txt: TextView) :Int{
-return txt.text.toString().filter { it.isDigit() }.toInt()
+    private fun numberSeparation(txt: TextView): Int {
+        return txt.text.toString().filter { it.isDigit() }.toInt()
     }
 
     override fun onDestroy() {
         super.onDestroy()
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+
+        // Checks the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Toast.makeText(requireContext(), "landscape", Toast.LENGTH_SHORT).show();
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            Toast.makeText(requireContext(), "portrait", Toast.LENGTH_SHORT).show();
+        }
+
+    }
 }

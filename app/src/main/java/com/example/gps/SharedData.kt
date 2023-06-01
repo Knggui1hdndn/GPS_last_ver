@@ -14,7 +14,7 @@ object SharedData {
     val time = MutableLiveData<Long>(0)
     var fromUnit = ""
     var toUnit = ""
-    var checkUnit = ""
+    var checkService = false
 
     val conversionRates = mapOf(
         "knot" to mapOf(
