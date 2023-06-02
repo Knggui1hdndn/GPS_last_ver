@@ -109,7 +109,7 @@ class Map() : SensorEventListener {
                 val distance = getDistance(lastLocation)
                 val currentSpeed = getCurrentSpeed(lastLocation)
                 listSpeed.add(0F)
-                listSpeed.add(currentSpeed.toFloat())
+                listSpeed.add(currentSpeed)
                 val maxSpeed = getMaxSpeed()
                 val averageSpeed = getAverageSpeed()
                 locationChangeListener.onLocationChanged(
@@ -163,6 +163,7 @@ class Map() : SensorEventListener {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun getCurrentSpeed(lastLocation: Location): Float {
         if (!lastLocation.hasSpeed()) return 0F
         val time = (System.currentTimeMillis() - milli) / 1000.0
@@ -177,22 +178,22 @@ class Map() : SensorEventListener {
             when {
                 convertedSpeed > myDataBase!!.vehicleDao()
                     .getVehicleChecked(myDataBase!!.SpeedDao().getChecked().type).limitWarning -> {
-                    if (mediaPlayer==null||(  !mediaPlayer!!.isPlaying)) {
+                    if (mediaPlayer == null || (!mediaPlayer!!.isPlaying)) {
                         mediaPlayer = MediaPlayer.create(context, R.raw.wraning)
                         val audioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
                         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 100, 0)
                         val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
                         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0)
-                       // mediaPlayer?.start()
+                        // mediaPlayer?.start()
                     }
                 }
 
                 else -> {
-                   if(mediaPlayer!=null )  mediaPlayer!!.stop()
+                    if (mediaPlayer != null) mediaPlayer!!.stop()
                 }
             }
         }
-        return speed
+        return if (lastLocation.hasSpeedAccuracy() && lastLocation.hasSpeed()) (lastLocation.speed * 3.6).toFloat() else 0F
     }
 
     private fun getMaxSpeed(): Float {
@@ -239,8 +240,7 @@ class Map() : SensorEventListener {
 
     private val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10)
         .setWaitForAccurateLocation(true).setMinUpdateIntervalMillis(10)
-        .setGranularity(Granularity.GRANULARITY_FINE)
-        .setMaxUpdateDelayMillis(10).build()
+        .setGranularity(Granularity.GRANULARITY_FINE).setMaxUpdateDelayMillis(10).build()
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (event != null && event.sensor.type == Sensor.TYPE_ACCELEROMETER) {

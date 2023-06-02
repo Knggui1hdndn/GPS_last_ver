@@ -58,6 +58,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) {
                 this.txtDistance.text =
                     if (SharedData.toUnit != "km/h") "${(it * 0.6214).toInt()}mi" else "${(it * 1.60934).toInt()}km"
                 setFont(binding)
+
             }
 
             SharedData.averageSpeedLiveData.observe(viewLifecycleOwner) {
