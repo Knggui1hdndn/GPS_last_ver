@@ -18,16 +18,16 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="5"
-             android:orientation="vertical">
+            android:gravity="bottom"
+            android:orientation="vertical">
 
             <com.github.anastr.speedviewlib.AwesomeSpeedometer
                 android:id="@+id/speed"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_margin="30dp"
-                android:layout_weight="10"
-                app:sv_backgroundCircleColor="@color/black"
+                 app:sv_backgroundCircleColor="@color/black"
                 app:sv_maxSpeed="280"
                 app:sv_minSpeed="0"
                 app:sv_speedTextPosition="CENTER"
@@ -40,8 +40,7 @@
             android:name="com.example.gps.ui.ParameterFragment"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_gravity="bottom|end"
-            android:layout_marginStart="15dp"
+     
             android:layout_marginBottom="65dp"
             android:layout_weight="5" />
 

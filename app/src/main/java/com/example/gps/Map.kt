@@ -24,6 +24,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import com.example.gps.dao.MyDataBase
 import com.example.gps.model.MovementData
 import com.example.gps.service.MyService
+import com.example.gps.ui.ShowActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Granularity
 import com.google.android.gms.location.LocationCallback
@@ -37,19 +38,16 @@ interface LocationChangeListener {
     fun onLocationChanged(km: String, distance: String, maxSpeed: String)
 }
 
-class Map() : SensorEventListener {
-    private val accelerometerData = FloatArray(3)
+class Map() {
     private val handler = Handler(Looper.getMainLooper())
     private var fusedLocationClient: FusedLocationProviderClient? = null
     private var myDataBase: MyDataBase? = null
     private var millis = 0L
     private var distance = 0f
     private var lastMovementDataId = 0
-    private var milli = 0L
     private var previousLocation: Location? = null
     private var listSpeed = mutableListOf<Float>()
     private lateinit var sharedPreferences: SharedPreferences
-    private var acceleration: Double = 0.0
     private var notificationManager: NotificationManager? = null
     private var sensorManager: SensorManager? = null
     private var sensor: Sensor? = null
@@ -87,22 +85,16 @@ class Map() : SensorEventListener {
         @SuppressLint("SuspiciousIndentation")
         override fun onLocationResult(locationResult: LocationResult) {
             val lastLocation = locationResult.lastLocation
-            if (lastLocation != null && previousLocation != null && milli != 0L && myDataBase != null) {
+
+            if (lastLocation != null && previousLocation != null && myDataBase != null) {
+
                 if (!checkStart) {
-                    myDataBase!!.movementDao().insertMovementData(
-                        MovementData(
-                            0,
-                            System.currentTimeMillis(),
-                            lastLocation.latitude,
-                            lastLocation.longitude,
-                            0.0,
-                            0.0,
-                            0F,
-                            0F,
-                            0F,
-                            0F
-                        )
-                    )
+                    val movementData = myDataBase!!.movementDao().getLastMovementData()
+                    movementData.apply {
+                        startLongitude= previousLocation!!.longitude
+                        startLatitude= previousLocation!!.latitude
+                    }
+                    myDataBase!!.movementDao().updateMovementData(movementData)
                     lastMovementDataId = myDataBase!!.movementDao().getLastMovementDataId()
                     checkStart = true
                 }
@@ -120,7 +112,7 @@ class Map() : SensorEventListener {
                 with(SharedData) {
                     locationLiveData.value = lastLocation
                     distanceLiveData.value = distance
-                    currentSpeedLiveData.value = currentSpeed.toFloat()
+                    currentSpeedLiveData.value = currentSpeed
                     maxSpeedLiveData.value = maxSpeed
                     averageSpeedLiveData.value = averageSpeed
                 }
@@ -137,39 +129,18 @@ class Map() : SensorEventListener {
                     MyLocationConstants.DISTANCE,
                     (sharedPreferences.getInt(MyLocationConstants.DISTANCE, 0) + distance).toInt()
                 ).apply()
-                if (checkPause || checkStop) {
-                    val movementData = myDataBase!!.movementDao().getLastMovementData()
-                    movementData.endLatitude = lastLocation.latitude
-                    movementData.endLongitude = lastLocation.longitude
-                    myDataBase!!.movementDao().updateMovementData(movementData)
-                    if (checkStop) {
-                        removeCallBack()
-                        handler.removeCallbacks(countRunnable)
-                        with(SharedData) {
-                            locationLiveData.value = null
-                            distanceLiveData.value = 0F
-                            currentSpeedLiveData.value = 0F
-                            maxSpeedLiveData.value = 0F
-                            averageSpeedLiveData.value = 0F
-                            time.value = 0
-                        }
-                        context.stopService(Intent(context, MyService::class.java))
-                    }
-                }
+
             }
             //s=vt
             previousLocation = lastLocation
-            milli = System.currentTimeMillis()
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getCurrentSpeed(lastLocation: Location): Float {
         if (!lastLocation.hasSpeed()) return 0F
-        val time = (System.currentTimeMillis() - milli) / 1000.0
-        val s = nearestDistance(lastLocation)
-
-        var speed = ((s / time) * 3.6).toFloat()
+        var speed =
+            if (lastLocation.hasSpeedAccuracy() && lastLocation.hasSpeed()) (lastLocation.speed * 3.6).toFloat() else 0F
 
         val convertedSpeed = SharedData.convertSpeed(speed)
         val sharedPreferences =
@@ -193,16 +164,13 @@ class Map() : SensorEventListener {
                 }
             }
         }
-        return if (lastLocation.hasSpeedAccuracy() && lastLocation.hasSpeed()) (lastLocation.speed * 3.6).toFloat() else 0F
+        return speed
     }
 
     private fun getMaxSpeed(): Float {
         return listSpeed.max()
     }
 
-    private fun nearestDistance(lastLocation: Location): Float {
-        return previousLocation!!.distanceTo(lastLocation)
-    }
 
     private fun getDistance(lastLocation: Location): Float {
         distance += previousLocation!!.distanceTo(lastLocation)
@@ -215,14 +183,41 @@ class Map() : SensorEventListener {
 
     @SuppressLint("MissingPermission")
     fun startCallBack() {
-        sensorManager!!.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL)
         fusedLocationClient?.requestLocationUpdates(
             locationRequest, locationCallback1, Looper.getMainLooper()
         )
     }
 
+    @SuppressLint("MissingPermission")
     fun removeCallBack() {
-        sensorManager!!.unregisterListener(this)
+        if (checkStop) {
+            val movementData = myDataBase!!.movementDao().getLastMovementData()
+            if (checkStop) {
+
+                if (previousLocation == null ) {
+                    movementData.endLatitude = movementData.startLatitude
+                    movementData.endLongitude = movementData.startLongitude
+                } else {
+                    movementData.endLatitude = previousLocation!!.latitude
+                    movementData.endLongitude = previousLocation!!.longitude
+                }
+                myDataBase!!.movementDao().updateMovementData(movementData)
+                val i = Intent(context, ShowActivity::class.java)
+                i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                i.putExtra("movementData", myDataBase!!.movementDao().getLastMovementData())
+                context.startActivity(i)
+                context.stopService(Intent(context, MyService::class.java))
+
+                with(SharedData) {
+                    locationLiveData.value = null
+                    distanceLiveData.value = 0F
+                    currentSpeedLiveData.value = 0F
+                    maxSpeedLiveData.value = 0F
+                    averageSpeedLiveData.value = 0F
+                    time.value = 0
+                }
+            }
+        }
         fusedLocationClient?.removeLocationUpdates(
             locationCallback1
         )
@@ -242,21 +237,4 @@ class Map() : SensorEventListener {
         .setWaitForAccurateLocation(true).setMinUpdateIntervalMillis(10)
         .setGranularity(Granularity.GRANULARITY_FINE).setMaxUpdateDelayMillis(10).build()
 
-    override fun onSensorChanged(event: SensorEvent?) {
-        if (event != null && event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
-            accelerometerData[0] = event.values[0]
-            accelerometerData[1] = event.values[1]
-            accelerometerData[2] = event.values[2]
-
-            val x = accelerometerData[0]
-            val y = accelerometerData[1]
-            val z = accelerometerData[2]
-            acceleration =
-                ((x * x + y * y + z * z) / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH)).toDouble()
-        }
-    }
-
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-
-    }
 }

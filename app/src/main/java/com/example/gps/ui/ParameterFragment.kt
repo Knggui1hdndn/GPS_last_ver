@@ -2,11 +2,14 @@ package com.example.gps.ui
 
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.ActivityManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.ActivityInfo
+import android.content.pm.ConfigurationInfo
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -20,9 +23,12 @@ import com.example.gps.SettingConstants
 import com.example.gps.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.FragmentParameterBinding
+import com.example.gps.model.MovementData
 import com.example.gps.service.MyService
+import com.example.gps.ui.setting.Setting
 import com.example.gps.utils.ColorUtils
 import com.example.gps.utils.FontUtils
+import com.example.gps.utils.TimeUtils
 
 class ParameterFragment : Fragment(R.layout.fragment_parameter) {
     private lateinit var binding: FragmentParameterBinding
@@ -39,8 +45,39 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) {
         sharedPreferences = requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
         myDataBase = MyDataBase.getInstance(requireContext())
         checkUnit = SharedData.toUnit
+
+
+
+
+
+
         if (!isMyServiceRunning(MyService::class.java)) setState(MyLocationConstants.STOP)
         with(binding) {
+
+            if (requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                SharedData.time.observe(viewLifecycleOwner) {
+                    times!!.text = TimeUtils.formatTime(it)
+                }
+                settings!!.setOnClickListener {
+                    startActivity(Intent(requireActivity(), Setting::class.java))
+                }
+                stop!!.setOnClickListener {
+                    val status = view.context.getSharedPreferences("state", Context.MODE_PRIVATE)
+                        .getString(MyLocationConstants.STATE, null)
+                    if (status != MyLocationConstants.STOP && status != null) {
+                        val intent = Intent(requireContext(), MyService::class.java)
+                        intent.action = MyLocationConstants.STOP
+                        requireActivity().startService(intent)
+                        SharedData.checkService = true
+
+                    }
+                }
+                binding.imgRotateScreen!!.setOnClickListener {
+                    requireActivity().requestedOrientation =
+                        ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                }
+            }
+
             setBackGround()
             this.txtMaxSpeed.text = "0" + SharedData.toUnit
             this.txtDistance.text = "0" + if (SharedData.toUnit != "km/h") "mi" else "km"
@@ -73,6 +110,20 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) {
             showOrHideView()
             setFont(binding)
             this.btnStart.setOnClickListener {
+                myDataBase.movementDao().insertMovementData(
+                    MovementData(
+                        0,
+                        System.currentTimeMillis(),
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                        0F,
+                        0F,
+                        0F,
+                        0F
+                    )
+                )
                 setState(MyLocationConstants.START)
                 hideBtnStart()
                 startService(MyLocationConstants.START)

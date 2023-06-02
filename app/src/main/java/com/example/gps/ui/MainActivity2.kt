@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Build
@@ -15,6 +16,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.OrientationEventListener
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -42,7 +44,7 @@ import com.google.android.gms.location.DetectedActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
-class MainActivity2 : AppCompatActivity() {
+class MainActivity2 : AppCompatActivity()   {
 
 
     private lateinit var binding: ActivityMain2Binding
@@ -191,4 +193,6 @@ class MainActivity2 : AppCompatActivity() {
         if (item.itemId == android.R.id.home) startActivity(Intent(this, Setting::class.java))
         return true
     }
+
+
 }

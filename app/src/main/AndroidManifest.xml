@@ -50,7 +50,7 @@
             android:exported="false"
             android:launchMode="singleTop"
 
-            />
+        />
         <activity
             android:name=".ui.ShowActivity"
             android:exported="false" />

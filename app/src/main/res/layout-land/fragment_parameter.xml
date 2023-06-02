@@ -2,17 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:gravity="bottom|right"
-    android:orientation="vertical"
+    android:orientation="horizontal"
+    android:weightSum="10"
     tools:context=".ui.ParameterFragment">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:orientation="horizontal"
+        android:layout_weight="10"
         android:weightSum="10">
 
         <LinearLayout
@@ -25,6 +27,7 @@
                 android:layout_width="match_parent"
                 android:textSize="30dp"
                 android:layout_margin="15dp"
+                android:id="@+id/times"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center_horizontal"
                 android:text="00:00:00"
@@ -193,7 +196,7 @@
                     android:rotation="-91"
                     android:layout_weight="2.5"
                     android:rotationY="17"
-
+                    android:id="@+id/settings"
                     android:src="@drawable/baseline_settings_24"
                     app:tint="@color/white" />
 
@@ -205,6 +208,7 @@
                     android:rotation="-91"
                     android:layout_weight="2.5"
                     android:rotationY="17"
+                    android:id="@+id/stop"
                     android:src="@drawable/baseline_refresh_24"
                     app:tint="@color/white" />
 
@@ -216,6 +220,7 @@
                     android:layout_weight="2.5"
                     android:rotation="-91"
                     android:rotationY="17"
+                    android:id="@+id/imgRotateScreen"
                     android:src="@drawable/img"
                     app:tint="@color/white" />
 

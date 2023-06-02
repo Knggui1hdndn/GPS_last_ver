@@ -10,40 +10,43 @@
     <!--        app:sv_withTremble="false"-->
 
     <FrameLayout
-        android:layout_height="0dp"
         android:layout_width="match_parent"
+        android:layout_height="0dp"
 
-        android:layout_weight="6"
-        >
+        android:layout_weight="6">
 
         <com.github.anastr.speedviewlib.AwesomeSpeedometer
             android:id="@+id/speed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-android:layout_margin="30dp"            app:sv_backgroundCircleColor="@color/black"
+            android:layout_margin="30dp"
+            app:sv_backgroundCircleColor="@color/black"
             app:sv_maxSpeed="280"
             app:sv_minSpeed="0"
             app:sv_speedTextPosition="CENTER"
             app:sv_speedometerMode="NORMAL"
             app:sv_trianglesColor="@color/white" />
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="30dp"
-            android:layout_gravity="top|end"
-            android:src="@drawable/baseline_refresh_24"
-            android:id="@+id/imgReset"/>
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="30dp"
-            android:layout_gravity="start|end"
-            android:background="@drawable/img"
-            android:backgroundTint="@color/white"
 
-            android:id="@+id/imgRotateScreen"/>
+        <ImageView
+            android:id="@+id/imgReset"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="30dp"
+            android:src="@drawable/baseline_refresh_24" />
+
+        <ImageView
+            android:id="@+id/imgRotateScreen"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="start|end"
+            android:layout_margin="30dp"
+            android:background="@drawable/img"
+
+            android:backgroundTint="@color/white" />
     </FrameLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -51,8 +54,9 @@ android:layout_margin="30dp"            app:sv_backgroundCircleColor="@color/bla
         android:gravity="bottom"
         android:orientation="vertical">
 
+
         <fragment
-            android:id="@+id/frag"
+            android:id="@+id/frag1"
             android:name="com.example.gps.ui.ParameterFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

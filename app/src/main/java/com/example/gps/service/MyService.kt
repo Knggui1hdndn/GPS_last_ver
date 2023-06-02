@@ -58,6 +58,7 @@ class MyService : Service(), LocationChangeListener {
 
             MyLocationConstants.STOP -> {
                 map.checkStop = true
+                map.removeCallBack()
                 map.removeHandler()
                 SharedData.time.value = 0
             }

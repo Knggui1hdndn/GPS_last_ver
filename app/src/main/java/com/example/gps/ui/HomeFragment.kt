@@ -4,10 +4,13 @@ import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.OrientationEventListener
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.gps.MyLocationConstants
 import com.example.gps.R
@@ -29,9 +32,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     // onDestroyView.
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentHomeBinding.bind(view)
-
-        sharedPreferences =
-            view.context.getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
+        sharedPreferences = view.context.getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         var timePrevious = System.currentTimeMillis()
         with(binding) {
             try {
@@ -49,9 +50,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         intent.action = MyLocationConstants.STOP
                         requireActivity().startService(intent)
                         SharedData.checkService = true
-                        val i = Intent(requireContext(), ShowActivity::class.java)
-                        i.putExtra("movementData", myDataBase.movementDao().getLastMovementData())
-                        startActivity(i)
+
                     }
                 }
                 val maxSpeedAnalog =
@@ -86,7 +85,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             Log.d("Sssssssssssssss", e.toString())
         }
     }
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Toast.makeText(requireContext(), "Landscape Mode", Toast.LENGTH_SHORT).show()
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            Toast.makeText(requireContext(), "Portrait Mode", Toast.LENGTH_SHORT).show()
+        }
+        super.onConfigurationChanged(newConfig)
 
+    }
     override fun onResume() {
         changeBackGroundSpeedView()
         super.onResume()

@@ -9,7 +9,7 @@ class MovementData(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
     val date: Long,
-    val startLatitude: Double,
+    var startLatitude: Double,
     var startLongitude: Double,
     var endLatitude: Double,
     var endLongitude: Double,
@@ -18,6 +18,6 @@ class MovementData(
     var distance: Float,
     var time: Float,
 
-) :Serializable{
+    ) :Serializable{
 
 }

@@ -79,8 +79,7 @@ private var unit=""
                      else -> txtSpeed.text = "000"
                  }
 
-                this.txtDistance1.text =
-                    SharedData.convertSpeed(txtDistance1.text.toString().toFloat()).toInt()
+                this.txtDistance1.text =SharedData.convertSpeed(txtDistance1.text.toString().toFloat()).toInt()
                         .toString()
             }
             unit=SharedData.toUnit
