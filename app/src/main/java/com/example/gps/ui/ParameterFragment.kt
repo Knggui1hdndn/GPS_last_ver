@@ -45,12 +45,6 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) {
         sharedPreferences = requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
         myDataBase = MyDataBase.getInstance(requireContext())
         checkUnit = SharedData.toUnit
-
-
-
-
-
-
         if (!isMyServiceRunning(MyService::class.java)) setState(MyLocationConstants.STOP)
         with(binding) {
 
@@ -71,8 +65,10 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) {
                         SharedData.checkService = true
 
                     }
+                    Toast.makeText(requireContext(),"oks"+ imgRotateScreen1!!.id,Toast.LENGTH_SHORT).show()
+
                 }
-                binding.imgRotateScreen!!.setOnClickListener {
+                imgRotateScreen1!!.setOnClickListener {
                     requireActivity().requestedOrientation =
                         ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
                 }

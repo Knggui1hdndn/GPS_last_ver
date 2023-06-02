@@ -220,7 +220,7 @@
                     android:layout_weight="2.5"
                     android:rotation="-91"
                     android:rotationY="17"
-                    android:id="@+id/imgRotateScreen"
+                    android:id="@+id/imgRotateScreen1"
                     android:src="@drawable/img"
                     app:tint="@color/white" />
 

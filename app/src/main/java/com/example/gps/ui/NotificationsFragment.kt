@@ -32,7 +32,7 @@ import java.util.Locale
 class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
     private var cameraPosition: CameraPosition? = null
     private var count = 0
-    private lateinit  var sharedPreferences : SharedPreferences
+    private lateinit var sharedPreferences: SharedPreferences
 
     @SuppressLint("SuspiciousIndentation", "MissingPermission")
     private val callback = OnMapReadyCallback { p0 ->
@@ -56,14 +56,16 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
     private val polylineOptions = PolylineOptions()
     private var check = true
 
+    @SuppressLint("SuspiciousIndentation")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentNotificationsBinding.bind(view)
-        sharedPreferences=requireContext().getSharedPreferences(SettingConstants.SETTING,Context.MODE_PRIVATE)
+        sharedPreferences =
+            requireContext().getSharedPreferences(SettingConstants.SETTING, Context.MODE_PRIVATE)
         if (savedInstanceState != null) {
             cameraPosition = savedInstanceState.getParcelable("cameraPosition")
 
         }
-        check=sharedPreferences.getBoolean(SettingConstants.TRACK_ON_MAP,true)
+        check = sharedPreferences.getBoolean(SettingConstants.TRACK_ON_MAP, true)
         setBackgroundColor()
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(callback)
@@ -75,10 +77,11 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
                     map?.let { it1 -> MapUtils.setStStyleMap(it1) }
                 }
 
-                val shaPreferences = requireActivity().getSharedPreferences("state", Context.MODE_PRIVATE)
+                val shaPreferences =
+                    requireActivity().getSharedPreferences("state", Context.MODE_PRIVATE)
                 val state = shaPreferences.getString(MyLocationConstants.STATE, null)
                 if ((state == MyLocationConstants.START || state == MyLocationConstants.PAUSE || state == MyLocationConstants.RESUME) && check) {
-                    polylineOptions.addAll(convertToListLatLng()) .color(Color.GREEN).width(15f)
+                    polylineOptions.addAll(convertToListLatLng()).color(Color.GREEN).width(15f)
                 }
                 SharedData.locationLiveData.observe(viewLifecycleOwner) { location ->
                     if (location == null) {
@@ -93,7 +96,7 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
                         }
                         polylineOptions.add(LatLng(location.latitude, location.longitude))
                             .color(Color.GREEN).width(15f)
-                      if(check)  map?.addPolyline(polylineOptions)
+                        if (check) map?.addPolyline(polylineOptions)
                         this!!.latitude.text = location.latitude.toString()
                         this.longitude.text = location.longitude.toString()
                     }
@@ -138,7 +141,6 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
                 this!!.longitude,
                 latitude,
                 txtAverageSpeed,
-
                 txtAverageSpeed
             )
         }
@@ -147,14 +149,15 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
     override fun onResume() {
         setBackgroundColor()
         setDataWhenComeBack()
-        check=sharedPreferences.getBoolean(SettingConstants.TRACK_ON_MAP,true)
-        if(check)  map?.addPolyline(polylineOptions) else map?.clear()
+        check = sharedPreferences.getBoolean(SettingConstants.TRACK_ON_MAP, true)
+        if (check) map?.addPolyline(polylineOptions) else map?.clear()
         super.onResume()
     }
 
     private fun setDataWhenComeBack() {
 
-        SharedData.convertSpeed(binding?.txtAverageSpeed?.text.toString().filter { it.isDigit() }.toFloat()).toInt()
+        SharedData.convertSpeed(binding?.txtAverageSpeed?.text.toString().filter { it.isDigit() }
+            .toFloat()).toInt()
     }
 
     override fun onPause() {

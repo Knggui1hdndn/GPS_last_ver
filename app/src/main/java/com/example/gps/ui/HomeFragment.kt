@@ -54,8 +54,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     }
                 }
                 val maxSpeedAnalog =
-                    myDataBase.vehicleDao()
-                        .getVehicleChecked(myDataBase.SpeedDao().getChecked().type)
+                    myDataBase.vehicleDao().getVehicleChecked(myDataBase.SpeedDao().getChecked().type)
                 speed.maxSpeed = maxSpeedAnalog.clockSpeed.toFloat()
                 speed.unit = SharedData.toUnit
             } catch (e: Exception) {

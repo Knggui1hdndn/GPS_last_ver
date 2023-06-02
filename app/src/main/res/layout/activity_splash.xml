@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0d0d0d"
+    android:id="@+id/match_constraint"
     android:orientation="vertical"
     tools:context=".ui.SplashActivity">
 
@@ -13,6 +14,7 @@
         android:layout_height="match_parent">
 
         <ImageView
+            android:id="@+id/a"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitCenter"
