@@ -1,34 +1,28 @@
 package com.example.gps.ui
 
-import android.Manifest
+
 import android.annotation.SuppressLint
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
-import android.content.res.Configuration
-import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.OrientationEventListener
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.example.gps.MyReceiver
 import com.example.gps.R
 import com.example.gps.SettingConstants
 import com.example.gps.SettingConstants.Companion.CLOCK_DISPLAY
@@ -38,26 +32,31 @@ import com.example.gps.databinding.ActivityMain2Binding
 import com.example.gps.model.Speed
 import com.example.gps.ui.setting.Setting
 import com.example.gps.utils.TimeUtils
-import com.google.android.gms.location.ActivityRecognition
-import com.google.android.gms.location.ActivityRecognitionClient
-import com.google.android.gms.location.ActivityTransition
-import com.google.android.gms.location.ActivityTransitionRequest
-import com.google.android.gms.location.DetectedActivity
+import com.example.gps.utils.UnitUtils
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
-class MainActivity2 : AppCompatActivity()   {
+class MainActivity2 : AppCompatActivity() {
 
-
+    val FragmentManager.currentNavigationFragment: Fragment?
+        get() = primaryNavigationFragment?.childFragmentManager?.fragments?.first()
     private lateinit var binding: ActivityMain2Binding
 
     private lateinit var sharedPreferences: SharedPreferences
 
+    override fun onStart() {
+        super.onStart()
+        try {
+            SharedData.toUnit=UnitUtils.getUnit(MyDataBase.getInstance(this).vehicleDao().getVehicleChecked(MyDataBase.getInstance(this).SpeedDao().getChecked().type).typeID)
+            SharedData.fromUnit= SharedData.toUnit
+        }catch (e:Exception){}
+    }
     @RequiresApi(Build.VERSION_CODES.P)
     @SuppressLint("UseCompatLoadingForDrawables", "SetTextI18n", "MissingPermission", "InlinedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMain2Binding.inflate(layoutInflater)
+
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_home_black_24dp)
@@ -78,12 +77,27 @@ class MainActivity2 : AppCompatActivity()   {
 //            // Thiết bị không hỗ trợ hoạt động nhận dạng
 //            Log.d("ActivitySupport", "Thiết bị không hỗ trợ hoạt động nhận dạng")
 //        }
-
-        requestPermissions(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 1)
-        requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 1)
-        requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+//
+//        requestPermissions(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 1)
+//        requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 1)
+//        requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
 
         binding.times.isVisible = sharedPreferences.getBoolean(CLOCK_DISPLAY, true)
+
+
+
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
+            )
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
+        navController.addOnDestinationChangedListener { _, _, _ ->
+            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_home_black_24dp)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
+        navController.addOnDestinationChangedListener { controller, destination, arguments -> }
         if (!sharedPreferences.getBoolean(
                 SettingConstants.CHECK_OPEN,
                 false
@@ -107,48 +121,13 @@ class MainActivity2 : AppCompatActivity()   {
                 myDataBase.SpeedDao().insertSpeed(Speed(2, which + 1 == 2))
                 myDataBase.SpeedDao().insertSpeed(Speed(3, which + 1 == 3))
                 insert(myDataBase)
-                val unit = MyDataBase.getInstance(this).SpeedDao().getChecked().type
-                SharedData.fromUnit = if (unit == 1) {
-                    "mph";
-                } else if (unit == 2) "km/h" else "knot"
-                if (unit == 1 || unit == 2) {
-                    SharedData.speedAnalog.value = 240
-                } else {
-                    SharedData.speedAnalog.value = 320
-                }
-                SharedData.toUnit = SharedData.fromUnit
+                val navHostFragment: NavHostFragment? = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?
+
+                (navHostFragment!!.childFragmentManager.fragments[0] as HomeFragment).setSpeedAndUnit()
                 dialog.cancel()
             }
             builder.create().show()
         }
-        val speed = MyDataBase.getInstance(this).SpeedDao().getChecked()
-        if (speed != null) {
-            val unit = speed.type
-            SharedData.fromUnit = if (unit == 1) "mph" else if (unit == 2) "km/h" else "knot"
-            SharedData.toUnit = SharedData.fromUnit
-        }
-
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
-            )
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
-        navController.addOnDestinationChangedListener { _, _, _ ->
-            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_home_black_24dp)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        }
-        navController.addOnDestinationChangedListener(object :NavController.OnDestinationChangedListener{
-            override fun onDestinationChanged(
-                controller: NavController,
-                destination: NavDestination,
-                arguments: Bundle?
-            ) {
-                TODO("Not yet implemented")
-            }
-        })
-
         SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
     }
 

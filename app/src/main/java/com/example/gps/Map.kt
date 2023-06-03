@@ -91,8 +91,8 @@ class Map() {
                 if (!checkStart) {
                     val movementData = myDataBase!!.movementDao().getLastMovementData()
                     movementData.apply {
-                        startLongitude= previousLocation!!.longitude
-                        startLatitude= previousLocation!!.latitude
+                        startLongitude = previousLocation!!.longitude
+                        startLatitude = previousLocation!!.latitude
                     }
                     myDataBase!!.movementDao().updateMovementData(movementData)
                     lastMovementDataId = myDataBase!!.movementDao().getLastMovementDataId()
@@ -111,10 +111,12 @@ class Map() {
                 )
                 with(SharedData) {
                     locationLiveData.value = lastLocation
-                    distanceLiveData.value = distance
-                    currentSpeedLiveData.value = currentSpeed
-                    maxSpeedLiveData.value = maxSpeed
-                    averageSpeedLiveData.value = averageSpeed
+                    distanceLiveData.value = hashMapOf(convertSpeed(distance).toFloat() to toUnit)
+                    currentSpeedLiveData.value =
+                        hashMapOf(convertSpeed(currentSpeed).toFloat() to lastLocation.time)
+                    maxSpeedLiveData.value = hashMapOf(convertSpeed(maxSpeed).toFloat() to toUnit)
+                    averageSpeedLiveData.value =
+                        hashMapOf(convertSpeed(averageSpeed).toFloat() to toUnit)
                 }
                 myDataBase!!.locationDao().insertLocationData(
                     lastLocation.latitude, lastLocation.longitude, lastMovementDataId
@@ -194,7 +196,7 @@ class Map() {
             val movementData = myDataBase!!.movementDao().getLastMovementData()
             if (checkStop) {
 
-                if (previousLocation == null ) {
+                if (previousLocation == null) {
                     movementData.endLatitude = movementData.startLatitude
                     movementData.endLongitude = movementData.startLongitude
                 } else {
@@ -210,10 +212,10 @@ class Map() {
 
                 with(SharedData) {
                     locationLiveData.value = null
-                    distanceLiveData.value = 0F
-                    currentSpeedLiveData.value = 0F
-                    maxSpeedLiveData.value = 0F
-                    averageSpeedLiveData.value = 0F
+                    distanceLiveData.value = hashMapOf(0F to toUnit)
+                    currentSpeedLiveData.value = hashMapOf(0F to 0)
+                    maxSpeedLiveData.value = hashMapOf(0F to toUnit)
+                    averageSpeedLiveData.value = hashMapOf(0F to toUnit)
                     time.value = 0
                 }
             }

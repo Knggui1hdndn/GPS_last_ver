@@ -18,88 +18,81 @@ import com.example.gps.SettingConstants
 import com.example.gps.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.FragmentHomeBinding
+import com.example.gps.interfaces.HomeInterface
+import com.example.gps.model.Vehicle
 import com.example.gps.service.MyService
 import com.example.gps.utils.ColorUtils
-import com.google.android.gms.ads.RequestConfiguration
+import com.example.gps.utils.UnitUtils
 
 
-class HomeFragment : Fragment(R.layout.fragment_home) {
+class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
 
     private lateinit var binding: FragmentHomeBinding
-    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var sharedPreferencesSetting: SharedPreferences
+    private lateinit var sharedPreferencesState: SharedPreferences
+    private lateinit var myDataBase: MyDataBase
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentHomeBinding.bind(view)
-        sharedPreferences = view.context.getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
-        var timePrevious = System.currentTimeMillis()
+        myDataBase = MyDataBase.getInstance(requireContext())
+        sharedPreferencesSetting =
+            requireContext().getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
+        sharedPreferencesState = requireContext().getSharedPreferences("state", MODE_PRIVATE)
+
         with(binding) {
-            try {
-                imgRotateScreen!!.setOnClickListener {
-                    requireActivity().requestedOrientation =
-                        ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-                }
-
-                val myDataBase = MyDataBase.getInstance(requireContext())
-                imgReset!!.setOnClickListener {
-                    val status = view.context.getSharedPreferences("state", MODE_PRIVATE)
-                        .getString(MyLocationConstants.STATE, null)
-                    if (status != MyLocationConstants.STOP && status != null) {
-                        val intent = Intent(requireContext(), MyService::class.java)
-                        intent.action = MyLocationConstants.STOP
-                        requireActivity().startService(intent)
-                        SharedData.checkService = true
-
-                    }
-                }
-                val maxSpeedAnalog =
-                    myDataBase.vehicleDao().getVehicleChecked(myDataBase.SpeedDao().getChecked().type)
-                speed.maxSpeed = maxSpeedAnalog.clockSpeed.toFloat()
-                speed.unit = SharedData.toUnit
-            } catch (e: Exception) {
-
+            imgRotateScreen!!.setOnClickListener {
+                requireActivity().requestedOrientation =
+                    ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
             }
-            // change ring color, have fun with this method
-            SharedData.speedAnalog.observe(viewLifecycleOwner) {
-                speed.maxSpeed = SharedData.convertSpeed(it.toFloat()).toFloat()
+
+            imgReset!!.setOnClickListener {
+                stopRunning()
             }
-            changeBackGroundSpeedView()
             SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) {
-                var speed1 = String.format("%.1f", it)
-                speed1 = speed1.replace(",", ".");
-                this.speed.speedTo(speed1.toFloat(), System.currentTimeMillis() - timePrevious)
-                timePrevious = System.currentTimeMillis()
+                it[it.keys.first()]?.let { it1 -> this.speed.speedTo(it.keys.first(), it1 * 1000) }
             }
+            setSpeedAndUnit()
         }
     }
 
-    private fun changeBackGroundSpeedView() {
+    private fun getVehicleChecked(): Vehicle {
+        return myDataBase.vehicleDao()
+            .getVehicleChecked(myDataBase.SpeedDao().getChecked().type)
+    }
+
+    private fun stopRunning() {
+        val status = sharedPreferencesState.getString(MyLocationConstants.STATE, null)
+        if (status != MyLocationConstants.STOP && status != null) {
+            val intent = Intent(requireContext(), MyService::class.java)
+            intent.action = MyLocationConstants.STOP
+            requireActivity().startService(intent)
+        }
+    }
+
+    override fun onVisibilityChanged(boolean: Boolean) {
+        binding.imgReset!!.visibility = if (boolean) View.GONE else View.VISIBLE
+    }
+
+    override fun onMaxSpeedAnalogChange(speed: Int) {
+        binding.speed.unit
+    }
+
+    override fun setSpeedAndUnit() {
         try {
-            binding.speed.unit = SharedData.toUnit
-            val positionsColor = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, 2)
-            if (positionsColor == 1) binding.speed.trianglesColor = Color.BLUE
-            binding.speed.setSpeedometerColor(ColorUtils.checkColor(positionsColor));
+            binding.speed.maxSpeed = getVehicleChecked().clockSpeed.toFloat()
+            binding.speed.unit = UnitUtils.getUnit(myDataBase.SpeedDao().getChecked().type)
         } catch (e: Exception) {
-            Log.d("Sssssssssssssss", e.toString())
+
         }
     }
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            Toast.makeText(requireContext(), "Landscape Mode", Toast.LENGTH_SHORT).show()
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            Toast.makeText(requireContext(), "Portrait Mode", Toast.LENGTH_SHORT).show()
-        }
-        super.onConfigurationChanged(newConfig)
 
-    }
-    override fun onResume() {
-        changeBackGroundSpeedView()
-        super.onResume()
+    override fun onColorChange() {
+        val positionsColor = sharedPreferencesSetting.getInt(SettingConstants.COLOR_DISPLAY, 2)
+        if (positionsColor == 1) binding.speed.trianglesColor = Color.BLUE
+        binding.speed.setSpeedometerColor(ColorUtils.checkColor(positionsColor));
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-
+    override fun onUnitChange() {
+        setSpeedAndUnit()
     }
 }

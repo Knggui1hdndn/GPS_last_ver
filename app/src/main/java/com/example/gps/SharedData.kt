@@ -5,10 +5,10 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 
 object SharedData {
-    val averageSpeedLiveData = MutableLiveData<Float>()
-    val maxSpeedLiveData = MutableLiveData<Float>()
-    val currentSpeedLiveData = MutableLiveData<Float>()
-    val distanceLiveData = MutableLiveData<Float>()
+    val averageSpeedLiveData = MutableLiveData<HashMap<Float,String>>()
+    val maxSpeedLiveData = MutableLiveData<HashMap<Float,String>>()
+    val currentSpeedLiveData = MutableLiveData<HashMap<Float,Long>>()
+    val distanceLiveData = MutableLiveData<HashMap<Float,String>>()
     val locationLiveData = MutableLiveData<Location>()
     val speedAnalog = MutableLiveData<Int>()
     val time = MutableLiveData<Long>(0)

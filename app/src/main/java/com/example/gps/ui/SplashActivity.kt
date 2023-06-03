@@ -42,17 +42,17 @@ class SplashActivity : AppCompatActivity() {
 //        val uri = Uri.parse("package:" + packageName)
 //        val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri)Remote stack trace:
 //        startActivity(intent)
-        requestPermissions(
-            arrayOf(
-                Manifest.permission.READ_MEDIA_IMAGES,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.ACTIVITY_RECOGNITION,
-                Manifest.permission.MANAGE_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ), 3
-        )
+//        requestPermissions(
+//            arrayOf(
+//                Manifest.permission.READ_MEDIA_IMAGES,
+//                Manifest.permission.READ_EXTERNAL_STORAGE,
+//                Manifest.permission.ACTIVITY_RECOGNITION,
+//                Manifest.permission.MANAGE_EXTERNAL_STORAGE,
+//                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                Manifest.permission.ACCESS_COARSE_LOCATION,
+//                Manifest.permission.ACCESS_FINE_LOCATION
+//            ), 3
+//        )
 
 
        createTimer(3L)

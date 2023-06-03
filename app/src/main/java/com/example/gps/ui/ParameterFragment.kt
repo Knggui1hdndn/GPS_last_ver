@@ -63,10 +63,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) {
                         intent.action = MyLocationConstants.STOP
                         requireActivity().startService(intent)
                         SharedData.checkService = true
-
                     }
-                    Toast.makeText(requireContext(),"oks"+ imgRotateScreen1!!.id,Toast.LENGTH_SHORT).show()
-
                 }
                 imgRotateScreen1!!.setOnClickListener {
                     requireActivity().requestedOrientation =
@@ -79,26 +76,24 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) {
             this.txtDistance.text = "0" + if (SharedData.toUnit != "km/h") "mi" else "km"
             this.txtAverageSpeed.text = "0" + SharedData.toUnit
             SharedData.maxSpeedLiveData.observe(viewLifecycleOwner) {
-                this.txtMaxSpeed.text = if (it <= 0) "0" + SharedData.toUnit else String.format(
+                this.txtMaxSpeed.text = if (it.keys.first() <= 0) "0" + SharedData.toUnit else String.format(
                     "%.0f",
-                    SharedData.convertSpeed(it)
+                     it.keys.first()
                 ) + SharedData.toUnit
                 setFont(binding)
             }
 
 
             SharedData.distanceLiveData.observe(viewLifecycleOwner) {
-                this.txtDistance.text =
-                    if (SharedData.toUnit != "km/h") "${(it * 0.6214).toInt()}mi" else "${(it * 1.60934).toInt()}km"
+                this.txtDistance.text =if (SharedData.toUnit != "km/h") "${(it.keys.first() * 0.6214).toInt()}mi" else "${(it.keys.first() * 1.60934).toInt()}km"
                 setFont(binding)
-
             }
 
             SharedData.averageSpeedLiveData.observe(viewLifecycleOwner) {
                 this.txtAverageSpeed.text =
-                    if (it <= 0) "0" + SharedData.toUnit else String.format(
+                    if (it.keys.first() <= 0) "0" + SharedData.toUnit else String.format(
                         "%.0f",
-                        SharedData.convertSpeed(it)
+                        SharedData.convertSpeed(it.keys.first())
                     ) + SharedData.toUnit
                 setFont(binding)
             }
@@ -139,8 +134,6 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) {
                 setState(MyLocationConstants.STOP)
                 hideBtnStop()
                 startService(MyLocationConstants.STOP)
-
-
             }
         }
     }
