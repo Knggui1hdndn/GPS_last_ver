@@ -19,6 +19,5 @@
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.example.gps.ui.NotificationsFragment"
-
         tools:layout="@layout/fragment_notifications" />
 </navigation>

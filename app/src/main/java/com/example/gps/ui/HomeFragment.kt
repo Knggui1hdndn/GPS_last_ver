@@ -38,28 +38,36 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
         sharedPreferencesSetting =
             requireContext().getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         sharedPreferencesState = requireContext().getSharedPreferences("state", MODE_PRIVATE)
+        val positionsColor = sharedPreferencesSetting.getInt(SettingConstants.COLOR_DISPLAY, 2)
 
+        setSpeedAndUnit()
+        onColorChange(positionsColor)
         with(binding) {
-            imgRotateScreen!!.setOnClickListener {
-                requireActivity().requestedOrientation =
-                    ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+           if(requireContext().resources.configuration.orientation==Configuration.ORIENTATION_PORTRAIT){
+               imgRotateScreen!!.setOnClickListener {
+                   requireActivity().requestedOrientation =
+                       ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+               }
+               imgReset!!.setOnClickListener {
+                   stopRunning()
+               }
+           }
+
+
+            SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) {
+                it[it.keys.first()]?.let { it1 -> this.speed.speedTo(SharedData.convertSpeed(it.keys.first()).toFloat(), it1 * 1000) }
             }
 
-            imgReset!!.setOnClickListener {
-                stopRunning()
-            }
-            SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) {
-                it[it.keys.first()]?.let { it1 -> this.speed.speedTo(it.keys.first(), it1 * 1000) }
-            }
-            setSpeedAndUnit()
         }
     }
 
     private fun getVehicleChecked(): Vehicle {
-        return myDataBase.vehicleDao()
-            .getVehicleChecked(myDataBase.SpeedDao().getChecked().type)
+        return myDataBase.vehicleDao().getVehicleChecked(myDataBase.SpeedDao().getChecked().type)
     }
-
+    fun getCurrentUnit():String{
+        val myDataBase=MyDataBase.getInstance(requireContext()).SpeedDao()
+        return UnitUtils.getUnit(myDataBase.getChecked().type)
+    }
     private fun stopRunning() {
         val status = sharedPreferencesState.getString(MyLocationConstants.STATE, null)
         if (status != MyLocationConstants.STOP && status != null) {
@@ -74,22 +82,28 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
     }
 
     override fun onMaxSpeedAnalogChange(speed: Int) {
-        binding.speed.unit
+        binding.speed.maxSpeed = speed.toFloat()
     }
 
     override fun setSpeedAndUnit() {
         try {
             binding.speed.maxSpeed = getVehicleChecked().clockSpeed.toFloat()
+
             binding.speed.unit = UnitUtils.getUnit(myDataBase.SpeedDao().getChecked().type)
+            Log.d("okkkk","óaosk"+getVehicleChecked().clockSpeed.toFloat())
+
         } catch (e: Exception) {
+            Log.d("okkkk","óaoskew"+getVehicleChecked().clockSpeed.toFloat())
 
         }
     }
 
-    override fun onColorChange() {
-        val positionsColor = sharedPreferencesSetting.getInt(SettingConstants.COLOR_DISPLAY, 2)
-        if (positionsColor == 1) binding.speed.trianglesColor = Color.BLUE
-        binding.speed.setSpeedometerColor(ColorUtils.checkColor(positionsColor));
+    override fun onColorChange(i: Int) {
+        try {
+            if (i == 1) binding.speed.trianglesColor = Color.BLUE
+            binding.speed.setSpeedometerColor(ColorUtils.checkColor(i));
+        } catch (e: Exception) {
+        }
     }
 
     override fun onUnitChange() {

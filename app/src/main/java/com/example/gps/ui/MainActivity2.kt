@@ -38,16 +38,18 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity2 : AppCompatActivity() {
 
-    val FragmentManager.currentNavigationFragment: Fragment?
-        get() = primaryNavigationFragment?.childFragmentManager?.fragments?.first()
+
     private lateinit var binding: ActivityMain2Binding
 
     private lateinit var sharedPreferences: SharedPreferences
-
+    fun getCurrentUnit():String{
+        val myDataBase=MyDataBase.getInstance(this).SpeedDao()
+        return UnitUtils.getUnit(myDataBase.getChecked().type)
+    }
     override fun onStart() {
         super.onStart()
         try {
-            SharedData.toUnit=UnitUtils.getUnit(MyDataBase.getInstance(this).vehicleDao().getVehicleChecked(MyDataBase.getInstance(this).SpeedDao().getChecked().type).typeID)
+            SharedData.toUnit=getCurrentUnit()
             SharedData.fromUnit= SharedData.toUnit
         }catch (e:Exception){}
     }
@@ -56,7 +58,7 @@ class MainActivity2 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMain2Binding.inflate(layoutInflater)
-
+SharedData.activity=this
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_home_black_24dp)
@@ -83,9 +85,6 @@ class MainActivity2 : AppCompatActivity() {
 //        requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
 
         binding.times.isVisible = sharedPreferences.getBoolean(CLOCK_DISPLAY, true)
-
-
-
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
@@ -96,7 +95,9 @@ class MainActivity2 : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, _, _ ->
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_home_black_24dp)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         }
+        SharedData.distanceLiveData.value=20F
         navController.addOnDestinationChangedListener { controller, destination, arguments -> }
         if (!sharedPreferences.getBoolean(
                 SettingConstants.CHECK_OPEN,
@@ -122,12 +123,12 @@ class MainActivity2 : AppCompatActivity() {
                 myDataBase.SpeedDao().insertSpeed(Speed(3, which + 1 == 3))
                 insert(myDataBase)
                 val navHostFragment: NavHostFragment? = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?
-
                 (navHostFragment!!.childFragmentManager.fragments[0] as HomeFragment).setSpeedAndUnit()
                 dialog.cancel()
             }
             builder.create().show()
         }
+
         SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
     }
 
@@ -172,7 +173,8 @@ class MainActivity2 : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.history) {
-            startActivity(Intent(this, HistoryActivity::class.java))
+            val intent=Intent(this, HistoryActivity::class.java)
+             startActivity(intent)
         }
         if (item.itemId == android.R.id.home) startActivity(Intent(this, Setting::class.java))
         return true

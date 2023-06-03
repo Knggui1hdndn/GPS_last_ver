@@ -1,5 +1,5 @@
 package com.example.gps.interfaces
 
 interface DisplayInterface {
-    fun onColorChange()
+    fun onColorChange(i:Int)
 }

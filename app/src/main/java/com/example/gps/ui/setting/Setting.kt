@@ -1,6 +1,7 @@
 package com.example.gps.ui.setting
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Service
 import android.content.DialogInterface
 import android.content.SharedPreferences
@@ -14,6 +15,8 @@ import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment
 import com.example.gps.MyLocationConstants
 import com.example.gps.R
 import com.example.gps.SettingConstants
@@ -21,8 +24,16 @@ import com.example.gps.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.dao.VehicleDao
 import com.example.gps.databinding.ActivitySettingBinding
+import com.example.gps.ui.DashboardFragment
+import com.example.gps.ui.HomeFragment
+import com.example.gps.ui.MainActivity2
+import com.example.gps.ui.NotificationsFragment
+import com.example.gps.ui.ParameterFragment
 import com.example.gps.utils.ColorUtils
+import com.example.gps.utils.UnitUtils
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.internal.ContextUtils.getActivity
+
 
 class Setting : AppCompatActivity() {
     private lateinit var binding: ActivitySettingBinding
@@ -58,9 +69,17 @@ class Setting : AppCompatActivity() {
     private var colorPosition = 1
     private var checkUnitClick = 0
     private var checkVehicleClick = 0
+    private var check  = true
+    private lateinit var mainActivity2: MainActivity2
     private lateinit var myDataBase: MyDataBase
+    private lateinit var navHostFragment: NavHostFragment
+    private lateinit var parameterFragment: ParameterFragment
+    private lateinit var childFragment: Fragment
+    private   var homeFragment: HomeFragment?=null
+    private   var dashboardFragment: DashboardFragment?=null
+    private   var notificationsFragment: NotificationsFragment?=null
 
-    @SuppressLint("CommitPrefEdits", "SetTextI18n")
+    @SuppressLint("CommitPrefEdits", "SetTextI18n", "RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingBinding.inflate(layoutInflater)
@@ -73,7 +92,17 @@ class Setting : AppCompatActivity() {
         vehicleDao = MyDataBase.getInstance(this).vehicleDao()
         myDataBase = MyDataBase.getInstance(this)
         checkUnitClick = myDataBase.SpeedDao().getChecked().type
+
         colorPosition = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, 0)
+
+        mainActivity2 = getActivity(SharedData.activity) as MainActivity2
+        navHostFragment =
+            (mainActivity2.supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?)!!
+        childFragment = navHostFragment.childFragmentManager.fragments[0]
+        parameterFragment =
+            childFragment.childFragmentManager.findFragmentById(R.id.frag) as ParameterFragment
+
+
         setBackgroundALL()
         txtDistance.text = getSharedPreferences("state", Service.MODE_PRIVATE).getInt(
             MyLocationConstants.DISTANCE,
@@ -98,6 +127,7 @@ class Setting : AppCompatActivity() {
         btnMaxSpeepAnalog.setOnClickListener {
             getDialogSpeedAnalog().show()
         }
+
         btnResetDistance.setOnClickListener {
             when (checkUnitClick) {
                 1 -> txtDistance.text = "000000 Mph"
@@ -130,31 +160,85 @@ class Setting : AppCompatActivity() {
             checkVehicleClick = 3
         }
         btnMph.setOnClickListener {
-            SharedData.toUnit  = "mph"
+            SharedData.fromUnit=getCurrentUnit()
+            SharedData.toUnit = "mph"
             myDataBase.SpeedDao().updateUnChecked()
             myDataBase.SpeedDao().updateChecked(1)
+            registerReceiverUnitFromFragmentM2()
             setBackgroundSpeedAndVehicle()
+            parameterFragment.onUnitChange()
             checkUnitClick = 1
 
         }
         btnKm.setOnClickListener {
+            SharedData.fromUnit=getCurrentUnit()
+
             SharedData.toUnit = "km/h"
             myDataBase.SpeedDao().updateUnChecked()
             myDataBase.SpeedDao().updateChecked(2)
+            registerReceiverUnitFromFragmentM2()
             setBackgroundSpeedAndVehicle()
+            parameterFragment.onUnitChange()
             checkUnitClick = 2
         }
         btnKnot.setOnClickListener {
-            SharedData.toUnit  = "knot"
+            SharedData.fromUnit=getCurrentUnit()
+            SharedData.toUnit = "knot"
             myDataBase.SpeedDao().updateUnChecked()
             myDataBase.SpeedDao().updateChecked(3)
+            registerReceiverUnitFromFragmentM2()
             setBackgroundSpeedAndVehicle()
+            parameterFragment.onUnitChange()
             checkUnitClick = 3
         }
         onClickBtnColor(btnColor1, btnColor2, btnColor3, btnColor4, btnColor5, btnColor6, btnColor7)
+
+    }
+    fun getCurrentUnit():String{
+        val myDataBase=MyDataBase.getInstance(this).SpeedDao()
+        return UnitUtils.getUnit(myDataBase.getChecked().type)
+    }
+    private fun registerReceiverUnitFromFragmentM2() {
+        when (childFragment) {
+            is HomeFragment -> {
+                if (homeFragment==null)   homeFragment =  childFragment as HomeFragment
+                homeFragment!!.onUnitChange()
+            }
+
+            is DashboardFragment -> {
+                if (dashboardFragment==null)     dashboardFragment = childFragment as DashboardFragment
+                dashboardFragment!!.onUnitChange()
+            }
+
+            is NotificationsFragment -> {
+                if (notificationsFragment==null)     notificationsFragment = childFragment as NotificationsFragment
+                notificationsFragment!!.onUnitChange()
+            }
+        }
     }
 
+    private fun registerReceiverColorFromFragmentM2() {
+        when (childFragment) {
+            is HomeFragment -> {
+                if (homeFragment==null)   homeFragment = childFragment as HomeFragment
+                homeFragment!!.onColorChange(colorPosition)
+            }
+
+            is DashboardFragment -> {
+                if (dashboardFragment==null)  dashboardFragment = childFragment as DashboardFragment
+                dashboardFragment!!.onColorChange(colorPosition)
+            }
+
+            is NotificationsFragment -> {
+                if (notificationsFragment==null)   notificationsFragment = childFragment as NotificationsFragment
+                notificationsFragment!!.onColorChange(colorPosition)
+            }
+        }
+    }
+
+
     private fun getDialogSpeedAnalog(): AlertDialog.Builder {
+
         var item = 0
         val array = arrayOf(
             "80",
@@ -180,7 +264,7 @@ class Setting : AppCompatActivity() {
             setPositiveButton("Đồng Ý") { dialog: DialogInterface, _: Int ->
                 myDataBase.vehicleDao().updateMaxSpeed(checkUnitClick, checkVehicleClick, item)
                 btnMaxSpeepAnalog.text = item.toString()
-                SharedData.speedAnalog.value=item
+                 registerReceiverUnitFromFragmentM2()
                 dialog.cancel()
             }
         }
@@ -190,8 +274,10 @@ class Setting : AppCompatActivity() {
         val vehicleChecked = myDataBase.vehicleDao().getVehicleChecked(typeId)
         btnMaxSpeepAnalog.text = vehicleChecked.clockSpeed.toString()
         btnWarningLimit.text = vehicleChecked.limitWarning.toString()
-        SharedData.speedAnalog.value=vehicleChecked.clockSpeed
-     }
+        SharedData.speedAnalog.value = vehicleChecked.clockSpeed
+
+
+    }
 
 
     private fun removeBackgroundButtonVehicle() {
@@ -240,12 +326,14 @@ class Setting : AppCompatActivity() {
                 btnKm.setBackgroundColor(ColorUtils.checkColor(colorPosition))
                 setBackgroundVehicleWhenOnCreate(2)
                 setSpecifications(2)
+
             }
 
             3 -> {
                 btnKnot.setBackgroundColor(ColorUtils.checkColor(colorPosition))
                 setBackgroundVehicleWhenOnCreate(3)
                 setSpecifications(3)
+
             }
         }
     }
@@ -308,6 +396,9 @@ class Setting : AppCompatActivity() {
                     }
 
                 }
+                parameterFragment.onColorChange(colorPosition)
+                if(check==false) registerReceiverColorFromFragmentM2()
+                check=true
                 saveColorChecked()
                 removeBackgroundButtonUnit()
                 removeBackgroundButtonVehicle()

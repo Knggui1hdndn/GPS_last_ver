@@ -85,9 +85,7 @@ class Map() {
         @SuppressLint("SuspiciousIndentation")
         override fun onLocationResult(locationResult: LocationResult) {
             val lastLocation = locationResult.lastLocation
-
             if (lastLocation != null && previousLocation != null && myDataBase != null) {
-
                 if (!checkStart) {
                     val movementData = myDataBase!!.movementDao().getLastMovementData()
                     movementData.apply {
@@ -111,21 +109,22 @@ class Map() {
                 )
                 with(SharedData) {
                     locationLiveData.value = lastLocation
-                    distanceLiveData.value = hashMapOf(convertSpeed(distance).toFloat() to toUnit)
+                    distanceLiveData.value = convertSpeed(distance).toFloat()
                     currentSpeedLiveData.value =
                         hashMapOf(convertSpeed(currentSpeed).toFloat() to lastLocation.time)
-                    maxSpeedLiveData.value = hashMapOf(convertSpeed(maxSpeed).toFloat() to toUnit)
-                    averageSpeedLiveData.value =
-                        hashMapOf(convertSpeed(averageSpeed).toFloat() to toUnit)
+                    maxSpeedLiveData.value = convertSpeed(maxSpeed).toFloat()
+                    averageSpeedLiveData.value = convertSpeed(averageSpeed).toFloat()
                 }
                 myDataBase!!.locationDao().insertLocationData(
                     lastLocation.latitude, lastLocation.longitude, lastMovementDataId
                 )
                 val movementData = myDataBase!!.movementDao().getLastMovementData()
-                movementData.time = millis.toFloat()
-                movementData.averageSpeed = averageSpeed
-                movementData.maxSpeed = maxSpeed
-                movementData.distance = distance
+                movementData.apply {
+                    time = millis.toFloat()
+                    this.averageSpeed = averageSpeed
+                    this.maxSpeed = maxSpeed
+                    this.distance = distance
+                }
                 myDataBase!!.movementDao().updateMovementData(movementData)
                 sharedPreferences.edit().putInt(
                     MyLocationConstants.DISTANCE,
@@ -141,9 +140,7 @@ class Map() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getCurrentSpeed(lastLocation: Location): Float {
         if (!lastLocation.hasSpeed()) return 0F
-        var speed =
-            if (lastLocation.hasSpeedAccuracy() && lastLocation.hasSpeed()) (lastLocation.speed * 3.6).toFloat() else 0F
-
+        val speed = if (lastLocation.hasSpeedAccuracy() && lastLocation.hasSpeed()) (lastLocation.speed * 3.6).toFloat() else 0F
         val convertedSpeed = SharedData.convertSpeed(speed)
         val sharedPreferences =
             context.getSharedPreferences(SettingConstants.SETTING, Context.MODE_PRIVATE)
@@ -152,12 +149,7 @@ class Map() {
                 convertedSpeed > myDataBase!!.vehicleDao()
                     .getVehicleChecked(myDataBase!!.SpeedDao().getChecked().type).limitWarning -> {
                     if (mediaPlayer == null || (!mediaPlayer!!.isPlaying)) {
-                        mediaPlayer = MediaPlayer.create(context, R.raw.wraning)
-                        val audioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
-                        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 100, 0)
-                        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-                        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0)
-                        // mediaPlayer?.start()
+                        broadcastWarning()
                     }
                 }
 
@@ -167,6 +159,15 @@ class Map() {
             }
         }
         return speed
+    }
+
+    private fun broadcastWarning() {
+        mediaPlayer = MediaPlayer.create(context, R.raw.wraning)
+        val audioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 100, 0)
+        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0)
+//        mediaPlayer?.start()
     }
 
     private fun getMaxSpeed(): Float {
@@ -192,10 +193,16 @@ class Map() {
 
     @SuppressLint("MissingPermission")
     fun removeCallBack() {
+        updateWhenStop()
+        fusedLocationClient?.removeLocationUpdates(
+            locationCallback1
+        )
+    }
+
+    private fun updateWhenStop() {
         if (checkStop) {
             val movementData = myDataBase!!.movementDao().getLastMovementData()
             if (checkStop) {
-
                 if (previousLocation == null) {
                     movementData.endLatitude = movementData.startLatitude
                     movementData.endLongitude = movementData.startLongitude
@@ -212,17 +219,14 @@ class Map() {
 
                 with(SharedData) {
                     locationLiveData.value = null
-                    distanceLiveData.value = hashMapOf(0F to toUnit)
+                    distanceLiveData.value = 0F
                     currentSpeedLiveData.value = hashMapOf(0F to 0)
-                    maxSpeedLiveData.value = hashMapOf(0F to toUnit)
-                    averageSpeedLiveData.value = hashMapOf(0F to toUnit)
+                    maxSpeedLiveData.value = 0F
+                    averageSpeedLiveData.value = 0F
                     time.value = 0
                 }
             }
         }
-        fusedLocationClient?.removeLocationUpdates(
-            locationCallback1
-        )
     }
 
     fun removeHandler() {

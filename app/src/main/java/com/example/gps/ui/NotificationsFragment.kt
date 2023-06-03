@@ -15,6 +15,7 @@ import com.example.gps.SettingConstants
 import com.example.gps.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.FragmentNotificationsBinding
+import com.example.gps.interfaces.MapInterface
 import com.example.gps.utils.FontUtils
 import com.example.gps.utils.MapUtils
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -29,10 +30,10 @@ import java.lang.Exception
 import java.util.Locale
 
 
-class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
+class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInterface {
     private var cameraPosition: CameraPosition? = null
-    private var count = 0
-    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var sharedPreferencesSetting: SharedPreferences
+    private lateinit var sharedPreferencesState: SharedPreferences
 
     @SuppressLint("SuspiciousIndentation", "MissingPermission")
     private val callback = OnMapReadyCallback { p0 ->
@@ -54,38 +55,40 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
     private var binding: FragmentNotificationsBinding? = null
     private var map: GoogleMap? = null
     private val polylineOptions = PolylineOptions()
-    private var check = true
+    private var check = false
 
-    @SuppressLint("SuspiciousIndentation")
+    @SuppressLint("SuspiciousIndentation", "SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentNotificationsBinding.bind(view)
-        sharedPreferences =
+        sharedPreferencesSetting =
             requireContext().getSharedPreferences(SettingConstants.SETTING, Context.MODE_PRIVATE)
+        sharedPreferencesState =
+            requireActivity().getSharedPreferences("state", Context.MODE_PRIVATE)
         if (savedInstanceState != null) {
             cameraPosition = savedInstanceState.getParcelable("cameraPosition")
-
         }
-        check = sharedPreferences.getBoolean(SettingConstants.TRACK_ON_MAP, true)
-        setBackgroundColor()
+        check = sharedPreferencesSetting.getBoolean(SettingConstants.TRACK_ON_MAP, true)
+        val positionsColor = sharedPreferencesSetting.getInt(SettingConstants.COLOR_DISPLAY, 2)
+        onColorChange(positionsColor)
+        onVisibilityPolyLine(check)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(callback)
         var i = 0
         if (binding != null) {
             with(binding) {
-
                 this?.imgChange?.setOnClickListener {
                     map?.let { it1 -> MapUtils.setStStyleMap(it1) }
                 }
+                this!!.txtSpeed.text = "0" + SharedData.toUnit
 
-                val shaPreferences =
-                    requireActivity().getSharedPreferences("state", Context.MODE_PRIVATE)
-                val state = shaPreferences.getString(MyLocationConstants.STATE, null)
+                val state = sharedPreferencesState.getString(MyLocationConstants.STATE, null)
+                //check  add polyline when onCreated
                 if ((state == MyLocationConstants.START || state == MyLocationConstants.PAUSE || state == MyLocationConstants.RESUME) && check) {
                     polylineOptions.addAll(convertToListLatLng()).color(Color.GREEN).width(15f)
                 }
                 SharedData.locationLiveData.observe(viewLifecycleOwner) { location ->
                     if (location == null) {
-                        this!!.latitude.text = "0"
+                        this.latitude.text = "0"
                         this.longitude.text = "0"
                     } else {
                         if (i == 0 && map != null && cameraPosition == null) {
@@ -94,17 +97,15 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
                             map?.moveCamera(CameraUpdateFactory.newLatLng(sydney))
                             i = 1
                         }
-                        polylineOptions.add(LatLng(location.latitude, location.longitude))
-                            .color(Color.GREEN).width(15f)
+                        polylineOptions.add(LatLng(location.latitude, location.longitude)) .color(Color.GREEN).width(15f)
                         if (check) map?.addPolyline(polylineOptions)
-                        this!!.latitude.text = location.latitude.toString()
+                        this.latitude.text = location.latitude.toString()
                         this.longitude.text = location.longitude.toString()
                     }
                 }
-
                 SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) { Speed ->
-                    this!!.txtAverageSpeed.text =
-                        String.format(Locale.getDefault(), "%.0fkm", Speed)
+                    this.txtSpeed.text =
+                  "${Speed.keys.first().toInt()}${SharedData.toUnit}"
                 }
             }
         }
@@ -130,43 +131,30 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications) {
         outState.putParcelable("cameraPosition", map?.cameraPosition)
     }
 
-    private fun setBackgroundColor() {
-        val intColor = requireActivity().getSharedPreferences(
-            SettingConstants.SETTING,
-            Service.MODE_PRIVATE
-        ).getInt(SettingConstants.COLOR_DISPLAY, 2)
+
+    override fun onVisibilityPolyLine(boolean: Boolean) {
+        check = boolean
+        if (boolean) map?.addPolyline(polylineOptions) else map?.clear()
+    }
+
+    override fun onColorChange(i: Int) {
         with(binding) {
             FontUtils.setTextColor(
-                intColor,
+                i,
                 this!!.longitude,
                 latitude,
-                txtAverageSpeed,
-                txtAverageSpeed
+                txtSpeed,
             )
         }
     }
 
-    override fun onResume() {
-        setBackgroundColor()
-        setDataWhenComeBack()
-        check = sharedPreferences.getBoolean(SettingConstants.TRACK_ON_MAP, true)
-        if (check) map?.addPolyline(polylineOptions) else map?.clear()
-        super.onResume()
-    }
-
-    private fun setDataWhenComeBack() {
-
-        SharedData.convertSpeed(binding?.txtAverageSpeed?.text.toString().filter { it.isDigit() }
-            .toFloat()).toInt()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d("okoko", "onPause")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("okoko", "onDestroy")
+    @SuppressLint("SetTextI18n")
+    override fun onUnitChange() {
+        binding?.txtSpeed?.text = "${
+            SharedData.convertSpeed(
+                binding?.txtSpeed?.text.toString().filter { it.isDigit() }
+                    .toFloat())
+        }+${SharedData.toUnit}"
+        FontUtils.setFont(requireContext(), binding?.txtSpeed!!)
     }
 }

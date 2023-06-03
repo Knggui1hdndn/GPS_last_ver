@@ -1,5 +1,5 @@
 package com.example.gps.interfaces
 
-interface MeasurementInterFace  {
+interface MeasurementInterFace:DisplayInterface  {
     fun onUnitChange()
 }

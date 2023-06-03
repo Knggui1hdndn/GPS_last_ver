@@ -24,41 +24,37 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var sharedPreferencesStates: SharedPreferences
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "SuspiciousIndentation")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentDashboardBinding.bind(view)
-        sharedPreferencesStates =
-            requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
+        sharedPreferencesStates = requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
         sharedPreferences = requireActivity().getSharedPreferences(
             SettingConstants.SETTING,
             Service.MODE_PRIVATE
         )
-        val allDistance = sharedPreferencesStates.getInt(MyLocationConstants.DISTANCE, 0)
-        with(binding) {
 
-            setBackgroundColor()
-            this.txtKm3.text = if (SharedData.toUnit != "km/h") "mi" else "km"
+        val allDistance = sharedPreferencesStates.getInt(MyLocationConstants.DISTANCE, 0)
+        val positionsColor = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, 2)
+        onColorChange(positionsColor)
+
+        with(binding) {
+             this.txtKm3.text = if (SharedData.toUnit != "km/h") "mi" else "km"
             binding.txtKm4.text = SharedData.toUnit
             FontUtils.setFont(requireContext(), this.txtSpeed)
-
             SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) {
            if (it.keys.first() == 0F) txtSpeed.text = "000"
                 when (String.format("%.0f", it).length) {
                     1 -> {
                         txtSpeed.text = "00" +it.keys.first().toInt().toString()
-
                     }
-
                     2 -> {
                         txtSpeed.text = "0" + it.keys.first().toInt().toString()
                     }
-
                     else -> txtSpeed.text = it.keys.first().toInt().toString()
                 }
-
             }
             SharedData.distanceLiveData.observe(viewLifecycleOwner) {
-                txtDistance1.text = (allDistance + it.keys.first()).toInt().toString()
+                txtDistance1.text = (allDistance + it).toInt().toString()
             }
             txtDistance1.text = SharedData.convertSpeed(allDistance.toFloat()).toInt().toString()
             txtKm4.text = SharedData.toUnit
@@ -68,11 +64,9 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
 
     @SuppressLint("SetTextI18n")
     private fun setDataWhenComBack() {
-
-
         with(binding) {
-
             txtKm4.text = SharedData.toUnit
+            this.txtKm3.text = if (SharedData.toUnit != "km/h") "mi" else "km"
             when (SharedData.convertSpeed(txtSpeed.text.toString().toFloat()).toInt()) {
                 1 -> {
                     txtSpeed.text =
@@ -87,30 +81,24 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
                 else -> txtSpeed.text = "000"
             }
 
-            this.txtDistance1.text =
-                SharedData.convertSpeed(txtDistance1.text.toString().toFloat()).toInt()
-                    .toString()
+            this.txtDistance1.text = SharedData.convertSpeed(txtDistance1.text.toString().toFloat()).toInt() .toString()
         }
 
     }
 
 
-    private fun setBackgroundColor() {
-        val intColor = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, 2)
-        FontUtils.setTextColor(intColor, binding.txtSpeed, binding.txtKm4)
-    }
+
 
 
     override fun onResetDistances() {
-
+        binding.txtDistance1.text ="000000"
     }
 
-    override fun onColorChange() {
-        setBackgroundColor()
+    override fun onColorChange(i: Int) {
+        FontUtils.setTextColor(i, binding.txtSpeed, binding.txtKm4)
     }
 
     override fun onUnitChange() {
         setDataWhenComBack()
-        setBackgroundColor()
-    }
+     }
 }
