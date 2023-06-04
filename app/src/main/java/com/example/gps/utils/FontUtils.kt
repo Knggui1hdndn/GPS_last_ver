@@ -19,6 +19,10 @@ class FontUtils() {
                     position = it.text.toString().indexOf("m")
 
                 }
+                if (position < 0) {
+                    position = it.text.toString().indexOf("N")
+
+                }
                 if (position >= 0) {
                     val newSize = 0.5f
                     val sizeSpan = RelativeSizeSpan(newSize)

@@ -10,10 +10,13 @@ import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
 import com.example.gps.MyLocationConstants
 import com.example.gps.R
 import com.example.gps.SettingConstants
@@ -28,26 +31,25 @@ import com.example.gps.utils.ColorUtils
 import com.example.gps.utils.FontUtils
 import com.example.gps.utils.TimeUtils
 import com.example.gps.utils.UnitUtils
+import com.google.android.material.internal.ContextUtils
 
-class ParameterFragment : Fragment(R.layout.fragment_parameter) ,MeasurementInterFace{
+class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInterFace {
     private lateinit var binding: FragmentParameterBinding
     private var intColor: Int = 0
     private var check = false
     private var sharedPreferences: SharedPreferences? = null
-     private lateinit var myDataBase: MyDataBase
-    var checkUnit = ""
+    private lateinit var myDataBase: MyDataBase
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "RestrictedApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentParameterBinding.bind(view)
         sharedPreferences = requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
         myDataBase = MyDataBase.getInstance(requireContext())
-        checkUnit = getCurrentUnit()
         setBackGround()
         setTextDefault()
-        onUnitChange()
-        //set state is STOP when MyService not Running
-        if (!isMyServiceRunning(MyService::class.java)) setState(MyLocationConstants.STOP)
+         //set state is STOP when MyService not Running
+        if (!isMyServiceRunning(MyService::class.java)) setState(MyLocationConstants.STOP) ;
+
         with(binding) {
 
             if (requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -58,7 +60,15 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) ,MeasurementInte
                     startActivity(Intent(requireActivity(), Setting::class.java))
                 }
                 stop!!.setOnClickListener {
-                  stopService()
+                    stopService()
+                    val fragment =
+                        (requireActivity().supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?)?.childFragmentManager?.fragments?.get(
+                            0
+                        )
+                    if (fragment is NotificationsFragment
+                    ) {
+                        fragment.clearMap()
+                    }
                 }
                 imgRotateScreen1!!.setOnClickListener {
                     requireActivity().requestedOrientation =
@@ -69,29 +79,28 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) ,MeasurementInte
 
 
             SharedData.maxSpeedLiveData.observe(viewLifecycleOwner) {
-                this.txtMaxSpeed.text = if (it  <= 0) "0" + SharedData.toUnit else String.format(
+                this.txtMaxSpeed.text = if (it <= 0) "0" + SharedData.toUnit else String.format(
                     "%.0f",
-                     it
+                    it
                 ) + SharedData.toUnit
                 setFont(binding)
             }
 
 
             SharedData.distanceLiveData.observe(viewLifecycleOwner) {
-                this.txtDistance.text =if (SharedData.toUnit != "km/h") "${(it  * 0.6214).toInt()}mi" else "${(it  * 1.60934).toInt()}km"
-                setFont(binding)
+                this.txtDistance.text = String.format("%.2f",it.toFloat())+ SharedData.toUnitDistance
+                 setFont(binding)
             }
 
             SharedData.averageSpeedLiveData.observe(viewLifecycleOwner) {
                 this.txtAverageSpeed.text =
-                    if (it  <= 0) "0" + SharedData.toUnit else String.format(
+                    if (it <= 0) "0" + SharedData.toUnit else String.format(
                         "%.0f",
-                        SharedData.convertSpeed(it )
+                        SharedData.convertSpeed(it)
                     ) + SharedData.toUnit
                 setFont(binding)
             }
-            setDataWhenComeBack()
-            showOrHideView()
+             showOrHideView()
             setFont(binding)
             this.btnStart.setOnClickListener {
                 insertMovementData()
@@ -120,9 +129,9 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) ,MeasurementInte
 
     @SuppressLint("SetTextI18n")
     private fun setTextDefault() {
-        with(binding){
+        with(binding) {
             this.txtMaxSpeed.text = "0" + SharedData.toUnit
-            this.txtDistance.text = "0" + if (SharedData.toUnit != "km/h") "mi" else "km"
+            this.txtDistance.text = "0" + SharedData.toUnitDistance
             this.txtAverageSpeed.text = "0" + SharedData.toUnit
         }
     }
@@ -170,7 +179,8 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) ,MeasurementInte
     }
 
     private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
-        val manager = requireActivity().getSystemService(AppCompatActivity.ACTIVITY_SERVICE) as ActivityManager
+        val manager =
+            requireActivity().getSystemService(AppCompatActivity.ACTIVITY_SERVICE) as ActivityManager
         for (service in manager.getRunningServices(Int.MAX_VALUE)) {
             if (serviceClass.name == service.service.className) {
                 return true
@@ -265,39 +275,40 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) ,MeasurementInte
     }
 
 
-    private fun setDataWhenComeBack() {
-            with(binding) {
-                 numberSeparation(txtDistance)
-                val distance = numberSeparation(txtDistance)
-                SharedData.distanceLiveData.value =  SharedData.convertDistance(distance.toFloat()) .toFloat()
-                val averageSpeed = numberSeparation(txtAverageSpeed)
-                SharedData.averageSpeedLiveData.value  = SharedData.convertSpeed(averageSpeed.toFloat()).toFloat()
-                val speed = numberSeparation(txtMaxSpeed)
-                SharedData.maxSpeedLiveData.value =SharedData.convertSpeed(speed .toFloat()).toFloat()
-            }
-            setFont(binding)
+    fun setDataWhenComeBack() {
+        with(binding) {
+             val distance = numberSeparation(txtDistance)
+            Log.d("okoko1",distance.toString())
+            SharedData.distanceLiveData.value =
+                SharedData.convertDistance(distance.toFloat()).toFloat()
+            val averageSpeed = numberSeparation(txtAverageSpeed)
+            SharedData.averageSpeedLiveData.value =
+                SharedData.convertSpeed(averageSpeed.toFloat()).toFloat()
+            val speed = numberSeparation(txtMaxSpeed)
+            SharedData.maxSpeedLiveData.value = SharedData.convertSpeed(speed.toFloat()).toFloat()
+        }
+        setFont(binding)
 
     }
 
 
+    private fun numberSeparation(txt: TextView): Double {
+         return try {
 
-    fun getCurrentUnit():String{
-        val myDataBase=MyDataBase.getInstance(requireContext()).SpeedDao()
-     return UnitUtils.getUnit(myDataBase.getChecked().type)
+             return txt.text.toString().filter { it.isDigit()  || it == ',' }.replace(',','.').toDouble()
+        }catch (e:Exception){
+             Log.d("ôikkkkkkkk",e.message.toString())
+
+             0.0
+        }
     }
-
-
-    private fun numberSeparation(txt: TextView): Int {
-        return txt.text.toString().filter { it.isDigit() }.toInt()
-    }
-
 
 
     override fun onUnitChange() {
         setDataWhenComeBack()
     }
 
-    override fun onColorChange(i:Int) {
+    override fun onColorChange(i: Int) {
         with(binding) {
             FontUtils.setTextColor(i, this.txtMaxSpeed, txtAverageSpeed, txtDistance)
             btnStart.setBackgroundColor(ColorUtils.checkColor(i))

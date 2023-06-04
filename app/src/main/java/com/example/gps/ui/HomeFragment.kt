@@ -1,7 +1,8 @@
 package com.example.gps.ui
 
 import android.content.Context.MODE_PRIVATE
-import android.content.Intent
+
+ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
@@ -61,8 +62,13 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
         }
     }
 
-    private fun getVehicleChecked(): Vehicle {
-        return myDataBase.vehicleDao().getVehicleChecked(myDataBase.SpeedDao().getChecked().type)
+    private fun getVehicleChecked(): Vehicle? {
+
+        return try {
+            myDataBase.vehicleDao().getVehicleChecked(myDataBase.SpeedDao().getChecked().type)
+        }catch (e:Exception){
+            return null
+        }
     }
     fun getCurrentUnit():String{
         val myDataBase=MyDataBase.getInstance(requireContext()).SpeedDao()
@@ -87,15 +93,15 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
 
     override fun setSpeedAndUnit() {
         try {
-            binding.speed.maxSpeed = getVehicleChecked().clockSpeed.toFloat()
-
+            binding.speed.maxSpeed = getVehicleChecked()?.clockSpeed?.toFloat()!!
             binding.speed.unit = UnitUtils.getUnit(myDataBase.SpeedDao().getChecked().type)
-            Log.d("okkkk","óaosk"+getVehicleChecked().clockSpeed.toFloat())
-
-        } catch (e: Exception) {
-            Log.d("okkkk","óaoskew"+getVehicleChecked().clockSpeed.toFloat())
+        } catch (_: Exception) {
 
         }
+    }
+
+    override fun toggleButtonVisibility(boolean: Boolean) {
+        binding.imgReset?.visibility   =if (boolean) View.VISIBLE else View.GONE
     }
 
     override fun onColorChange(i: Int) {

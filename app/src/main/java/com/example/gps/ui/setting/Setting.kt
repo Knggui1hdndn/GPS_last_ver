@@ -13,6 +13,7 @@ import android.view.MenuItem
 import android.widget.Button
 import android.widget.Switch
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -69,15 +70,15 @@ class Setting : AppCompatActivity() {
     private var colorPosition = 1
     private var checkUnitClick = 0
     private var checkVehicleClick = 0
-    private var check  = true
+    private var check = true
     private lateinit var mainActivity2: MainActivity2
     private lateinit var myDataBase: MyDataBase
     private lateinit var navHostFragment: NavHostFragment
     private lateinit var parameterFragment: ParameterFragment
     private lateinit var childFragment: Fragment
-    private   var homeFragment: HomeFragment?=null
-    private   var dashboardFragment: DashboardFragment?=null
-    private   var notificationsFragment: NotificationsFragment?=null
+    private var homeFragment: HomeFragment? = null
+    private var dashboardFragment: DashboardFragment? = null
+    private var notificationsFragment: NotificationsFragment? = null
 
     @SuppressLint("CommitPrefEdits", "SetTextI18n", "RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -109,21 +110,27 @@ class Setting : AppCompatActivity() {
             0
         ).toString()
         swtAlarm.setOnCheckedChangeListener { _, isChecked ->
-            sharedPreferences.edit().putBoolean(SettingConstants.SPEED_ALARM, isChecked).apply()
+            saveSettingBoolean(SettingConstants.SPEED_ALARM, isChecked)
         }
+
         swtShowReset.setOnCheckedChangeListener { _, isChecked ->
-            sharedPreferences.edit().putBoolean(SettingConstants.SHOW_RESET_BUTTON, isChecked)
-                .apply()
+            saveSettingBoolean(SettingConstants.SHOW_RESET_BUTTON, isChecked)
         }
+
         swtClockDisplay.setOnCheckedChangeListener { _, isChecked ->
-            sharedPreferences.edit().putBoolean(SettingConstants.CLOCK_DISPLAY, isChecked).apply()
+            saveSettingBoolean(SettingConstants.CLOCK_DISPLAY, isChecked)
         }
+
         swtTrackOnMap.setOnCheckedChangeListener { _, isChecked ->
-            sharedPreferences.edit().putBoolean(SettingConstants.TRACK_ON_MAP, isChecked).apply()
+            saveSettingBoolean(SettingConstants.TRACK_ON_MAP, isChecked)
+            toggleTrackOnMap()
         }
+
         swtShowSpeedInNoti.setOnCheckedChangeListener { _, isChecked ->
-            sharedPreferences.edit().putBoolean(SettingConstants.DISPLAY_SPEED, isChecked).apply()
+            saveSettingBoolean(SettingConstants.DISPLAY_SPEED, isChecked)
         }
+
+
         btnMaxSpeepAnalog.setOnClickListener {
             getDialogSpeedAnalog().show()
         }
@@ -141,77 +148,79 @@ class Setting : AppCompatActivity() {
         btnLetGo.setOnClickListener {
             finish()
         }
+
         btnOto.setOnClickListener {
-            myDataBase.vehicleDao().updateUnChecked(checkUnitClick)
-            myDataBase.vehicleDao().updateVehicle(checkUnitClick, 1)
-            setBackgroundSpeedAndVehicle()
-            checkVehicleClick = 1
+            updateVehicle(1)
         }
+
         btnBicycle.setOnClickListener {
-            myDataBase.vehicleDao().updateUnChecked(checkUnitClick)
-            myDataBase.vehicleDao().updateVehicle(checkUnitClick, 2)
-            setBackgroundSpeedAndVehicle()
-            checkVehicleClick = 2
+            updateVehicle(2)
         }
+
         btnTrain.setOnClickListener {
-            myDataBase.vehicleDao().updateUnChecked(checkUnitClick)
-            myDataBase.vehicleDao().updateVehicle(checkUnitClick, 3)
-            setBackgroundSpeedAndVehicle()
-            checkVehicleClick = 3
+            updateVehicle(3)
         }
         btnMph.setOnClickListener {
-            SharedData.fromUnit=getCurrentUnit()
-            SharedData.toUnit = "mph"
-            myDataBase.SpeedDao().updateUnChecked()
-            myDataBase.SpeedDao().updateChecked(1)
-            registerReceiverUnitFromFragmentM2()
-            setBackgroundSpeedAndVehicle()
-            parameterFragment.onUnitChange()
-            checkUnitClick = 1
-
+            updateSpeedUnit("mph", "mi", 1)
         }
+
         btnKm.setOnClickListener {
-            SharedData.fromUnit=getCurrentUnit()
+            updateSpeedUnit("km/h", "km", 2)
+        }
 
-            SharedData.toUnit = "km/h"
-            myDataBase.SpeedDao().updateUnChecked()
-            myDataBase.SpeedDao().updateChecked(2)
-            registerReceiverUnitFromFragmentM2()
-            setBackgroundSpeedAndVehicle()
-            parameterFragment.onUnitChange()
-            checkUnitClick = 2
-        }
         btnKnot.setOnClickListener {
-            SharedData.fromUnit=getCurrentUnit()
-            SharedData.toUnit = "knot"
-            myDataBase.SpeedDao().updateUnChecked()
-            myDataBase.SpeedDao().updateChecked(3)
-            registerReceiverUnitFromFragmentM2()
-            setBackgroundSpeedAndVehicle()
-            parameterFragment.onUnitChange()
-            checkUnitClick = 3
+            updateSpeedUnit("knot", "nm", 3)
         }
+
+
         onClickBtnColor(btnColor1, btnColor2, btnColor3, btnColor4, btnColor5, btnColor6, btnColor7)
 
     }
-    fun getCurrentUnit():String{
-        val myDataBase=MyDataBase.getInstance(this).SpeedDao()
+
+    private fun saveSettingBoolean(key: String, value: Boolean) {
+        sharedPreferences.edit().putBoolean(key, value).apply()
+    }
+
+    private fun updateVehicle(checkVehicleClick: Int) {
+        myDataBase.vehicleDao().updateUnChecked(checkUnitClick)
+        myDataBase.vehicleDao().updateVehicle(checkUnitClick, checkVehicleClick)
+        setBackgroundSpeedAndVehicle()
+        this.checkVehicleClick = checkVehicleClick
+    }
+
+    private fun updateSpeedUnit(speedUnit: String, distanceUnit: String, checkUnitClick: Int) {
+        SharedData.fromUnitDistance = SharedData.toUnitDistance
+        SharedData.toUnitDistance = distanceUnit
+        SharedData.fromUnit = SharedData.toUnit
+        SharedData.toUnit = speedUnit
+        myDataBase.SpeedDao().updateUnChecked()
+        myDataBase.SpeedDao().updateChecked(checkUnitClick)
+        registerReceiverUnitFromFragmentM2()
+        setBackgroundSpeedAndVehicle()
+        parameterFragment.onUnitChange()
+    }
+
+    fun getCurrentUnit(): String {
+        val myDataBase = MyDataBase.getInstance(this).SpeedDao()
         return UnitUtils.getUnit(myDataBase.getChecked().type)
     }
+
     private fun registerReceiverUnitFromFragmentM2() {
         when (childFragment) {
             is HomeFragment -> {
-                if (homeFragment==null)   homeFragment =  childFragment as HomeFragment
+                if (homeFragment == null) homeFragment = childFragment as HomeFragment
                 homeFragment!!.onUnitChange()
             }
 
             is DashboardFragment -> {
-                if (dashboardFragment==null)     dashboardFragment = childFragment as DashboardFragment
+                if (dashboardFragment == null) dashboardFragment =
+                    childFragment as DashboardFragment
                 dashboardFragment!!.onUnitChange()
             }
 
             is NotificationsFragment -> {
-                if (notificationsFragment==null)     notificationsFragment = childFragment as NotificationsFragment
+                if (notificationsFragment == null) notificationsFragment =
+                    childFragment as NotificationsFragment
                 notificationsFragment!!.onUnitChange()
             }
         }
@@ -220,23 +229,44 @@ class Setting : AppCompatActivity() {
     private fun registerReceiverColorFromFragmentM2() {
         when (childFragment) {
             is HomeFragment -> {
-                if (homeFragment==null)   homeFragment = childFragment as HomeFragment
+                if (homeFragment == null) homeFragment = childFragment as HomeFragment
                 homeFragment!!.onColorChange(colorPosition)
             }
 
             is DashboardFragment -> {
-                if (dashboardFragment==null)  dashboardFragment = childFragment as DashboardFragment
+                if (dashboardFragment == null) dashboardFragment =
+                    childFragment as DashboardFragment
                 dashboardFragment!!.onColorChange(colorPosition)
             }
 
             is NotificationsFragment -> {
-                if (notificationsFragment==null)   notificationsFragment = childFragment as NotificationsFragment
+                if (notificationsFragment == null) notificationsFragment =
+                    childFragment as NotificationsFragment
                 notificationsFragment!!.onColorChange(colorPosition)
             }
         }
     }
 
+    private fun toggleTrackOnMap() {
+        if (!swtTrackOnMap.isChecked) when (childFragment) {
+            is NotificationsFragment -> {
+                if (notificationsFragment == null) notificationsFragment =
+                    childFragment as NotificationsFragment
+                notificationsFragment!!.clearMap()
+                Toast.makeText(this, "okkkk", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
+    //    private fun toggleTrackOnMap() {
+//        when (childFragment) {
+//            is NotificationsFragment -> {
+//                if (notificationsFragment == null) notificationsFragment =
+//                    childFragment as NotificationsFragment
+//                notificationsFragment!!.clearMap()
+//            }
+//        }
+//    }
     private fun getDialogSpeedAnalog(): AlertDialog.Builder {
 
         var item = 0
@@ -264,7 +294,7 @@ class Setting : AppCompatActivity() {
             setPositiveButton("Đồng Ý") { dialog: DialogInterface, _: Int ->
                 myDataBase.vehicleDao().updateMaxSpeed(checkUnitClick, checkVehicleClick, item)
                 btnMaxSpeepAnalog.text = item.toString()
-                 registerReceiverUnitFromFragmentM2()
+                registerReceiverUnitFromFragmentM2()
                 dialog.cancel()
             }
         }
@@ -397,8 +427,7 @@ class Setting : AppCompatActivity() {
 
                 }
                 parameterFragment.onColorChange(colorPosition)
-                if(check==false) registerReceiverColorFromFragmentM2()
-                check=true
+                registerReceiverColorFromFragmentM2()
                 saveColorChecked()
                 removeBackgroundButtonUnit()
                 removeBackgroundButtonVehicle()

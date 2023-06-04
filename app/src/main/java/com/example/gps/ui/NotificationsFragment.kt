@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.gps.MyLocationConstants
 import com.example.gps.R
@@ -38,7 +39,7 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
     @SuppressLint("SuspiciousIndentation", "MissingPermission")
     private val callback = OnMapReadyCallback { p0 ->
         map = p0
-        map!!.apply {
+         map!!.apply {
             isMyLocationEnabled = true
             setMinZoomPreference(15.0f);
             setMaxZoomPreference(35.0f);
@@ -74,12 +75,14 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(callback)
         var i = 0
+
         if (binding != null) {
             with(binding) {
                 this?.imgChange?.setOnClickListener {
                     map?.let { it1 -> MapUtils.setStStyleMap(it1) }
                 }
                 this!!.txtSpeed.text = "0" + SharedData.toUnit
+                FontUtils.setFont(requireContext(),this.txtSpeed)
 
                 val state = sharedPreferencesState.getString(MyLocationConstants.STATE, null)
                 //check  add polyline when onCreated
@@ -97,7 +100,8 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
                             map?.moveCamera(CameraUpdateFactory.newLatLng(sydney))
                             i = 1
                         }
-                        polylineOptions.add(LatLng(location.latitude, location.longitude)) .color(Color.GREEN).width(15f)
+                        polylineOptions.add(LatLng(location.latitude, location.longitude))
+                            .color(Color.GREEN).width(15f)
                         if (check) map?.addPolyline(polylineOptions)
                         this.latitude.text = location.latitude.toString()
                         this.longitude.text = location.longitude.toString()
@@ -105,7 +109,9 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
                 }
                 SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) { Speed ->
                     this.txtSpeed.text =
-                  "${Speed.keys.first().toInt()}${SharedData.toUnit}"
+                        "${Speed.keys.first().toInt()}${SharedData.toUnit}"
+                    FontUtils.setFont(requireContext(),this.txtSpeed)
+
                 }
             }
         }
@@ -135,6 +141,11 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
     override fun onVisibilityPolyLine(boolean: Boolean) {
         check = boolean
         if (boolean) map?.addPolyline(polylineOptions) else map?.clear()
+    }
+
+    fun clearMap() {
+        map?.clear()
+        Toast.makeText(requireContext(),"mmo0"+map.toString(), Toast.LENGTH_SHORT).show()
     }
 
     override fun onColorChange(i: Int) {

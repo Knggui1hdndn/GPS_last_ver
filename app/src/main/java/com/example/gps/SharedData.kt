@@ -39,7 +39,7 @@ object SharedData {
         "mi" to mapOf(
             "mi" to 1.0,
             "km" to 1.60934,
-            "nm" to 1.15
+            "nm" to 1.15078
         ),
         "km" to mapOf(
             "mi" to 0.621371,
@@ -47,7 +47,7 @@ object SharedData {
             "nm" to 0.539957
         ),
         "nm" to mapOf(
-            "mi" to 1.15078 ,
+            "mi" to 0.868976,
             "km" to 1.852,
             "nm" to 1.0
         )
@@ -57,7 +57,9 @@ object SharedData {
     // Hàm chuyển đổi vận tốc
     fun convertSpeed(speed: Float ): Double {
         try {
+
             var sp = speed * conversionRates[fromUnit]!![toUnit]!!
+            Log.d("okoko","$speed $toUnit $fromUnit")
             return sp
         } catch (e: Exception) {
         }
@@ -66,11 +68,16 @@ object SharedData {
     }
     fun convertDistance(distance:Float ): Double {
         try {
+            Log.d("okoko1","$fromUnitDistance   $toUnitDistance  ")
+
             val sp :Double= distance * conversionRatesDistance[fromUnitDistance]!![toUnitDistance]!!
+            Log.d("okoko1","$fromUnitDistance   $toUnitDistance  $sp  $distance")
+
             return sp
         } catch (e: Exception) {
+
         }
-        return 1.0
+        return 0.0
     }
     var activity: Activity? = null
 

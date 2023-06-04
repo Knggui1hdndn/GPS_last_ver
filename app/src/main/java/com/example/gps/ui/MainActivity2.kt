@@ -42,25 +42,41 @@ class MainActivity2 : AppCompatActivity() {
     private lateinit var binding: ActivityMain2Binding
 
     private lateinit var sharedPreferences: SharedPreferences
-    fun getCurrentUnit():String{
-        val myDataBase=MyDataBase.getInstance(this).SpeedDao()
+    fun getCurrentUnit(): String {
+        val myDataBase = MyDataBase.getInstance(this).SpeedDao()
         return UnitUtils.getUnit(myDataBase.getChecked().type)
     }
+
     override fun onStart() {
         super.onStart()
-        try {
-            SharedData.toUnit=getCurrentUnit()
-            SharedData.fromUnit= SharedData.toUnit
-        }catch (e:Exception){}
+        setUnitSpeepAndDistance()
     }
+
+    private fun setUnitSpeepAndDistance() {
+        try {
+            SharedData.toUnit = getCurrentUnit()
+            SharedData.fromUnit = SharedData.toUnit
+            when (SharedData.fromUnit) {
+                "km/h" -> SharedData.fromUnitDistance = "km"
+                "mph" -> SharedData.fromUnitDistance = "mi"
+                "knot" -> SharedData.fromUnitDistance = "nm"
+            }
+            SharedData.toUnitDistance = SharedData.fromUnitDistance
+        } catch (e: Exception) {
+            Log.d("okok312o1", "${e.message}")
+
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.P)
     @SuppressLint("UseCompatLoadingForDrawables", "SetTextI18n", "MissingPermission", "InlinedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMain2Binding.inflate(layoutInflater)
-SharedData.activity=this
+        SharedData.activity = this
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
+        setUnitSpeepAndDistance()
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_home_black_24dp)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
@@ -97,7 +113,7 @@ SharedData.activity=this
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         }
-        SharedData.distanceLiveData.value=20F
+
         navController.addOnDestinationChangedListener { controller, destination, arguments -> }
         if (!sharedPreferences.getBoolean(
                 SettingConstants.CHECK_OPEN,
@@ -122,13 +138,24 @@ SharedData.activity=this
                 myDataBase.SpeedDao().insertSpeed(Speed(2, which + 1 == 2))
                 myDataBase.SpeedDao().insertSpeed(Speed(3, which + 1 == 3))
                 insert(myDataBase)
-                val navHostFragment: NavHostFragment? = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?
+                setUnitSpeepAndDistance()
+                val navHostFragment: NavHostFragment? =
+                    supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?
                 (navHostFragment!!.childFragmentManager.fragments[0] as HomeFragment).setSpeedAndUnit()
+                (navHostFragment.childFragmentManager.fragments[0].childFragmentManager.findFragmentById(
+                    R.id.frag
+                ) as ParameterFragment).setDataWhenComeBack()
                 dialog.cancel()
             }
             builder.create().show()
         }
-
+        val navHostFragment: NavHostFragment? =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?
+        (navHostFragment!!.childFragmentManager.fragments[0] as HomeFragment).setSpeedAndUnit()
+        (navHostFragment.childFragmentManager.fragments[0].childFragmentManager.findFragmentById(
+            R.id.frag
+        ) as ParameterFragment).setDataWhenComeBack()
+        SharedData.distanceLiveData.value = 20F
         SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
     }
 
@@ -173,8 +200,8 @@ SharedData.activity=this
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.history) {
-            val intent=Intent(this, HistoryActivity::class.java)
-             startActivity(intent)
+            val intent = Intent(this, HistoryActivity::class.java)
+            startActivity(intent)
         }
         if (item.itemId == android.R.id.home) startActivity(Intent(this, Setting::class.java))
         return true

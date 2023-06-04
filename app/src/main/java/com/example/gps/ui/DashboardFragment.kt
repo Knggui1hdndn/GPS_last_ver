@@ -43,7 +43,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
             FontUtils.setFont(requireContext(), this.txtSpeed)
             SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) {
            if (it.keys.first() == 0F) txtSpeed.text = "000"
-                when (String.format("%.0f", it).length) {
+                when (String.format("%.0f", it.keys.first()).length) {
                     1 -> {
                         txtSpeed.text = "00" +it.keys.first().toInt().toString()
                     }
@@ -54,9 +54,11 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
                 }
             }
             SharedData.distanceLiveData.observe(viewLifecycleOwner) {
-                txtDistance1.text = (allDistance + it).toInt().toString()
+                Log.d("ooooooooooooooooo","$allDistance ${SharedData.toUnitDistance}  ${SharedData.fromUnitDistance}")
+                txtDistance1.text =  SharedData.convertDistance(allDistance.toFloat()).toInt().toString()
             }
-            txtDistance1.text = SharedData.convertSpeed(allDistance.toFloat()).toInt().toString()
+            Log.d("ooooooooooooooooo","$allDistance ${SharedData.toUnitDistance}  ${SharedData.fromUnitDistance}")
+            txtDistance1.text = SharedData.convertDistance(allDistance.toFloat()).toInt().toString()
             txtKm4.text = SharedData.toUnit
         }
     }
