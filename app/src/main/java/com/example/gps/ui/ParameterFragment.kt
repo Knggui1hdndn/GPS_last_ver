@@ -1,13 +1,16 @@
 package com.example.gps.ui
 
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.ActivityManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
@@ -15,7 +18,9 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import com.example.gps.MyLocationConstants
 import com.example.gps.R
@@ -39,6 +44,22 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
     private var check = false
     private var sharedPreferences: SharedPreferences? = null
     private lateinit var myDataBase: MyDataBase
+    private var resultLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
+            if (granted.entries.all { it.value }) {
+                start()
+                val fragment = checkFragmnetNotification()
+                if (fragment is NotificationsFragment) {
+                    fragment.mapAsync()
+                }
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "Bạn không thể sử dụng chức năng nếu không cấp quyền",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
 
     @SuppressLint("SetTextI18n", "RestrictedApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -47,12 +68,18 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
         myDataBase = MyDataBase.getInstance(requireContext())
         setBackGround()
         setTextDefault()
-         //set state is STOP when MyService not Running
-        if (!isMyServiceRunning(MyService::class.java)) setState(MyLocationConstants.STOP) ;
+        //set state is STOP when MyService not Running
+        if (!isMyServiceRunning(MyService::class.java)) setState(MyLocationConstants.STOP);
 
         with(binding) {
 
             if (requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
+                val fragment = checkFragmnetNotification()
+                if (fragment is NotificationsFragment) {
+                    times!!.visibility = View.GONE
+                }
+
                 SharedData.time.observe(viewLifecycleOwner) {
                     times!!.text = TimeUtils.formatTime(it)
                 }
@@ -60,15 +87,13 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
                     startActivity(Intent(requireActivity(), Setting::class.java))
                 }
                 stop!!.setOnClickListener {
-                    stopService()
-                    val fragment =
-                        (requireActivity().supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?)?.childFragmentManager?.fragments?.get(
-                            0
-                        )
-                    if (fragment is NotificationsFragment
-                    ) {
-                        fragment.clearMap()
+
+                    val fragment = checkFragmnetNotification()
+                    if (fragment is NotificationsFragment) {
+                         fragment.clear()
+
                     }
+                    stopService()
                 }
                 imgRotateScreen1!!.setOnClickListener {
                     requireActivity().requestedOrientation =
@@ -76,20 +101,22 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
                 }
             }
 
-
-
             SharedData.maxSpeedLiveData.observe(viewLifecycleOwner) {
                 this.txtMaxSpeed.text = if (it <= 0) "0" + SharedData.toUnit else String.format(
                     "%.0f",
-                    it
+                    SharedData.convertSpeed(it)
                 ) + SharedData.toUnit
                 setFont(binding)
             }
 
 
             SharedData.distanceLiveData.observe(viewLifecycleOwner) {
-                this.txtDistance.text = String.format("%.2f",it.toFloat())+ SharedData.toUnitDistance
-                 setFont(binding)
+                this.txtDistance.text =
+                    String.format(
+                        "%.2f",
+                        SharedData.convertDistance(it)
+                    ) + SharedData.toUnitDistance
+                setFont(binding)
             }
 
             SharedData.averageSpeedLiveData.observe(viewLifecycleOwner) {
@@ -100,13 +127,22 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
                     ) + SharedData.toUnit
                 setFont(binding)
             }
-             showOrHideView()
+            showOrHideView()
             setFont(binding)
             this.btnStart.setOnClickListener {
-                insertMovementData()
-                setState(MyLocationConstants.START)
-                hideBtnStart()
-                startService(MyLocationConstants.START)
+                if (requireContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    requireContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    resultLauncher.launch(
+                        arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        )
+                    )
+                } else {
+                    start()
+                }
+
             }
 
             btnResume.setOnClickListener {
@@ -120,12 +156,30 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
                 startService(MyLocationConstants.PAUSE)
             }
             btnStop.setOnClickListener {
+                val fragment = checkFragmnetNotification()
+                if (fragment is NotificationsFragment) {
+                    fragment.clear()
+
+                }
                 setState(MyLocationConstants.STOP)
                 hideBtnStop()
                 startService(MyLocationConstants.STOP)
             }
         }
     }
+
+    private fun checkFragmnetNotification(): Fragment? {
+
+        return (requireActivity().supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?)?.childFragmentManager?.fragments?.get(0)
+    }
+
+    private fun start() {
+        insertMovementData()
+        setState(MyLocationConstants.START)
+        hideBtnStart()
+        startService(MyLocationConstants.START)
+    }
+
 
     @SuppressLint("SetTextI18n")
     private fun setTextDefault() {
@@ -145,10 +199,10 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
                 0.0,
                 0.0,
                 0.0,
-                0F,
-                0F,
-                0F,
-                0F
+                0.0,
+                0.0,
+                0.0,
+                0
             )
         )
     }
@@ -164,6 +218,11 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
         }
     }
 
+    fun toggleClockVisibilityLandscape(boolean: Boolean) {
+        if (requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            binding.times?.visibility = if (boolean) View.VISIBLE else View.GONE
+        }
+    }
 
     private fun setBackGround() {
         intColor = requireActivity().getSharedPreferences(
@@ -237,7 +296,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
         }
     }
 
-    private fun hideBtnStop() {
+      fun hideBtnStop() {
         with(binding) {
             this!!.btnStart.visibility = View.VISIBLE
             mframeLayout.visibility = View.GONE
@@ -277,15 +336,15 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
 
     fun setDataWhenComeBack() {
         with(binding) {
-             val distance = numberSeparation(txtDistance)
-            Log.d("okoko1",distance.toString())
+            val distance = numberSeparation(txtDistance)
+            Log.d("okoko1", distance.toString())
             SharedData.distanceLiveData.value =
-                SharedData.convertDistance(distance.toFloat()).toFloat()
+                SharedData.convertDistance(distance)
             val averageSpeed = numberSeparation(txtAverageSpeed)
             SharedData.averageSpeedLiveData.value =
-                SharedData.convertSpeed(averageSpeed.toFloat()).toFloat()
+                SharedData.convertSpeed(averageSpeed)
             val speed = numberSeparation(txtMaxSpeed)
-            SharedData.maxSpeedLiveData.value = SharedData.convertSpeed(speed.toFloat()).toFloat()
+            SharedData.maxSpeedLiveData.value = SharedData.convertSpeed(speed)
         }
         setFont(binding)
 
@@ -293,13 +352,14 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
 
 
     private fun numberSeparation(txt: TextView): Double {
-         return try {
+        return try {
 
-             return txt.text.toString().filter { it.isDigit()  || it == ',' }.replace(',','.').toDouble()
-        }catch (e:Exception){
-             Log.d("ôikkkkkkkk",e.message.toString())
+            return txt.text.toString().filter { it.isDigit() || it == ',' }.replace(',', '.')
+                .toDouble()
+        } catch (e: Exception) {
+            Log.d("ôikkkkkkkk", e.message.toString())
 
-             0.0
+            0.0
         }
     }
 

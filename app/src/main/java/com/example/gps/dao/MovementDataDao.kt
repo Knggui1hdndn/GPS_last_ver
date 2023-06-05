@@ -11,7 +11,7 @@ import com.example.gps.model.MovementData
 
 @Dao
 interface MovementDataDao {
-    @Query("SELECT * FROM MovementData")
+    @Query("SELECT * FROM MovementData where startLatitude!=0")
     fun getAllMovementData(): MutableList<MovementData>
 
     @Delete

@@ -8,4 +8,5 @@ interface HomeInterface : DisplayInterface, MeasurementInterFace {
     fun setSpeedAndUnit()
     fun toggleButtonVisibility(boolean: Boolean)
 
+
 }

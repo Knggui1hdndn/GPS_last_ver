@@ -8,13 +8,14 @@ import androidx.lifecycle.MutableLiveData
 
 @SuppressLint("StaticFieldLeak")
 object SharedData {
-    val averageSpeedLiveData = MutableLiveData<Float>()
-    val maxSpeedLiveData = MutableLiveData<Float>()
-    val currentSpeedLiveData = MutableLiveData<HashMap<Float, Long>>()
-    val distanceLiveData = MutableLiveData<Float>()
+    val averageSpeedLiveData = MutableLiveData<Double>()
+    val maxSpeedLiveData = MutableLiveData<Double>()
+    val currentSpeedLiveData = MutableLiveData<HashMap<Double, Long>>()
+    val distanceLiveData = MutableLiveData<Double>()
     val locationLiveData = MutableLiveData<Location>()
     val speedAnalog = MutableLiveData<Int>()
     val time = MutableLiveData<Long>(0)
+    val checkPermission = MutableLiveData<Boolean>( )
     var fromUnit = ""
     var toUnit = ""
 
@@ -55,24 +56,18 @@ object SharedData {
 
 
     // Hàm chuyển đổi vận tốc
-    fun convertSpeed(speed: Float ): Double {
+    fun convertSpeed(speed: Double ): Double {
         try {
-
             var sp = speed * conversionRates[fromUnit]!![toUnit]!!
-            Log.d("okoko","$speed $toUnit $fromUnit")
-            return sp
+             return sp
         } catch (e: Exception) {
         }
 
         return 0.0
     }
-    fun convertDistance(distance:Float ): Double {
+    fun convertDistance(distance:Double ): Double {
         try {
-            Log.d("okoko1","$fromUnitDistance   $toUnitDistance  ")
-
             val sp :Double= distance * conversionRatesDistance[fromUnitDistance]!![toUnitDistance]!!
-            Log.d("okoko1","$fromUnitDistance   $toUnitDistance  $sp  $distance")
-
             return sp
         } catch (e: Exception) {
 

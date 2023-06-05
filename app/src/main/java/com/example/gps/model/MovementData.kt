@@ -13,10 +13,10 @@ class MovementData(
     var startLongitude: Double,
     var endLatitude: Double,
     var endLongitude: Double,
-    var maxSpeed: Float,
-    var averageSpeed: Float,
-    var distance: Float,
-    var time: Float,
+    var maxSpeed: Double,
+    var averageSpeed: Double,
+    var distance: Double,
+    var time: Long,
 
     ) :Serializable{
 

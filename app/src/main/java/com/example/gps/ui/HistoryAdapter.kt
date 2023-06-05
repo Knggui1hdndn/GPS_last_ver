@@ -1,6 +1,5 @@
 package com.example.gps.ui
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.location.Geocoder
@@ -21,15 +20,16 @@ class HistoryAdapter(private val i: Int) :
     RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder>() {
     private var list: MutableList<MovementData> = mutableListOf()
 
-  inner  class HistoryViewHolder(private val binding: ItemBinding) :
+    inner class HistoryViewHolder(private val binding: ItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        @SuppressLint("SetTextI18n")
-        fun bind(movementData: MovementData) {
 
+        fun bind(movementData: MovementData) {
             with(binding) {
+
                 btnSeeMore.strokeColor = ColorStateList.valueOf(ColorUtils.checkColor(i))
                 btnSeeMore.setTextColor(ColorUtils.checkColor(i))
                 a.setBackgroundColor(ColorUtils.checkColor(i))
+
                 binding.btnSeeMore.setOnClickListener {
                     val intent = Intent(it.context, ShowActivity::class.java)
                     intent.putExtra("movementData", movementData)
@@ -38,35 +38,34 @@ class HistoryAdapter(private val i: Int) :
 
                 val calendar = Calendar.getInstance()
                 txtDate.text =
-                    "${calendar.get(Calendar.DAY_OF_MONTH)}\nthg ${calendar.get(Calendar.MONTH) + 1}\n${
-                        calendar.get(Calendar.YEAR)
-                    }"
+                    "${calendar.get(Calendar.DAY_OF_MONTH)}\nthg ${calendar.get(Calendar.MONTH) + 1}\n${calendar.get(
+                        Calendar.YEAR
+                    )}"
                 txtMaxSpeed.text = movementData.maxSpeed.toString()
-                txtTime.text = TimeUtils.formatTime(movementData.time.toLong())
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    Geocoder(
-                        binding.root.context,
-                        Locale.getDefault()
-                    ).getFromLocation(
-                        movementData.startLatitude.toDouble(),
-                        movementData.startLongitude.toDouble(),
-                        1
-                    ) {
-                        if (it.size > 0) {
-                            txtStart.text = it[0]
-                                .getAddressLine(0)
-                        } else {
-                            txtStart.text = "__"
-                        }
+                txtTime.text = TimeUtils.formatTime(movementData.time)
 
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    Geocoder(binding.root.context, Locale.getDefault()).getFromLocation(
+                        movementData.startLatitude,
+                        movementData.startLongitude,
+                        1
+                    ) { addresses ->
+                        val addressLine = if (addresses.size > 0 && addresses[0].getAddressLine(0).trim().isNotEmpty()) {
+                            addresses[0].getAddressLine(0)
+                        } else {
+                            "__"
+                        }
+                        txtStart.text = addressLine
                     }
                 } else {
+                    val address = getAddressLine(movementData.startLatitude, movementData.startLongitude)
+                    val addressLine = if (address != null && address.trim().isNotEmpty()) {
+                        address
+                    } else {
+                        "_ _"
+                    }
 
-                    val a = getAddressLine(
-                        movementData.startLatitude.toDouble(),
-                        movementData.startLongitude.toDouble()
-                    )
-                    txtStart.text = if (a != null) a else null
+                    txtStart.text = addressLine
                 }
             }
         }
@@ -77,8 +76,12 @@ class HistoryAdapter(private val i: Int) :
                     binding.root.context,
                     Locale.getDefault()
                 ).getFromLocation(endLatitude, endLongitude, 1)
-                return geocoder?.get(0)?.getAddressLine(0)
+                if (geocoder != null) {
+                    return if (geocoder.size > 0) geocoder[0]?.getAddressLine(0)?.toString() else null
+                }
+                null
             } catch (e: Exception) {
+                Log.d("addressLine", e.message.toString())
                 null
             }
         }
@@ -87,8 +90,6 @@ class HistoryAdapter(private val i: Int) :
     fun notifyDataSetChanged(mutableList: MutableList<MovementData>) {
         list.clear()
         list.addAll(mutableList)
-        Log.d("NotifyDataSetChanged", "onResume${list.size}   ")
-
         notifyDataSetChanged()
     }
 

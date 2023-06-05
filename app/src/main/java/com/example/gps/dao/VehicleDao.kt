@@ -20,6 +20,10 @@ interface VehicleDao {
 
     @Query("Update Vehicle set clockSpeed= :clockSpeed  where typeID =  :typeID and type = :type  ")
     fun updateMaxSpeed(typeID: Int,type: Int,clockSpeed:Int)
+
+    @Query("Update Vehicle set limitWarning= :clockSpeed  where typeID =  :typeID and type = :type  ")
+    fun updateWarning(typeID: Int,type: Int,clockSpeed:Int)
+
     @Query("Update Vehicle set isChecked=1  where   typeID = :i and type= :type")
     fun updateVehicle(i: Int,type: Int)
 

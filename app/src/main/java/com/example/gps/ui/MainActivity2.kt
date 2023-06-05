@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -40,7 +41,7 @@ class MainActivity2 : AppCompatActivity() {
 
 
     private lateinit var binding: ActivityMain2Binding
-
+    private var check = false
     private lateinit var sharedPreferences: SharedPreferences
     fun getCurrentUnit(): String {
         val myDataBase = MyDataBase.getInstance(this).SpeedDao()
@@ -49,7 +50,7 @@ class MainActivity2 : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        setUnitSpeepAndDistance()
+        if (!check) setUnitSpeepAndDistance();check = true
     }
 
     private fun setUnitSpeepAndDistance() {
@@ -85,20 +86,6 @@ class MainActivity2 : AppCompatActivity() {
         val navView: BottomNavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_activity_main2)
 
-//        val googleApiAvailability = GoogleApiAvailability.getInstance()
-//        val resultCode = googleApiAvailability.isGooglePlayServicesAvailable(this)
-//
-//        if (resultCode == ConnectionResult.SUCCESS) {
-//            // Thiết bị hỗ trợ hoạt động nhận dạng
-//            Log.d("ActivitySupport", "Thiết bị hỗ trợ hoạt động nhận dạng")
-//        } else {
-//            // Thiết bị không hỗ trợ hoạt động nhận dạng
-//            Log.d("ActivitySupport", "Thiết bị không hỗ trợ hoạt động nhận dạng")
-//        }
-//
-//        requestPermissions(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 1)
-//        requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 1)
-//        requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
 
         binding.times.isVisible = sharedPreferences.getBoolean(CLOCK_DISPLAY, true)
         val appBarConfiguration = AppBarConfiguration(
@@ -139,23 +126,24 @@ class MainActivity2 : AppCompatActivity() {
                 myDataBase.SpeedDao().insertSpeed(Speed(3, which + 1 == 3))
                 insert(myDataBase)
                 setUnitSpeepAndDistance()
-                val navHostFragment: NavHostFragment? =
-                    supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?
+                val navHostFragment: NavHostFragment? = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?
                 (navHostFragment!!.childFragmentManager.fragments[0] as HomeFragment).setSpeedAndUnit()
-                (navHostFragment.childFragmentManager.fragments[0].childFragmentManager.findFragmentById(
-                    R.id.frag
-                ) as ParameterFragment).setDataWhenComeBack()
+                (navHostFragment.childFragmentManager.fragments[0].childFragmentManager.findFragmentById(R.id.frag) as ParameterFragment).setDataWhenComeBack()
                 dialog.cancel()
             }
             builder.create().show()
         }
-        val navHostFragment: NavHostFragment? =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?
-        (navHostFragment!!.childFragmentManager.fragments[0] as HomeFragment).setSpeedAndUnit()
-        (navHostFragment.childFragmentManager.fragments[0].childFragmentManager.findFragmentById(
-            R.id.frag
-        ) as ParameterFragment).setDataWhenComeBack()
-        SharedData.distanceLiveData.value = 20F
+        try {
+            val navHostFragment: NavHostFragment? =
+                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?
+            (navHostFragment?.childFragmentManager?.fragments?.get(0)?.childFragmentManager?.findFragmentById(
+                R.id.frag
+            ) as ParameterFragment).setDataWhenComeBack()
+            (navHostFragment.childFragmentManager.fragments[0] as HomeFragment).setSpeedAndUnit()
+        } catch (e: java.lang.Exception) {
+        }
+
+        SharedData.distanceLiveData.value = 20.0
         SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
     }
 

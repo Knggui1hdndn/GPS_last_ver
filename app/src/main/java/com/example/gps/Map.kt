@@ -46,7 +46,7 @@ class Map() {
     private var distance = 0f
     private var lastMovementDataId = 0
     private var previousLocation: Location? = null
-    private var listSpeed = mutableListOf<Float>()
+    private var listSpeed = mutableListOf<Double>()
     private lateinit var sharedPreferences: SharedPreferences
     private var notificationManager: NotificationManager? = null
     private var sensorManager: SensorManager? = null
@@ -98,7 +98,7 @@ class Map() {
                 }
                 val distance = getDistance(lastLocation)
                 val currentSpeed = getCurrentSpeed(lastLocation)
-                listSpeed.add(0F)
+                listSpeed.add(0.0)
                 listSpeed.add(currentSpeed)
                 val maxSpeed = getMaxSpeed()
                 val averageSpeed = getAverageSpeed()
@@ -109,18 +109,18 @@ class Map() {
                 )
                 with(SharedData) {
                     locationLiveData.value = lastLocation
-                    distanceLiveData.value = convertSpeed(distance).toFloat()
+                    distanceLiveData.value = convertSpeed(distance)
                     currentSpeedLiveData.value =
-                        hashMapOf(convertSpeed(currentSpeed).toFloat() to lastLocation.time)
-                    maxSpeedLiveData.value = convertSpeed(maxSpeed).toFloat()
-                    averageSpeedLiveData.value = convertSpeed(averageSpeed).toFloat()
+                        hashMapOf(convertSpeed(currentSpeed)  to lastLocation.time)
+                    maxSpeedLiveData.value = convertSpeed(maxSpeed)
+                    averageSpeedLiveData.value = convertSpeed(averageSpeed)
                 }
                 myDataBase!!.locationDao().insertLocationData(
                     lastLocation.latitude, lastLocation.longitude, lastMovementDataId
                 )
                 val movementData = myDataBase!!.movementDao().getLastMovementData()
                 movementData.apply {
-                    time = millis.toFloat()
+                    time = millis
                     this.averageSpeed = averageSpeed
                     this.maxSpeed = maxSpeed
                     this.distance = distance
@@ -138,9 +138,9 @@ class Map() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun getCurrentSpeed(lastLocation: Location): Float {
-        if (!lastLocation.hasSpeed()) return 0F
-        val speed = if (lastLocation.hasSpeedAccuracy() && lastLocation.hasSpeed()) (lastLocation.speed * 3.6).toFloat() else 0F
+    private fun getCurrentSpeed(lastLocation: Location): Double {
+        if (!lastLocation.hasSpeed()) return 0.0
+        val speed = if (lastLocation.hasSpeedAccuracy() && lastLocation.hasSpeed()) (lastLocation.speed * 3.6) else 0.0
         val convertedSpeed = SharedData.convertSpeed(speed)
         val sharedPreferences =
             context.getSharedPreferences(SettingConstants.SETTING, Context.MODE_PRIVATE)
@@ -167,21 +167,21 @@ class Map() {
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 100, 0)
         val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0)
-//        mediaPlayer?.start()
+//      mediaPlayer?.start()
     }
 
-    private fun getMaxSpeed(): Float {
+    private fun getMaxSpeed(): Double {
         return listSpeed.max()
     }
 
 
-    private fun getDistance(lastLocation: Location): Float {
+    private fun getDistance(lastLocation: Location): Double {
         distance += previousLocation!!.distanceTo(lastLocation)
-        return distance / 1000
+        return distance / 1000.0
     }
 
-    private fun getAverageSpeed(): Float {
-        return (3.6 * (distance / (millis / 1000.0))).toFloat()
+    private fun getAverageSpeed(): Double {
+        return (3.6 * (distance / (millis / 1000.0)))
     }
 
     @SuppressLint("MissingPermission")
@@ -219,10 +219,10 @@ class Map() {
 
                 with(SharedData) {
                     locationLiveData.value = null
-                    distanceLiveData.value = 0F
-                    currentSpeedLiveData.value = hashMapOf(0F to 0)
-                    maxSpeedLiveData.value = 0F
-                    averageSpeedLiveData.value = 0F
+                    distanceLiveData.value = 0.0
+                    currentSpeedLiveData.value = hashMapOf(0.0 to 0)
+                    maxSpeedLiveData.value = 0.0
+                    averageSpeedLiveData.value = 0.0
                     time.value = 0
                 }
             }

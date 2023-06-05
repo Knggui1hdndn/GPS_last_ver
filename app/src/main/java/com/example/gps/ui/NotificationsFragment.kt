@@ -4,13 +4,14 @@ import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.gps.MyLocationConstants
+ import com.example.gps.MyLocationConstants
 import com.example.gps.R
 import com.example.gps.SettingConstants
 import com.example.gps.SharedData
@@ -35,11 +36,12 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
     private var cameraPosition: CameraPosition? = null
     private lateinit var sharedPreferencesSetting: SharedPreferences
     private lateinit var sharedPreferencesState: SharedPreferences
+    private var mapFragment: SupportMapFragment? = null
 
     @SuppressLint("SuspiciousIndentation", "MissingPermission")
     private val callback = OnMapReadyCallback { p0 ->
         map = p0
-         map!!.apply {
+        map!!.apply {
             isMyLocationEnabled = true
             setMinZoomPreference(15.0f);
             setMaxZoomPreference(35.0f);
@@ -72,8 +74,12 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
         val positionsColor = sharedPreferencesSetting.getInt(SettingConstants.COLOR_DISPLAY, 2)
         onColorChange(positionsColor)
         onVisibilityPolyLine(check)
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
-        mapFragment?.getMapAsync(callback)
+        mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        if (requireActivity().checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+            requireActivity().checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        ) {
+            mapAsync()
+        }
         var i = 0
 
         if (binding != null) {
@@ -82,7 +88,7 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
                     map?.let { it1 -> MapUtils.setStStyleMap(it1) }
                 }
                 this!!.txtSpeed.text = "0" + SharedData.toUnit
-                FontUtils.setFont(requireContext(),this.txtSpeed)
+                FontUtils.setFont(requireContext(), this.txtSpeed)
 
                 val state = sharedPreferencesState.getString(MyLocationConstants.STATE, null)
                 //check  add polyline when onCreated
@@ -109,12 +115,17 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
                 }
                 SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) { Speed ->
                     this.txtSpeed.text =
-                        "${Speed.keys.first().toInt()}${SharedData.toUnit}"
-                    FontUtils.setFont(requireContext(),this.txtSpeed)
+                        "${SharedData.convertSpeed(Speed.keys.first()).toInt()}${SharedData.toUnit}"
+                    FontUtils.setFont(requireContext(), this.txtSpeed)
 
                 }
             }
         }
+    }
+
+      fun mapAsync() {
+        mapFragment?.getMapAsync(callback)
+
     }
 
     private fun convertToListLatLng(): List<LatLng> {
@@ -140,12 +151,10 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
 
     override fun onVisibilityPolyLine(boolean: Boolean) {
         check = boolean
-        if (boolean) map?.addPolyline(polylineOptions) else map?.clear()
+        if (boolean) map?.addPolyline(polylineOptions.addAll(convertToListLatLng())) else map?.clear()
     }
-
-    fun clearMap() {
-        map?.clear()
-        Toast.makeText(requireContext(),"mmo0"+map.toString(), Toast.LENGTH_SHORT).show()
+    fun clear( ) {
+ map?.clear()
     }
 
     override fun onColorChange(i: Int) {
@@ -163,8 +172,8 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
     override fun onUnitChange() {
         binding?.txtSpeed?.text = "${
             SharedData.convertSpeed(
-                binding?.txtSpeed?.text.toString().filter { it.isDigit() }
-                    .toFloat())
+                binding?.txtSpeed?.text.toString().filter { it.isDigit() }.toDouble()
+            )
         }+${SharedData.toUnit}"
         FontUtils.setFont(requireContext(), binding?.txtSpeed!!)
     }

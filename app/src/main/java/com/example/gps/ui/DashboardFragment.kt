@@ -27,7 +27,8 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
     @SuppressLint("SetTextI18n", "SuspiciousIndentation")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentDashboardBinding.bind(view)
-        sharedPreferencesStates = requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
+        sharedPreferencesStates =
+            requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
         sharedPreferences = requireActivity().getSharedPreferences(
             SettingConstants.SETTING,
             Service.MODE_PRIVATE
@@ -38,27 +39,28 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
         onColorChange(positionsColor)
 
         with(binding) {
-             this.txtKm3.text = if (SharedData.toUnit != "km/h") "mi" else "km"
+            this.txtKm3.text = if (SharedData.toUnit != "km/h") "mi" else "km"
             binding.txtKm4.text = SharedData.toUnit
             FontUtils.setFont(requireContext(), this.txtSpeed)
             SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) {
-           if (it.keys.first() == 0F) txtSpeed.text = "000"
+                if (it.keys.first() == 0.0) txtSpeed.text = "000"
                 when (String.format("%.0f", it.keys.first()).length) {
                     1 -> {
-                        txtSpeed.text = "00" +it.keys.first().toInt().toString()
+                        txtSpeed.text = "00" + SharedData.convertSpeed(it.keys.first()).toInt()
                     }
+
                     2 -> {
-                        txtSpeed.text = "0" + it.keys.first().toInt().toString()
+                        txtSpeed.text = "0" +  SharedData.convertSpeed(it.keys.first()).toInt()
                     }
-                    else -> txtSpeed.text = it.keys.first().toInt().toString()
+
+                    else -> txtSpeed.text =  SharedData.convertSpeed(it.keys.first()).toInt().toString()
                 }
             }
             SharedData.distanceLiveData.observe(viewLifecycleOwner) {
-                Log.d("ooooooooooooooooo","$allDistance ${SharedData.toUnitDistance}  ${SharedData.fromUnitDistance}")
-                txtDistance1.text =  SharedData.convertDistance(allDistance.toFloat()).toInt().toString()
+                txtDistance1.text =
+                    SharedData.convertDistance(allDistance.toDouble()).toInt().toString()
             }
-            Log.d("ooooooooooooooooo","$allDistance ${SharedData.toUnitDistance}  ${SharedData.fromUnitDistance}")
-            txtDistance1.text = SharedData.convertDistance(allDistance.toFloat()).toInt().toString()
+            txtDistance1.text = SharedData.convertDistance(allDistance.toDouble()).toInt().toString()
             txtKm4.text = SharedData.toUnit
         }
     }
@@ -69,31 +71,29 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
         with(binding) {
             txtKm4.text = SharedData.toUnit
             this.txtKm3.text = if (SharedData.toUnit != "km/h") "mi" else "km"
-            when (SharedData.convertSpeed(txtSpeed.text.toString().toFloat()).toInt()) {
+            when (SharedData.convertSpeed(txtSpeed.text.toString().toDouble()).toInt()) {
                 1 -> {
                     txtSpeed.text =
-                        "00" + SharedData.convertSpeed(txtSpeed.text.toString().toFloat() ).toInt()
+                        "00" + SharedData.convertSpeed(txtSpeed.text.toString().toDouble()).toInt()
                 }
 
                 2 -> {
                     txtSpeed.text =
-                        "0" + SharedData.convertSpeed(txtSpeed.text.toString().toFloat() ).toInt()
+                        "0" + SharedData.convertSpeed(txtSpeed.text.toString().toDouble()).toInt()
                 }
 
                 else -> txtSpeed.text = "000"
             }
 
-            this.txtDistance1.text = SharedData.convertSpeed(txtDistance1.text.toString().toFloat()).toInt() .toString()
+            this.txtDistance1.text =
+                SharedData.convertSpeed(txtDistance1.text.toString().toDouble()).toInt().toString()
         }
 
     }
 
 
-
-
-
     override fun onResetDistances() {
-        binding.txtDistance1.text ="000000"
+        binding.txtDistance1.text = "000000"
     }
 
     override fun onColorChange(i: Int) {
@@ -102,5 +102,5 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
 
     override fun onUnitChange() {
         setDataWhenComBack()
-     }
+    }
 }

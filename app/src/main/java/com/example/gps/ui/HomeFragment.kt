@@ -36,24 +36,25 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentHomeBinding.bind(view)
         myDataBase = MyDataBase.getInstance(requireContext())
-        sharedPreferencesSetting =
-            requireContext().getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
+        sharedPreferencesSetting = requireContext().getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         sharedPreferencesState = requireContext().getSharedPreferences("state", MODE_PRIVATE)
         val positionsColor = sharedPreferencesSetting.getInt(SettingConstants.COLOR_DISPLAY, 2)
-
         setSpeedAndUnit()
         onColorChange(positionsColor)
         with(binding) {
+
            if(requireContext().resources.configuration.orientation==Configuration.ORIENTATION_PORTRAIT){
+               onVisibilityChanged(sharedPreferencesSetting.getBoolean(SettingConstants.SHOW_RESET_BUTTON, true))
+
                imgRotateScreen!!.setOnClickListener {
-                   requireActivity().requestedOrientation =
-                       ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                   requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
                }
                imgReset!!.setOnClickListener {
                    stopRunning()
                }
+           }else{
+               sharedPreferencesSetting.getInt(SettingConstants.COLOR_DISPLAY, 2)
            }
-
 
             SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) {
                 it[it.keys.first()]?.let { it1 -> this.speed.speedTo(SharedData.convertSpeed(it.keys.first()).toFloat(), it1 * 1000) }
@@ -63,7 +64,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
     }
 
     private fun getVehicleChecked(): Vehicle? {
-
         return try {
             myDataBase.vehicleDao().getVehicleChecked(myDataBase.SpeedDao().getChecked().type)
         }catch (e:Exception){
@@ -77,14 +77,16 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
     private fun stopRunning() {
         val status = sharedPreferencesState.getString(MyLocationConstants.STATE, null)
         if (status != MyLocationConstants.STOP && status != null) {
+           ( childFragmentManager.findFragmentById(R.id.frag) as ParameterFragment).hideBtnStop()
             val intent = Intent(requireContext(), MyService::class.java)
             intent.action = MyLocationConstants.STOP
             requireActivity().startService(intent)
+
         }
     }
 
     override fun onVisibilityChanged(boolean: Boolean) {
-        binding.imgReset!!.visibility = if (boolean) View.GONE else View.VISIBLE
+        binding.imgReset!!.visibility = if (!boolean) View.GONE else View.VISIBLE
     }
 
     override fun onMaxSpeedAnalogChange(speed: Int) {

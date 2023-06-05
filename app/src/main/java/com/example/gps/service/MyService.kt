@@ -88,7 +88,7 @@ class MyService : Service(), LocationChangeListener {
 
         notificationLayout.setTextViewText(
             R.id.txtKm, if (checkHide)
-                SharedData.convertSpeed(km.toFloat()).toInt().toString() else ""
+                SharedData.convertSpeed(km.toDouble()).toInt().toString() else ""
         )
 
 
@@ -99,11 +99,11 @@ class MyService : Service(), LocationChangeListener {
 
         notificationLayout.setTextViewText(
             R.id.txtDistance,
-            SharedData.convertSpeed(distance.toFloat()).toInt().toString()
+            SharedData.convertSpeed(distance.toDouble()).toInt().toString()
         )
         notificationLayout.setTextViewText(
             R.id.txtMaxSpeed,
-            SharedData.convertSpeed(maxSpeed.toFloat()).toInt().toString()
+            SharedData.convertSpeed(maxSpeed.toDouble()).toInt().toString()
         )
         notificationLayout.setTextViewText(R.id.unit1,if (checkHide) SharedData.toUnit else "")
         notificationLayout.setTextViewText(R.id.unit2, SharedData.toUnit)

@@ -32,12 +32,23 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="5dp"
-            android:layout_toLeftOf="@id/imgShare"
+            android:layout_toLeftOf="@id/imgCap"
             android:drawableStart="@drawable/baseline_delete_outline_24"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
 
+        <TextView
+            android:id="@+id/imgCap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+             android:layout_marginTop="20dp"
+            android:layout_marginEnd="5dp"
+            android:layout_toLeftOf="@id/imgShare"
+            android:drawableStart="@drawable/baseline_fit_screen_24"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
         <TextView
             android:id="@+id/imgShare"
             android:layout_width="wrap_content"
