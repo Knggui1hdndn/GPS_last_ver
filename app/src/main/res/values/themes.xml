@@ -3,8 +3,7 @@
     <style name="Base.Theme.GPS" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowBackground">@android:color/black</item>
         <item name="android:statusBarColor">@color/black</item>
-        <item name="titleTextColor">@color/black</item>
-        <item name="textAllCaps">false</item>
+         <item name="textAllCaps">false</item>
         <item name="android:textViewStyle">@style/MyTheme</item>
         <!-- Customize your theme here. -->
         <item name="android:windowSplashScreenBackground" tools:targetApi="s">@color/black</item>

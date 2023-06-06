@@ -1,6 +1,7 @@
 package com.example.gps.ui
 
 import android.annotation.SuppressLint
+import android.app.ActionBar.LayoutParams
 import android.app.AlertDialog
 import android.app.Dialog
 import android.app.Service
@@ -12,15 +13,19 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.location.Geocoder
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
 import android.widget.ImageView
 import android.widget.RelativeLayout
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import com.example.gps.R
 import com.example.gps.SettingConstants
 import com.example.gps.SharedData
@@ -42,12 +47,15 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.lang.Exception
+import java.io.FileReader
+import java.io.IOException
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
+
 
 class ShowActivity : AppCompatActivity() {
     private lateinit var bottomSheet: RelativeLayout
@@ -88,7 +96,7 @@ class ShowActivity : AppCompatActivity() {
         p0.apply {
             setMinZoomPreference(15.0f);
             setMaxZoomPreference(35.0f);
-            uiSettings.isZoomControlsEnabled = true
+
             uiSettings.isRotateGesturesEnabled = true
             setOnCameraMoveListener {
                 resetMinMaxZoomPreference()
@@ -108,9 +116,11 @@ class ShowActivity : AppCompatActivity() {
         setFont()
 
         bottom.imgCap.setOnClickListener {
-            val x = getDialogCapScreen()
+            binding.imgBack.visibility = View.GONE
+            binding.imgChange.visibility = View.GONE
+            getDialogCapScreen().show()
 
-            x.show()
+
         }
 
         bottom.imgDelete.setOnClickListener {
@@ -133,6 +143,17 @@ class ShowActivity : AppCompatActivity() {
             shareIntent.putExtra(Intent.EXTRA_TEXT, text)
             startActivity(shareIntent)
         }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("okkkok", "dfjfhjksadfh")
+
+    }
+
+    override fun onPause() {
+        super.onPause()
 
     }
 
@@ -175,6 +196,67 @@ class ShowActivity : AppCompatActivity() {
         )
     }
 
+    private fun getDialogCapScreen(): Dialog {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.window?.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        val view = LayoutInflater.from(this).inflate(R.layout.layout_screen, null)
+        dialog.setContentView(view)
+        with(dialog) {
+            val imgClose = findViewById<ImageView>(R.id.imgClose)
+            val imgShare = findViewById<ImageView>(R.id.imgShare)
+            val img = findViewById<ImageView>(R.id.img)
+            var bitmapScreen: Bitmap? = null
+            val returnedBitmap = loadBitmapFromView(
+                this@ShowActivity,
+                binding.mCoordinatorLayout
+            )
+            img.setImageBitmap(returnedBitmap!!)
+            snapShortMap {
+                bitmapScreen = drawImage(it, returnedBitmap)
+                img.setImageBitmap(bitmapScreen)
+            }
+            imgClose.setOnClickListener {
+                dialog.cancel()
+            }
+            imgShare.setOnClickListener {
+                if (bitmapScreen != null) {
+                    saveBitmapToAppDirectory(bitmapScreen!!, "share.png")
+                    val imgFile = getFileFromAppDirectory("share.png")
+                    openScreenshot(imgFile)
+                }
+            }
+            setOnCancelListener {
+                binding.imgBack.visibility = View.VISIBLE
+                binding.imgChange.visibility = View.VISIBLE
+            }
+        }
+
+        return dialog
+
+
+    }
+
+    private fun saveBitmapToAppDirectory(bitmap: Bitmap, fileName: String) {
+        val file = File(filesDir, fileName)
+        val outputStream = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        outputStream.close()
+    }
+
+    private fun getFileFromAppDirectory(fileName: String): File {
+        return File(filesDir, fileName)
+    }
+
+    private fun openScreenshot(imageFile: File) {
+        val contentUri: Uri = FileProvider.getUriForFile(this, "com.example.gps", imageFile)
+
+        val sharingIntent = Intent(Intent.ACTION_SEND)
+        sharingIntent.type = "image/*"
+        sharingIntent.putExtra(Intent.EXTRA_STREAM, contentUri)
+        startActivity(Intent.createChooser(sharingIntent, "Share image using"))
+    }
+
     private fun loadBitmapFromView(context: Context, v: View): Bitmap? {
         val dm = context.resources.displayMetrics
         v.measure(
@@ -187,51 +269,25 @@ class ShowActivity : AppCompatActivity() {
             v.measuredHeight, Bitmap.Config.ARGB_8888
         )
         val c = Canvas(returnedBitmap)
+        v.draw(c)
         return returnedBitmap
     }
 
-    fun drawImage(mapBitmap: Bitmap, bottom: Bitmap) {
-        var saveBitmap = Bitmap.createBitmap(mapBitmap)
+    private fun drawImage(mapBitmap: Bitmap, bottom: Bitmap): Bitmap {
+        val saveBitmap = Bitmap.createBitmap(mapBitmap)
         val c = Canvas(saveBitmap)
+
         c.drawBitmap(bottom, 0f, 0f, Paint())
-        // c.drawText()
+        return saveBitmap
     }
 
-
-    @SuppressLint("InflateParams", "WrongViewCast")
-    private fun getDialogCapScreen(): Dialog {
-        val dialog = Dialog(this)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        val view = LayoutInflater.from(this).inflate(R.layout.layout_screen, null)
-        dialog.setContentView(view)
-        with(dialog) {
-            val close = findViewById<ImageView>(R.id.imgClose)
-            val screen = findViewById<ImageView>(R.id.imgScreen)
-            val share = findViewById<ImageView>(R.id.imgShare)
-            val img = findViewById<ImageView>(R.id.img)
-            val snapshotReadyCallback = GoogleMap.SnapshotReadyCallback { bitmap ->
-                // Lưu bitmap vào một tệp ảnh
-                val file = File(this@ShowActivity.externalCacheDir, "map_snapshot.png")
-                val outputStream = FileOutputStream(file)
-                bitmap?.compress(Bitmap.CompressFormat.PNG, 90, outputStream)
-                outputStream.close()
-                screen?.setImageBitmap(
-                    bitmap
-                )
-                var returnedBitmap = loadBitmapFromView(
-                    this@ShowActivity,
-                    binding.bottom.root
-                )
-                img?.setImageBitmap(
-                    returnedBitmap
-                )
+    private fun snapShortMap(callback: (Bitmap) -> Unit) {
+        val snapshotReadyCallback = GoogleMap.SnapshotReadyCallback { bitmap ->
+            if (bitmap != null) {
+                callback(bitmap)
             }
-            map.snapshot(snapshotReadyCallback)
         }
-
-        return dialog
-
-
+        map.snapshot(snapshotReadyCallback)
     }
 
     private fun getDialog(): AlertDialog {
@@ -273,7 +329,8 @@ class ShowActivity : AppCompatActivity() {
                 txtSpeed.text = StringUtils.convert(mData.maxSpeed)
                 txtAverageSpeed.text = StringUtils.convert(mData.averageSpeed)
                 txtTime.text = TimeUtils.formatTime(mData.time)
-                txtDistance.text =DecimalFormat("#.##").format(SharedData.convertDistance(mData.distance)) + SharedData.toUnit
+                txtDistance.text =
+                    DecimalFormat("#.##").format(SharedData.convertDistance(mData.distance)) + SharedData.toUnit
             }
         }
     }

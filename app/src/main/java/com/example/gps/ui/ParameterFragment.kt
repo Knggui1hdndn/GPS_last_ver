@@ -3,7 +3,6 @@ package com.example.gps.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.ActivityManager
 import android.app.Service
 import android.content.Context
@@ -13,14 +12,11 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import com.example.gps.MyLocationConstants
 import com.example.gps.R
@@ -34,9 +30,8 @@ import com.example.gps.service.MyService
 import com.example.gps.ui.setting.Setting
 import com.example.gps.utils.ColorUtils
 import com.example.gps.utils.FontUtils
+import com.example.gps.utils.StringUtils
 import com.example.gps.utils.TimeUtils
-import com.example.gps.utils.UnitUtils
-import com.google.android.material.internal.ContextUtils
 
 class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInterFace {
     private lateinit var binding: FragmentParameterBinding
@@ -68,39 +63,43 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
         myDataBase = MyDataBase.getInstance(requireContext())
         setBackGround()
         setTextDefault()
+        setDataWhenComeBack()
+        showOrHideView()
+        setFont(binding)
         //set state is STOP when MyService not Running
         if (!isMyServiceRunning(MyService::class.java)) setState(MyLocationConstants.STOP);
+        onDataChangeWithOrientationLandscape()
+        onDataChangeWithOrientationPortrait()
+        handleOrientationClickAll()
 
-        with(binding) {
+    }
 
-            if (requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+    private fun handleOrientationClickAll() {
+        binding.btnResume.setOnClickListener {
+            setState(MyLocationConstants.RESUME)
+            hideBtnResume()
+            startService(MyLocationConstants.RESUME)
+        }
+        binding.btnPause.setOnClickListener {
+            setState(MyLocationConstants.PAUSE)
+            hideBtnPause()
+            startService(MyLocationConstants.PAUSE)
+        }
+        binding.btnStop.setOnClickListener {
+            val fragment = checkFragmnetNotification()
+            if (fragment is NotificationsFragment) {
+                fragment.clear()
 
-                val fragment = checkFragmnetNotification()
-                if (fragment is NotificationsFragment) {
-                    times!!.visibility = View.GONE
-                }
-
-                SharedData.time.observe(viewLifecycleOwner) {
-                    times!!.text = TimeUtils.formatTime(it)
-                }
-                settings!!.setOnClickListener {
-                    startActivity(Intent(requireActivity(), Setting::class.java))
-                }
-                stop!!.setOnClickListener {
-
-                    val fragment = checkFragmnetNotification()
-                    if (fragment is NotificationsFragment) {
-                         fragment.clear()
-
-                    }
-                    stopService()
-                }
-                imgRotateScreen1!!.setOnClickListener {
-                    requireActivity().requestedOrientation =
-                        ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
-                }
             }
+            setState(MyLocationConstants.STOP)
+            hideBtnStop()
+            startService(MyLocationConstants.STOP)
+        }
+    }
 
+    @SuppressLint("SetTextI18n")
+    private fun onDataChangeWithOrientationPortrait() {
+        with(binding) {
             SharedData.maxSpeedLiveData.observe(viewLifecycleOwner) {
                 this.txtMaxSpeed.text = if (it <= 0) "0" + SharedData.toUnit else String.format(
                     "%.0f",
@@ -127,8 +126,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
                     ) + SharedData.toUnit
                 setFont(binding)
             }
-            showOrHideView()
-            setFont(binding)
+
             this.btnStart.setOnClickListener {
                 if (requireContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                     requireContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -144,33 +142,43 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
                 }
 
             }
+        }
+    }
 
-            btnResume.setOnClickListener {
-                setState(MyLocationConstants.RESUME)
-                hideBtnResume()
-                startService(MyLocationConstants.RESUME)
-            }
-            btnPause.setOnClickListener {
-                setState(MyLocationConstants.PAUSE)
-                hideBtnPause()
-                startService(MyLocationConstants.PAUSE)
-            }
-            btnStop.setOnClickListener {
+    private fun onDataChangeWithOrientationLandscape() {
+        with(binding) {
+            if (requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 val fragment = checkFragmnetNotification()
                 if (fragment is NotificationsFragment) {
-                    fragment.clear()
-
+                    times!!.visibility = View.GONE
                 }
-                setState(MyLocationConstants.STOP)
-                hideBtnStop()
-                startService(MyLocationConstants.STOP)
+
+                SharedData.time.observe(viewLifecycleOwner) {
+                    times!!.text = TimeUtils.formatTime(it)
+                }
+                settings!!.setOnClickListener {
+                    startActivity(Intent(requireActivity(), Setting::class.java))
+                }
+                stop!!.setOnClickListener {
+                    val fragment = checkFragmnetNotification()
+                    if (fragment is NotificationsFragment) {
+                        fragment.clear()
+                    }
+                    stopService()
+                }
+                imgRotateScreen1!!.setOnClickListener {
+                    requireActivity().requestedOrientation =
+                        ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+                }
             }
         }
     }
 
     private fun checkFragmnetNotification(): Fragment? {
 
-        return (requireActivity().supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?)?.childFragmentManager?.fragments?.get(0)
+        return (requireActivity().supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?)?.childFragmentManager?.fragments?.get(
+            0
+        )
     }
 
     private fun start() {
@@ -286,6 +294,15 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+    }
+
     private fun hideBtnResume() {
         with(binding) {
             this.btnStart.visibility = View.GONE
@@ -296,9 +313,9 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
         }
     }
 
-      fun hideBtnStop() {
+    fun hideBtnStop() {
         with(binding) {
-            this!!.btnStart.visibility = View.VISIBLE
+            this.btnStart.visibility = View.VISIBLE
             mframeLayout.visibility = View.GONE
             btnStop.visibility = View.GONE
         }
@@ -334,33 +351,16 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
     }
 
 
+    @SuppressLint("SetTextI18n")
     fun setDataWhenComeBack() {
         with(binding) {
-            val distance = numberSeparation(txtDistance)
-            Log.d("okoko1", distance.toString())
-            SharedData.distanceLiveData.value =
-                SharedData.convertDistance(distance)
-            val averageSpeed = numberSeparation(txtAverageSpeed)
-            SharedData.averageSpeedLiveData.value =
-                SharedData.convertSpeed(averageSpeed)
-            val speed = numberSeparation(txtMaxSpeed)
-            SharedData.maxSpeedLiveData.value = SharedData.convertSpeed(speed)
+            txtDistance.text =  SharedData.convertDistance(SharedData.distanceLiveData.value!!).toInt() .toString() + SharedData.toUnitDistance
+            txtAverageSpeed.text = StringUtils.convert(SharedData.averageSpeedLiveData.value!!)
+            txtMaxSpeed.text = StringUtils.convert(SharedData.maxSpeedLiveData.value!!)
+
         }
         setFont(binding)
 
-    }
-
-
-    private fun numberSeparation(txt: TextView): Double {
-        return try {
-
-            return txt.text.toString().filter { it.isDigit() || it == ',' }.replace(',', '.')
-                .toDouble()
-        } catch (e: Exception) {
-            Log.d("ôikkkkkkkk", e.message.toString())
-
-            0.0
-        }
     }
 
 

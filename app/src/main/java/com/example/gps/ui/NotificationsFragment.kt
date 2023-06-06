@@ -10,7 +10,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
- import com.example.gps.MyLocationConstants
+import com.example.gps.MyLocationConstants
 import com.example.gps.R
 import com.example.gps.SettingConstants
 import com.example.gps.SharedData
@@ -35,6 +35,7 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
     private lateinit var sharedPreferencesSetting: SharedPreferences
     private lateinit var sharedPreferencesState: SharedPreferences
     private var mapFragment: SupportMapFragment? = null
+    private var checkMoveCameraMap: Boolean = false
 
     @SuppressLint("SuspiciousIndentation", "MissingPermission")
     private val callback = OnMapReadyCallback { p0 ->
@@ -48,77 +49,93 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
             map?.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
 //            map?.moveCamera(CameraUpdateFactory.newLatLng(LatLng(20.99605906969354, 105.74779462069273)))
             map?.mapType = GoogleMap.MAP_TYPE_HYBRID
-            setOnCameraMoveListener {
+            setOnCameraMoveStartedListener {
                 resetMinMaxZoomPreference()
+                checkMoveCameraMap = true
+
+            }
+            setOnMyLocationButtonClickListener {
+                checkMoveCameraMap = false
+                true
             }
         }
     }
     private var binding: FragmentNotificationsBinding? = null
     private var map: GoogleMap? = null
-    private var polylineOption  = PolylineOptions()
+    private var polylineOption = PolylineOptions()
     private var check = false
     private var i = 0
+
     @SuppressLint("SuspiciousIndentation", "SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentNotificationsBinding.bind(view)
         if (savedInstanceState != null) {
             cameraPosition = savedInstanceState.getParcelable("cameraPosition")
         }
-
-        sharedPreferencesSetting = requireContext().getSharedPreferences(SettingConstants.SETTING, Context.MODE_PRIVATE)
-        sharedPreferencesState = requireActivity().getSharedPreferences("state", Context.MODE_PRIVATE)
+        sharedPreferencesSetting =
+            requireContext().getSharedPreferences(SettingConstants.SETTING, Context.MODE_PRIVATE)
+        sharedPreferencesState =
+            requireActivity().getSharedPreferences("state", Context.MODE_PRIVATE)
         check = sharedPreferencesSetting.getBoolean(SettingConstants.TRACK_ON_MAP, true)
         val positionsColor = sharedPreferencesSetting.getInt(SettingConstants.COLOR_DISPLAY, 2)
         onColorChange(positionsColor)
-
         mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         checkPermission()
-        map?.addPolyline(polylineOption.addAll(convertToListLatLng()))
-        with(binding) {
-                this?.imgChange?.setOnClickListener {
-                    map?.let { it1 -> MapUtils.setStStyleMap(it1) }
-                }
-                this!!.txtSpeed.text = "0" + SharedData.toUnit
-                FontUtils.setFont(requireContext(), this.txtSpeed)
-                addPolylineIfValidState()
-                SharedData.locationLiveData.observe(viewLifecycleOwner) { location ->
-                    updateLocationUI(location)
-                 }
-                SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) { Speed ->
-                    this.txtSpeed.text =StringUtils.convert(Speed.keys.first())
-                    FontUtils.setFont(requireContext(), this.txtSpeed)
 
-                }
+        with(binding) {
+            this?.imgChange?.setOnClickListener {
+                map?.let { it1 -> MapUtils.setStStyleMap(it1) }
+            }
+            this!!.txtSpeed.text = "0" + SharedData.toUnit
+            FontUtils.setFont(requireContext(), this.txtSpeed)
+            addPolylineIfValidState()
+            SharedData.locationLiveData.observe(viewLifecycleOwner) { location ->
+                updateLocationUI(location)
+            }
+            SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) { Speed ->
+                this.txtSpeed.text = StringUtils.convert(Speed.keys.first())
+                FontUtils.setFont(requireContext(), this.txtSpeed)
+
+            }
         }
     }
 
+    @SuppressLint("SuspiciousIndentation")
     private fun addPolylineIfValidState() {
         val state = sharedPreferencesState.getString(MyLocationConstants.STATE, null)
         if ((state == MyLocationConstants.START || state == MyLocationConstants.PAUSE || state == MyLocationConstants.RESUME) && check) {
-        val polylineOptions= PolylineOptions().addAll(convertToListLatLng()).color(Color.GREEN).width(15f)
+            val polylineOptions =
+                PolylineOptions().addAll(convertToListLatLng()).color(Color.GREEN).width(15f)
             map?.addPolyline(polylineOptions)
-            polylineOption=polylineOptions
-        }    }
+            checkMoveCameraMap = false
+            polylineOption = polylineOptions
+        }
+    }
 
     private fun updateLocationUI(location: Location?) {
-      with(binding){
-          if (location == null) {
-              this!!.latitude.text = "0"
-              longitude.text = "0"
-          } else {
-              if (i == 0 && map != null && cameraPosition == null) {
-                  val sydney = LatLng(location.latitude, location.longitude)
-                  map?.addMarker(MarkerOptions().position(sydney).title("User"))
-                  map?.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-                  i = 1
-              }
-              polylineOption.add(LatLng(location.latitude, location.longitude)).color(Color.GREEN).width(15f)
-              if (check) map?.addPolyline(polylineOption)
-              map?.moveCamera(CameraUpdateFactory.newCameraPosition(updateMoveCamera(location)))
-              this!!.latitude.text = location.latitude.toString()
-              longitude.text = location.longitude.toString()
-          }
-      }
+        with(binding) {
+            if (location == null) {
+                this!!.latitude.text = "0"
+                longitude.text = "0"
+            } else {
+                if (i == 0 && map != null && cameraPosition == null) {
+                    val sydney = LatLng(location.latitude, location.longitude)
+                    map?.addMarker(MarkerOptions().position(sydney).title("User"))
+                    map?.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+                    i = 1
+                }
+                polylineOption.add(LatLng(location.latitude, location.longitude)).color(Color.GREEN)
+                    .width(15f)
+                if (check) map?.addPolyline(polylineOption);
+                if (!checkMoveCameraMap) map?.moveCamera(
+                    CameraUpdateFactory.newCameraPosition(
+                        updateMoveCamera(location)
+                    )
+                )
+                this!!.latitude.text = location.latitude.toString()
+                longitude.text = location.longitude.toString()
+            }
+        }
     }
 
     private fun updateMoveCamera(location: Location): CameraPosition {
@@ -166,10 +183,11 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
 
     override fun onVisibilityPolyLine(boolean: Boolean) {
         check = boolean
-        if (boolean) map?.addPolyline(polylineOption.addAll(convertToListLatLng())) else map?.clear()
+        if (boolean) map?.addPolyline(polylineOption ) else map?.clear()
     }
-    fun clear( ) {
- map?.clear()
+
+    fun clear() {
+        map?.clear()
     }
 
     override fun onColorChange(i: Int) {
@@ -187,7 +205,7 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
     override fun onUnitChange() {
         binding?.txtSpeed?.text = "${
             SharedData.convertSpeed(
-                binding?.txtSpeed?.text.toString().filter { it.isDigit() }.toDouble()
+                SharedData.currentSpeedLiveData.value!!.keys.first()
             )
         }+${SharedData.toUnit}"
         FontUtils.setFont(requireContext(), binding?.txtSpeed!!)

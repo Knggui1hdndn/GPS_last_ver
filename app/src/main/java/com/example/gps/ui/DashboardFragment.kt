@@ -28,17 +28,20 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
     @SuppressLint("SetTextI18n", "SuspiciousIndentation")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentDashboardBinding.bind(view)
-        sharedPreferencesStates =  requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
-        sharedPreferences =  requireActivity().getSharedPreferences(SettingConstants.SETTING, Service.MODE_PRIVATE)
+        sharedPreferencesStates =
+            requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
+        sharedPreferences =
+            requireActivity().getSharedPreferences(SettingConstants.SETTING, Service.MODE_PRIVATE)
         val allDistance = sharedPreferencesStates.getInt(MyLocationConstants.DISTANCE, 0)
         val positionsColor = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, 2)
         onColorChange(positionsColor)
+
         with(binding) {
             this.txtKm3.text = if (SharedData.toUnit != "km/h") "mi" else "km"
             binding.txtKm4.text = SharedData.toUnit
             FontUtils.setFont(requireContext(), this.txtSpeed)
             onDataChange()
-            txtDistance1.text = SharedData.convertDistance(allDistance.toDouble()).toInt().toString()
+
             txtKm4.text = SharedData.toUnit
         }
     }
@@ -49,10 +52,16 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
             val key = it.keys.first()
             binding.txtSpeed.text = "%03d".format(SharedData.convertSpeed(key).toInt())
         }
-
+        var check = true
         SharedData.distanceLiveData.observe(viewLifecycleOwner) {
-            binding.txtDistance1.text =
-                "${SharedData.convertDistance(binding.txtDistance1.text.toString().toDouble()).toInt()}"
+            if (check == true) {
+                setDataWhenComBack()
+                check == false
+            } else {
+                binding.txtDistance1.text =
+                    "${SharedData.convertDistance(it).toInt()}"
+            }
+
         }
     }
 
@@ -62,9 +71,15 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
         with(binding) {
             txtKm4.text = SharedData.toUnit
             txtKm3.text = if (SharedData.toUnit != "km/h") "mi" else "km"
-            val convertedSpeed = SharedData.convertSpeed(txtSpeed.text.toString().toDouble()).toInt()
-            txtSpeed.text = "%03d".format(convertedSpeed)
-            txtDistance1.text = SharedData.convertSpeed(txtDistance1.text.toString().toDouble()).toInt().toString()
+            val convertedSpeed =
+                SharedData.convertSpeed(SharedData.currentSpeedLiveData.value!!.keys.first())
+            txtSpeed.text = "%03d".format(convertedSpeed.toInt())
+            txtDistance1.text = SharedData.convertDistance(
+                sharedPreferencesStates.getInt(
+                    MyLocationConstants.DISTANCE,
+                    0
+                ).toDouble()
+            ).toInt().toString()
         }
     }
 

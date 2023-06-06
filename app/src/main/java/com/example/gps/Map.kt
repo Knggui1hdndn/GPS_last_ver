@@ -110,10 +110,10 @@ class Map() {
                 )
                 with(SharedData) {
                     locationLiveData.value = lastLocation
-                    distanceLiveData.value = convertSpeed(distance)
-                    currentSpeedLiveData.value = hashMapOf(convertSpeed(currentSpeed)  to System.currentTimeMillis()- previousTime!!)
-                    maxSpeedLiveData.value = convertSpeed(maxSpeed)
-                    averageSpeedLiveData.value = convertSpeed(averageSpeed)
+                    distanceLiveData.value =  distance
+                    currentSpeedLiveData.value = hashMapOf( currentSpeed   to System.currentTimeMillis()- previousTime!!)
+                    maxSpeedLiveData.value =  maxSpeed
+                    averageSpeedLiveData.value =  averageSpeed
                 }
                 myDataBase!!.locationDao().insertLocationData(
                     lastLocation.latitude, lastLocation.longitude, lastMovementDataId
@@ -142,14 +142,18 @@ class Map() {
     private fun getCurrentSpeed(lastLocation: Location): Double {
         if (!lastLocation.hasSpeed()) return 0.0
         val speed = if (lastLocation.hasSpeedAccuracy() && lastLocation.hasSpeed()) (lastLocation.speed * 3.6) else 0.0
-        val convertedSpeed = SharedData.convertSpeed(speed)
+        val convertedSpeed =  speed
         val sharedPreferences =
             context.getSharedPreferences(SettingConstants.SETTING, Context.MODE_PRIVATE)
         if (sharedPreferences.getBoolean(SettingConstants.SPEED_ALARM, true)) {
             when {
-                convertedSpeed > myDataBase!!.vehicleDao()
-                    .getVehicleChecked(myDataBase!!.SpeedDao().getChecked().type).limitWarning -> {
-                    if (mediaPlayer == null || (!mediaPlayer!!.isPlaying)) {
+                SharedData.convertSpeed(convertedSpeed) >SharedData.convertSpeed(
+                    myDataBase!!.vehicleDao()
+                        .getVehicleChecked(myDataBase!!.SpeedDao().getChecked().type).limitWarning.toDouble()
+                )  -> {
+                    if (mediaPlayer == null ) {
+                        mediaPlayer = MediaPlayer.create(context, R.raw.wraning)
+                    }else{
                         broadcastWarning()
                     }
                 }
@@ -163,12 +167,12 @@ class Map() {
     }
 
     private fun broadcastWarning() {
-        mediaPlayer = MediaPlayer.create(context, R.raw.wraning)
+
         val audioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 100, 0)
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 10, 0)
         val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0)
-//      mediaPlayer?.start()
+    mediaPlayer?.start()
     }
 
     private fun getMaxSpeed(): Double {
@@ -200,6 +204,7 @@ class Map() {
         )
     }
 
+    @SuppressLint("SuspiciousIndentation")
     private fun updateWhenStop() {
         if (checkStop) {
             val movementData = myDataBase!!.movementDao().getLastMovementData()

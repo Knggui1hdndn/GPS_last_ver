@@ -57,14 +57,12 @@ class MainActivity2 : AppCompatActivity() {
     private fun setUnitSpeepAndDistance() {
         try {
             SharedData.toUnit = getCurrentUnit()
-            SharedData.fromUnit = SharedData.toUnit
-            when (SharedData.fromUnit) {
-                "km/h" -> SharedData.fromUnitDistance = "km"
-                "mph" -> SharedData.fromUnitDistance = "mi"
-                "knot" -> SharedData.fromUnitDistance = "nm"
+             when (SharedData.toUnit) {
+                "km/h" -> SharedData.toUnitDistance = "km"
+                "mph" -> SharedData.toUnitDistance = "mi"
+                "knot" -> SharedData.toUnitDistance = "nm"
             }
-            SharedData.toUnitDistance = SharedData.fromUnitDistance
-        } catch (e: Exception) {
+         } catch (e: Exception) {
             Log.d("okok312o1", "${e.message}")
 
         }
@@ -86,10 +84,8 @@ class MainActivity2 : AppCompatActivity() {
         binding.times.text = "00 : 00 : 00"
         val navView: BottomNavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_activity_main2)
-
-
-        binding.times.isVisible = sharedPreferences.getBoolean(CLOCK_DISPLAY, true)
-        val appBarConfiguration = AppBarConfiguration(
+        binding.times.visibility = if(sharedPreferences.getBoolean(CLOCK_DISPLAY, true)) View.VISIBLE else View.GONE
+         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
             )
@@ -144,8 +140,7 @@ class MainActivity2 : AppCompatActivity() {
         } catch (e: java.lang.Exception) {
         }
 
-        SharedData.distanceLiveData.value = 20.0
-        SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
+         SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
     }
 
     private fun insert(myDataBase: MyDataBase) {

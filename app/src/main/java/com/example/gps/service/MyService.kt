@@ -86,10 +86,7 @@ class MyService : Service(), LocationChangeListener {
             application.getSharedPreferences(SettingConstants.SETTING, Context.MODE_PRIVATE)
         val checkHide = sharedPreferences.getBoolean(SettingConstants.DISPLAY_SPEED, true)
 
-        notificationLayout.setTextViewText(
-            R.id.txtKm, if (checkHide)
-                SharedData.convertSpeed(km.toDouble()).toInt().toString() else ""
-        )
+        notificationLayout.setTextViewText(R.id.txtKm, if (checkHide) SharedData.convertSpeed(km.toDouble()).toInt().toString() else "")
 
 
         notificationLayout.setTextViewText(
@@ -115,6 +112,7 @@ class MyService : Service(), LocationChangeListener {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setSound(null)
             .setSilent(true)
+            .setOngoing(true)
             .setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_VIBRATE) // Tắt âm thanh, chỉ nhấp nháy đèn và rung
             .setCustomBigContentView(notificationLayout)
             .build()

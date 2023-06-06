@@ -8,18 +8,20 @@ import androidx.lifecycle.MutableLiveData
 
 @SuppressLint("StaticFieldLeak")
 object SharedData {
-    val averageSpeedLiveData = MutableLiveData<Double>()
-    val maxSpeedLiveData = MutableLiveData<Double>()
-    val currentSpeedLiveData = MutableLiveData<HashMap<Double, Long>>()
-    val distanceLiveData = MutableLiveData<Double>()
+    val averageSpeedLiveData = MutableLiveData<Double>(0.0)
+    val maxSpeedLiveData = MutableLiveData<Double>(0.0)
+    val currentSpeedLiveData = MutableLiveData<HashMap<Double, Long>>(hashMapOf(0.0 to 0L))
+    val distanceLiveData = MutableLiveData<Double>(0.0)
     val locationLiveData = MutableLiveData<Location>()
+
+
     val speedAnalog = MutableLiveData<Int>()
     val time = MutableLiveData<Long>(0)
     val checkPermission = MutableLiveData<Boolean>( )
-    var fromUnit = ""
+    var fromUnit = "km/h"
     var toUnit = ""
 
-    var fromUnitDistance = ""
+    var fromUnitDistance = "km"
     var toUnitDistance = ""
     var checkService = false
 
@@ -61,6 +63,8 @@ object SharedData {
             var sp = speed * conversionRates[fromUnit]!![toUnit]!!
              return sp
         } catch (e: Exception) {
+            Log.d("convertSpeed","$fromUnit $toUnit  ")
+
         }
 
         return 0.0
@@ -68,8 +72,10 @@ object SharedData {
     fun convertDistance(distance:Double ): Double {
         try {
             val sp :Double= distance * conversionRatesDistance[fromUnitDistance]!![toUnitDistance]!!
+            Log.d("convertDistance","$fromUnitDistance $toUnitDistance $distance ${conversionRatesDistance["km"]!![toUnitDistance]!!}   $sp")
             return sp
         } catch (e: Exception) {
+            Log.d("convertDistance","${e.message.toString()}")
 
         }
         return 0.0

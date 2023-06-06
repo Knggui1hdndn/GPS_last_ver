@@ -20,8 +20,7 @@ class MyReceiver : BroadcastReceiver() {
                 for (event in result.transitionEvents) {
                     val activityType = event.activityType
                     val transitionType = event.transitionType
-Toast.makeText(context,"Activity: $activityType, Transition: $transitionType",Toast.LENGTH_SHORT).show()
-                    // Xử lý thông tin về hoạt động và sự chuyển đổi
+                     // Xử lý thông tin về hoạt động và sự chuyển đổi
                     Log.d("kjklfda", (activityType+transitionType).toString())
                  }
             }

@@ -39,18 +39,10 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-//        val uri = Uri.parse("package:" + packageName)
-//        val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri)Remote stack trace:
 
 
        createTimer(3L)
-//        findViewById<ImageView>(R.id.a).setImageBitmap(
-//            loadBitmapFromView(
-//                this,
-//                window.decorView.rootView
-//            )
-//        )
-//        loadBitmapFromView(this, window.decorView.rootView)?.let { saveImage(it) }
+
     }
 
 

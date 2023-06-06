@@ -1,17 +1,18 @@
 package com.example.gps.ui.setting
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.app.Dialog
 import android.app.Service
 import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.text.Html
 import android.util.Log
 import android.view.MenuItem
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
@@ -35,6 +36,7 @@ import com.example.gps.utils.ColorUtils
 import com.example.gps.utils.UnitUtils
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.internal.ContextUtils.getActivity
+import java.lang.Exception
 
 
 class Setting : AppCompatActivity() {
@@ -94,9 +96,7 @@ class Setting : AppCompatActivity() {
         vehicleDao = MyDataBase.getInstance(this).vehicleDao()
         myDataBase = MyDataBase.getInstance(this)
         checkUnitClick = myDataBase.SpeedDao().getChecked().type
-        Log.d("okokkos", checkUnitClick.toString())
         colorPosition = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, 0)
-
         mainActivity2 = getActivity(SharedData.activity) as MainActivity2
         navHostFragment =
             (mainActivity2.supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?)!!
@@ -104,10 +104,12 @@ class Setting : AppCompatActivity() {
         parameterFragment =
             childFragment.childFragmentManager.findFragmentById(R.id.frag) as ParameterFragment
         setBackgroundALL()
-        txtDistance.text = getSharedPreferences("state", Service.MODE_PRIVATE).getInt(
-            MyLocationConstants.DISTANCE,
-            0
-        ).toString()
+        txtDistance.text = SharedData.convertDistance(
+            getSharedPreferences("state", Service.MODE_PRIVATE).getInt(
+                MyLocationConstants.DISTANCE,
+                0
+            ).toDouble()
+        ).toInt().toString()
         swtAlarm.setOnCheckedChangeListener { _, isChecked ->
             saveSettingBoolean(SettingConstants.SPEED_ALARM, isChecked)
         }
@@ -117,7 +119,8 @@ class Setting : AppCompatActivity() {
         }
 
         swtClockDisplay.setOnCheckedChangeListener { _, isChecked ->
-            toggleClockVisibilityLandscape()        }
+            toggleClockVisibilityLandscape()
+        }
 
         swtTrackOnMap.setOnCheckedChangeListener { _, isChecked ->
             saveSettingBoolean(SettingConstants.TRACK_ON_MAP, isChecked)
@@ -130,7 +133,10 @@ class Setting : AppCompatActivity() {
 
 
         btnMaxSpeepAnalog.setOnClickListener {
-          //  getDialogSpeedAnalog().show()
+            getDialogSpeedAnalog().show()
+        }
+        btnWarningLimit.setOnClickListener {
+            getDialogWarningLimit().show()
         }
 
         btnResetDistance.setOnClickListener {
@@ -185,13 +191,14 @@ class Setting : AppCompatActivity() {
             }
         }
     }
+
     private fun toggleClockVisibilityLandscape() {
         saveSettingBoolean(SettingConstants.CLOCK_DISPLAY, swtClockDisplay.isChecked)
-
-                parameterFragment.toggleClockVisibilityLandscape(swtClockDisplay.isChecked)
+        parameterFragment.toggleClockVisibilityLandscape(swtClockDisplay.isChecked)
 
 
     }
+
     private fun saveSettingBoolean(key: String, value: Boolean) {
         sharedPreferences.edit().putBoolean(key, value).apply()
     }
@@ -207,9 +214,7 @@ class Setting : AppCompatActivity() {
         Log.d("okokkos", checkUnitClick.toString() + "dd" + this.checkUnitClick)
         if (checkUnitClick != this.checkUnitClick) {
             this.checkUnitClick = checkUnitClick
-            SharedData.fromUnitDistance = SharedData.toUnitDistance
             SharedData.toUnitDistance = distanceUnit
-            SharedData.fromUnit = SharedData.toUnit
             SharedData.toUnit = speedUnit
             myDataBase.SpeedDao().updateUnChecked()
             myDataBase.SpeedDao().updateChecked(checkUnitClick)
@@ -219,10 +224,6 @@ class Setting : AppCompatActivity() {
         }
     }
 
-    fun getCurrentUnit(): String {
-        val myDataBase = MyDataBase.getInstance(this).SpeedDao()
-        return UnitUtils.getUnit(myDataBase.getChecked().type)
-    }
 
     private fun registerReceiverUnitFromFragmentM2() {
         when (childFragment) {
@@ -267,7 +268,7 @@ class Setting : AppCompatActivity() {
     }
 
     private fun toggleTrackOnMap() {
-          when (childFragment) {
+        when (childFragment) {
             is NotificationsFragment -> {
                 if (notificationsFragment == null) notificationsFragment =
                     childFragment as NotificationsFragment
@@ -276,9 +277,38 @@ class Setting : AppCompatActivity() {
         }
     }
 
+    private fun getDialogWarningLimit(): Dialog {
+        val txtUrl = EditText(this)
+        txtUrl.inputType = EditorInfo.TYPE_CLASS_NUMBER
+        return AlertDialog.Builder(this).setView(txtUrl)
 
-    private fun getDialogSpeedAnalog(i :Int): AlertDialog.Builder {
 
+            .setPositiveButton(
+                "Đông ý"
+            ) { dialog, whichButton ->
+                try {
+                    val url = txtUrl.text.toString()
+                    if (url.toInt() >= 0 && url.isNotEmpty()) {
+                        myDataBase.vehicleDao()
+                            .updateWarning(checkUnitClick, checkVehicleClick, url.toInt())
+                        btnWarningLimit.text = url
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(this, "Tốc độ không để trống", Toast.LENGTH_SHORT).show()
+                }
+
+                dialog.cancel()
+            }
+            .setNegativeButton(
+                "Hủy bỏ"
+            ) { dialog, whichButton ->
+                dialog.cancel()
+            }.setMessage("Nhập giới hạn tốc độ")
+            .create()
+
+    }
+
+    private fun getDialogSpeedAnalog(): AlertDialog.Builder {
         var item = 0
         val array = arrayOf(
             "80",
@@ -291,7 +321,7 @@ class Setting : AppCompatActivity() {
             "640"
         )
         val position: Int = array.indexOf(btnMaxSpeepAnalog.text.toString())
-        return AlertDialog.Builder(this@Setting ).apply {
+        return AlertDialog.Builder(this@Setting).apply {
             setTitle("Chọn Tốc độ Đông hồ Analog").setSingleChoiceItems(
                 array, position
             ) { _, which ->
@@ -302,14 +332,12 @@ class Setting : AppCompatActivity() {
                 dialog.dismiss()
             }
             setPositiveButton("Đồng Ý") { dialog: DialogInterface, _: Int ->
-                if(i==1){
-                    myDataBase.vehicleDao().updateMaxSpeed(checkUnitClick, checkVehicleClick, item)
-                    btnMaxSpeepAnalog.text = item.toString()
-                    registerReceiverUnitFromFragmentM2()
-                    dialog.cancel()
-                }else{
-                    myDataBase.vehicleDao().updateWarning(checkUnitClick, checkVehicleClick, item)
-                }
+
+                myDataBase.vehicleDao().updateMaxSpeed(checkUnitClick, checkVehicleClick, item)
+                btnMaxSpeepAnalog.text = item.toString()
+                registerReceiverUnitFromFragmentM2()
+                dialog.cancel()
+                registerReceiverUnitFromFragmentM2()
 
             }
         }
