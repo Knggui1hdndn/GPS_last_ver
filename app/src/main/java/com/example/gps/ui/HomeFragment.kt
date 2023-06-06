@@ -57,7 +57,10 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
            }
 
             SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) {
-                it[it.keys.first()]?.let { it1 -> this.speed.speedTo(SharedData.convertSpeed(it.keys.first()).toFloat(), it1 * 1000) }
+                it[it.keys.first()]?.let { it1 -> this.speed.speedTo(SharedData.convertSpeed(it.keys.first()).toFloat(), it1 / 1000)
+
+                    Log.d("oko", (it1 / 1000).toString())}
+
             }
 
         }

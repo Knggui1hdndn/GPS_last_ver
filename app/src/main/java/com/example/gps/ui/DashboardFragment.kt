@@ -16,6 +16,7 @@ import com.example.gps.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.FragmentDashboardBinding
 import com.example.gps.interfaces.DigitalInterface
+import com.example.gps.utils.StringUtils
 import java.math.BigDecimal
 
 class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterface {
@@ -27,41 +28,31 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
     @SuppressLint("SetTextI18n", "SuspiciousIndentation")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentDashboardBinding.bind(view)
-        sharedPreferencesStates =
-            requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
-        sharedPreferences = requireActivity().getSharedPreferences(
-            SettingConstants.SETTING,
-            Service.MODE_PRIVATE
-        )
-
+        sharedPreferencesStates =  requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
+        sharedPreferences =  requireActivity().getSharedPreferences(SettingConstants.SETTING, Service.MODE_PRIVATE)
         val allDistance = sharedPreferencesStates.getInt(MyLocationConstants.DISTANCE, 0)
         val positionsColor = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, 2)
         onColorChange(positionsColor)
-
         with(binding) {
             this.txtKm3.text = if (SharedData.toUnit != "km/h") "mi" else "km"
             binding.txtKm4.text = SharedData.toUnit
             FontUtils.setFont(requireContext(), this.txtSpeed)
-            SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) {
-                if (it.keys.first() == 0.0) txtSpeed.text = "000"
-                when (String.format("%.0f", it.keys.first()).length) {
-                    1 -> {
-                        txtSpeed.text = "00" + SharedData.convertSpeed(it.keys.first()).toInt()
-                    }
-
-                    2 -> {
-                        txtSpeed.text = "0" +  SharedData.convertSpeed(it.keys.first()).toInt()
-                    }
-
-                    else -> txtSpeed.text =  SharedData.convertSpeed(it.keys.first()).toInt().toString()
-                }
-            }
-            SharedData.distanceLiveData.observe(viewLifecycleOwner) {
-                txtDistance1.text =
-                    SharedData.convertDistance(allDistance.toDouble()).toInt().toString()
-            }
+            onDataChange()
             txtDistance1.text = SharedData.convertDistance(allDistance.toDouble()).toInt().toString()
             txtKm4.text = SharedData.toUnit
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun onDataChange() {
+        SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) {
+            val key = it.keys.first()
+            binding.txtSpeed.text = "%03d".format(SharedData.convertSpeed(key).toInt())
+        }
+
+        SharedData.distanceLiveData.observe(viewLifecycleOwner) {
+            binding.txtDistance1.text =
+                "${SharedData.convertDistance(binding.txtDistance1.text.toString().toDouble()).toInt()}"
         }
     }
 
@@ -70,25 +61,11 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
     private fun setDataWhenComBack() {
         with(binding) {
             txtKm4.text = SharedData.toUnit
-            this.txtKm3.text = if (SharedData.toUnit != "km/h") "mi" else "km"
-            when (SharedData.convertSpeed(txtSpeed.text.toString().toDouble()).toInt()) {
-                1 -> {
-                    txtSpeed.text =
-                        "00" + SharedData.convertSpeed(txtSpeed.text.toString().toDouble()).toInt()
-                }
-
-                2 -> {
-                    txtSpeed.text =
-                        "0" + SharedData.convertSpeed(txtSpeed.text.toString().toDouble()).toInt()
-                }
-
-                else -> txtSpeed.text = "000"
-            }
-
-            this.txtDistance1.text =
-                SharedData.convertSpeed(txtDistance1.text.toString().toDouble()).toInt().toString()
+            txtKm3.text = if (SharedData.toUnit != "km/h") "mi" else "km"
+            val convertedSpeed = SharedData.convertSpeed(txtSpeed.text.toString().toDouble()).toInt()
+            txtSpeed.text = "%03d".format(convertedSpeed)
+            txtDistance1.text = SharedData.convertSpeed(txtDistance1.text.toString().toDouble()).toInt().toString()
         }
-
     }
 
 

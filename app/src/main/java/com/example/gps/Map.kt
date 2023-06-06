@@ -46,6 +46,7 @@ class Map() {
     private var distance = 0f
     private var lastMovementDataId = 0
     private var previousLocation: Location? = null
+    private var previousTime: Long? = null
     private var listSpeed = mutableListOf<Double>()
     private lateinit var sharedPreferences: SharedPreferences
     private var notificationManager: NotificationManager? = null
@@ -85,7 +86,7 @@ class Map() {
         @SuppressLint("SuspiciousIndentation")
         override fun onLocationResult(locationResult: LocationResult) {
             val lastLocation = locationResult.lastLocation
-            if (lastLocation != null && previousLocation != null && myDataBase != null) {
+            if (lastLocation != null && previousLocation != null && myDataBase != null&&previousTime!=null) {
                 if (!checkStart) {
                     val movementData = myDataBase!!.movementDao().getLastMovementData()
                     movementData.apply {
@@ -110,8 +111,7 @@ class Map() {
                 with(SharedData) {
                     locationLiveData.value = lastLocation
                     distanceLiveData.value = convertSpeed(distance)
-                    currentSpeedLiveData.value =
-                        hashMapOf(convertSpeed(currentSpeed)  to lastLocation.time)
+                    currentSpeedLiveData.value = hashMapOf(convertSpeed(currentSpeed)  to System.currentTimeMillis()- previousTime!!)
                     maxSpeedLiveData.value = convertSpeed(maxSpeed)
                     averageSpeedLiveData.value = convertSpeed(averageSpeed)
                 }
@@ -134,6 +134,7 @@ class Map() {
             }
             //s=vt
             previousLocation = lastLocation
+            previousTime=System.currentTimeMillis()
         }
     }
 
@@ -202,7 +203,7 @@ class Map() {
     private fun updateWhenStop() {
         if (checkStop) {
             val movementData = myDataBase!!.movementDao().getLastMovementData()
-            if (checkStop) {
+
                 if (previousLocation == null) {
                     movementData.endLatitude = movementData.startLatitude
                     movementData.endLongitude = movementData.startLongitude
@@ -225,7 +226,7 @@ class Map() {
                     averageSpeedLiveData.value = 0.0
                     time.value = 0
                 }
-            }
+
         }
     }
 

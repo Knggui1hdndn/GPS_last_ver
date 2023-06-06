@@ -12,12 +12,8 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.location.Geocoder
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.text.Html
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
@@ -25,7 +21,6 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
 import com.example.gps.R
 import com.example.gps.SettingConstants
 import com.example.gps.SharedData
@@ -35,7 +30,7 @@ import com.example.gps.databinding.BottomSheetBinding
 import com.example.gps.model.MovementData
 import com.example.gps.utils.FontUtils
 import com.example.gps.utils.MapUtils
-import com.example.gps.utils.ScreenshotUtil
+import com.example.gps.utils.StringUtils
 import com.example.gps.utils.TimeUtils
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -45,13 +40,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import com.google.android.gms.maps.model.StyleSpan
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.textview.MaterialTextView
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import java.lang.Exception
 import java.text.DateFormat
 import java.text.DecimalFormat
@@ -62,42 +53,38 @@ class ShowActivity : AppCompatActivity() {
     private lateinit var bottomSheet: RelativeLayout
     private lateinit var binding: ActivityShowBinding
     private lateinit var bottom: BottomSheetBinding
-    private var movementData2: MovementData? = null
+    private var mData2: MovementData? = null
     private val polylineOptions = PolylineOptions()
     private lateinit var myDataBase: MyDataBase
 
     @SuppressLint("MissingPermission")
     private val callback = OnMapReadyCallback { p0 ->
         map = p0
-        p0.moveCamera(
-            CameraUpdateFactory.newLatLng(
-                LatLng(
-                    movementData2!!.startLatitude,
-                    movementData2!!.startLongitude
-                )
-            )
-        )
+        val startLatLng = LatLng(mData2!!.startLatitude, mData2!!.startLongitude)
+        val endLatLng = LatLng(mData2!!.endLatitude, mData2!!.endLongitude)
+
+        p0.moveCamera(CameraUpdateFactory.newLatLng(startLatLng))
+
         p0.addMarker(
-            MarkerOptions().position(
-                LatLng(
-                    movementData2!!.startLatitude,
-                    movementData2!!.startLongitude
-                )
-            ).title("Bắt đầu")
+            MarkerOptions()
+                .position(startLatLng)
+                .title("Bắt đầu")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
         )
+
         p0.addMarker(
-            MarkerOptions().position(
-                LatLng(
-                    movementData2!!.endLatitude,
-                    movementData2!!.endLongitude
-                )
-            ).title("Kết thúc")
+            MarkerOptions()
+                .position(endLatLng)
+                .title("Kết thúc")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
         )
+
         p0.addPolyline(
-            polylineOptions.addAll(convertToListLatLng()).color(Color.GREEN).width(15f)
+            polylineOptions.addAll(convertToListLatLng())
+                .color(Color.GREEN)
+                .width(15f)
         )
+
         p0.apply {
             setMinZoomPreference(15.0f);
             setMaxZoomPreference(35.0f);
@@ -109,37 +96,16 @@ class ShowActivity : AppCompatActivity() {
         }
     }
     private lateinit var map: GoogleMap
-    private lateinit var   bottom2:BottomSheetBehavior<*>
+    private lateinit var bottom2: BottomSheetBehavior<*>
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("MissingInflatedId", "CutPasteId", "WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityShowBinding.inflate(layoutInflater)
-        bottom = binding.bottom
-        setContentView(binding.root)
-        myDataBase = MyDataBase.getInstance(this)
-        bottomSheet = bottom.bottomSheet
+        setupMyActivity()
         setBackgroundColor()
-        bottom2 = BottomSheetBehavior.from(bottomSheet).apply {
-            state = BottomSheetBehavior.STATE_EXPANDED
-        }
-        bottomSheet.post {
-            bottom2.peekHeight = 220 //height is ready
-        }
 
-        val intent = intent
-        val movementData = intent.extras?.getSerializable("movementData")
-        setData(movementData as MovementData?)
-        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
-        mapFragment?.getMapAsync(callback)
-
-        FontUtils.setFont(
-            this,
-            bottom.txtSpeed,
-            bottom.txtTime,
-            bottom.txtDistance,
-            bottom.txtAverageSpeed
-        )
+        setFont()
 
         bottom.imgCap.setOnClickListener {
             val x = getDialogCapScreen()
@@ -163,20 +129,53 @@ class ShowActivity : AppCompatActivity() {
         bottom.imgShare.setOnClickListener {
             val shareIntent = Intent(Intent.ACTION_SEND)
             shareIntent.type = "plain/text";
-            val text =
-                "Start point:${bottom.txtAddressStart.text}(${movementData2?.startLatitude},${movementData2?.startLongitude})\n" +
-                        "End point:${bottom.txtAddressEnd.text}(${movementData2?.endLatitude},${movementData2?.endLongitude})\nTime:${
-                            TimeUtils.formatTime(
-                                movementData2?.time!!.toLong()
-                            )
-                        },Date:${bottom.timeStart.text.toString().replace("Trip_", "")}"
+            val text = formatTripInformation()
             shareIntent.putExtra(Intent.EXTRA_TEXT, text)
             startActivity(shareIntent)
         }
 
     }
 
-    fun loadBitmapFromView(context: Context, v: View): Bitmap? {
+    private fun formatTripInformation(): String {
+        with(mData2) {
+            val startLaLong = "${this!!.startLatitude},${startLongitude}"
+            val endLaLong = "${this.startLatitude},${startLongitude}"
+            val startPoint = "Start point: ${bottom.txtAddressStart.text} $startLaLong"
+            val endPoint = "End point: ${bottom.txtAddressEnd.text} $endLaLong"
+            val time = "Time: ${TimeUtils.formatTime(time)}"
+            val date = "Date: ${bottom.timeStart.text.toString().replace("Trip_", "")}"
+            return "$startPoint\n$endPoint\n$time,$date"
+        }
+        return ""
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun setupMyActivity() {
+        binding = ActivityShowBinding.inflate(layoutInflater)
+        bottom = binding.bottom
+        setContentView(binding.root)
+        myDataBase = MyDataBase.getInstance(this)
+        bottomSheet = bottom.bottomSheet
+        bottom2 = BottomSheetBehavior.from(bottomSheet).apply {
+            state = BottomSheetBehavior.STATE_EXPANDED
+            peekHeight = 220
+        }
+        setData(intent.extras?.getSerializable("movementData") as MovementData?)
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
+        mapFragment?.getMapAsync(callback)
+    }
+
+    private fun setFont() {
+        FontUtils.setFont(
+            this,
+            bottom.txtSpeed,
+            bottom.txtTime,
+            bottom.txtDistance,
+            bottom.txtAverageSpeed
+        )
+    }
+
+    private fun loadBitmapFromView(context: Context, v: View): Bitmap? {
         val dm = context.resources.displayMetrics
         v.measure(
             View.MeasureSpec.makeMeasureSpec(dm.widthPixels, View.MeasureSpec.EXACTLY),
@@ -188,17 +187,14 @@ class ShowActivity : AppCompatActivity() {
             v.measuredHeight, Bitmap.Config.ARGB_8888
         )
         val c = Canvas(returnedBitmap)
-
-filesDir.
-        v.draw(c)
         return returnedBitmap
     }
 
-    fun drawImage(mapBitmap: Bitmap,bottom: Bitmap){
+    fun drawImage(mapBitmap: Bitmap, bottom: Bitmap) {
         var saveBitmap = Bitmap.createBitmap(mapBitmap)
         val c = Canvas(saveBitmap)
-        c.drawBitmap(bottom,0f,0f, Paint())
-        c.drawText()
+        c.drawBitmap(bottom, 0f, 0f, Paint())
+        // c.drawText()
     }
 
 
@@ -206,16 +202,13 @@ filesDir.
     private fun getDialogCapScreen(): Dialog {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-
         val view = LayoutInflater.from(this).inflate(R.layout.layout_screen, null)
         dialog.setContentView(view)
-
-
         with(dialog) {
-            val close = findViewById<ImageView>( R.id.imgClose)
-            val screen = findViewById<ImageView>( R.id.imgScreen)
-            val share = findViewById<ImageView>( R.id.imgShare)
-            val img = findViewById<ImageView>( R.id.img)
+            val close = findViewById<ImageView>(R.id.imgClose)
+            val screen = findViewById<ImageView>(R.id.imgScreen)
+            val share = findViewById<ImageView>(R.id.imgShare)
+            val img = findViewById<ImageView>(R.id.img)
             val snapshotReadyCallback = GoogleMap.SnapshotReadyCallback { bitmap ->
                 // Lưu bitmap vào một tệp ảnh
                 val file = File(this@ShowActivity.externalCacheDir, "map_snapshot.png")
@@ -225,24 +218,15 @@ filesDir.
                 screen?.setImageBitmap(
                     bitmap
                 )
-                Log.d("\\\\\\\\\\\\",bitmap!!.width.toString().plus("/").plus(bitmap.height))
-                Log.d("\\\\\\\\\\\\","bottom height "+binding.bottom.bottomSheet.height)
-
-                var returnedBitmap =    loadBitmapFromView(
+                var returnedBitmap = loadBitmapFromView(
                     this@ShowActivity,
-//                        this@ShowActivity.findViewById( bottom.bottomSheet.id)
                     binding.bottom.root
                 )
-                Log.d("\\\\\\\\\\\\",returnedBitmap!!.width.toString().plus("/").plus(returnedBitmap.height))
                 img?.setImageBitmap(
                     returnedBitmap
                 )
             }
-
             map.snapshot(snapshotReadyCallback)
-
-
-
         }
 
         return dialog
@@ -253,7 +237,7 @@ filesDir.
     private fun getDialog(): AlertDialog {
         return AlertDialog.Builder(this@ShowActivity)
             .setPositiveButton("Xóa") { _: DialogInterface, _: Int ->
-                movementData2?.let { it1 ->
+                mData2?.let { it1 ->
                     myDataBase.movementDao().delete(it1)
                     finish()
                 }
@@ -275,39 +259,25 @@ filesDir.
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
-    private fun setData(movementData: MovementData?) {
+    private fun setData(mData: MovementData?) {
         val df: DateFormat = SimpleDateFormat("dd/MM/yy_HH:mm:ss")
         with(bottom)
         {
-            if (movementData != null) {
-                movementData2 = movementData
-                timeStart.text = "Trip${df.format(movementData.date)}"
-                txtAddressEnd.text =
-                    if (getAddressLine(
-                            movementData.endLatitude, movementData.endLongitude
-                        ) != null
-                    ) getAddressLine(movementData.endLatitude, movementData.endLongitude) else "__"
-                txtAddressStart.text =
-                    if (getAddressLine(
-                            movementData.startLatitude,
-                            movementData.startLongitude
-                        )
-                        != null
-                    ) getAddressLine(
-                        movementData.startLatitude,
-                        movementData.startLongitude
-                    ) else "__"
-                txtSpeed.text =
-                    "${SharedData.convertSpeed(movementData.maxSpeed).toInt()}" + SharedData.toUnit
-                txtAverageSpeed.text = "${
-                    SharedData.convertSpeed(movementData.averageSpeed).toInt()
-                }" + SharedData.toUnit
-                txtTime.text = TimeUtils.formatTime(movementData.time)
-                txtDistance.text =
-                    DecimalFormat("#.##").format(SharedData.convertDistance(movementData.distance)) + SharedData.toUnit
+            if (mData != null) {
+                mData2 = mData
+                timeStart.text = "Trip${df.format(mData.date)}"
+                txtAddressEnd.text = getAddressLine(mData.endLatitude, mData.endLongitude)
+                    ?: "_ _"
+                txtAddressStart.text = getAddressLine(mData.startLatitude, mData.startLongitude)
+                    ?: "_ _"
+                txtSpeed.text = StringUtils.convert(mData.maxSpeed)
+                txtAverageSpeed.text = StringUtils.convert(mData.averageSpeed)
+                txtTime.text = TimeUtils.formatTime(mData.time)
+                txtDistance.text =DecimalFormat("#.##").format(SharedData.convertDistance(mData.distance)) + SharedData.toUnit
             }
         }
     }
+
 
     private fun convertToListLatLng(): List<LatLng> {
         val listMovement = myDataBase.locationDao()

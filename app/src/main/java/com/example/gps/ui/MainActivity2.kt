@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -159,7 +160,7 @@ class MainActivity2 : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         binding.navView.itemIconTintList = getColorRes()
-        binding.times.isVisible = sharedPreferences.getBoolean(CLOCK_DISPLAY, true)
+        binding.times.visibility = if (sharedPreferences.getBoolean(CLOCK_DISPLAY, true)) View.VISIBLE else View.GONE
 
     }
 

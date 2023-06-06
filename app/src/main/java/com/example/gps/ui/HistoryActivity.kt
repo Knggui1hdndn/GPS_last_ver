@@ -53,6 +53,7 @@ class HistoryActivity : AppCompatActivity() {
             .setPositiveButton(if (mutableList.size > 0) "Xóa" else "OK") { dialogInterface: DialogInterface, i: Int ->
                 myDataBase.movementDao().deleteAll()
                 adapter.notifyDataSetChanged(mutableListOf())
+                dialogInterface.dismiss()
             }
             .setNegativeButton("Đóng") { dialogInterface: DialogInterface, i: Int -> dialogInterface.dismiss() }
             .setTitle("Thông báo !")

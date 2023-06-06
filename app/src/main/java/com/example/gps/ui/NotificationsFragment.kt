@@ -1,13 +1,12 @@
 package com.example.gps.ui
 
 import android.annotation.SuppressLint
-import android.app.Service
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -20,6 +19,7 @@ import com.example.gps.databinding.FragmentNotificationsBinding
 import com.example.gps.interfaces.MapInterface
 import com.example.gps.utils.FontUtils
 import com.example.gps.utils.MapUtils
+import com.example.gps.utils.StringUtils
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -28,8 +28,6 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import java.lang.Exception
-import java.util.Locale
 
 
 class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInterface {
@@ -57,73 +55,90 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
     }
     private var binding: FragmentNotificationsBinding? = null
     private var map: GoogleMap? = null
-    private val polylineOptions = PolylineOptions()
+    private var polylineOption  = PolylineOptions()
     private var check = false
-
+    private var i = 0
     @SuppressLint("SuspiciousIndentation", "SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentNotificationsBinding.bind(view)
-        sharedPreferencesSetting =
-            requireContext().getSharedPreferences(SettingConstants.SETTING, Context.MODE_PRIVATE)
-        sharedPreferencesState =
-            requireActivity().getSharedPreferences("state", Context.MODE_PRIVATE)
         if (savedInstanceState != null) {
             cameraPosition = savedInstanceState.getParcelable("cameraPosition")
         }
+
+        sharedPreferencesSetting = requireContext().getSharedPreferences(SettingConstants.SETTING, Context.MODE_PRIVATE)
+        sharedPreferencesState = requireActivity().getSharedPreferences("state", Context.MODE_PRIVATE)
         check = sharedPreferencesSetting.getBoolean(SettingConstants.TRACK_ON_MAP, true)
         val positionsColor = sharedPreferencesSetting.getInt(SettingConstants.COLOR_DISPLAY, 2)
         onColorChange(positionsColor)
-        onVisibilityPolyLine(check)
-        mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        if (requireActivity().checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-            requireActivity().checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-        ) {
-            mapAsync()
-        }
-        var i = 0
 
-        if (binding != null) {
-            with(binding) {
+        mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        checkPermission()
+        map?.addPolyline(polylineOption.addAll(convertToListLatLng()))
+        with(binding) {
                 this?.imgChange?.setOnClickListener {
                     map?.let { it1 -> MapUtils.setStStyleMap(it1) }
                 }
                 this!!.txtSpeed.text = "0" + SharedData.toUnit
                 FontUtils.setFont(requireContext(), this.txtSpeed)
-
-                val state = sharedPreferencesState.getString(MyLocationConstants.STATE, null)
-                //check  add polyline when onCreated
-                if ((state == MyLocationConstants.START || state == MyLocationConstants.PAUSE || state == MyLocationConstants.RESUME) && check) {
-                    polylineOptions.addAll(convertToListLatLng()).color(Color.GREEN).width(15f)
-                }
+                addPolylineIfValidState()
                 SharedData.locationLiveData.observe(viewLifecycleOwner) { location ->
-                    if (location == null) {
-                        this.latitude.text = "0"
-                        this.longitude.text = "0"
-                    } else {
-                        if (i == 0 && map != null && cameraPosition == null) {
-                            val sydney = LatLng(location.latitude, location.longitude)
-                            map?.addMarker(MarkerOptions().position(sydney).title("User"))
-                            map?.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-                            i = 1
-                        }
-                        polylineOptions.add(LatLng(location.latitude, location.longitude))
-                            .color(Color.GREEN).width(15f)
-                        if (check) map?.addPolyline(polylineOptions)
-                        this.latitude.text = location.latitude.toString()
-                        this.longitude.text = location.longitude.toString()
-                    }
-                }
+                    updateLocationUI(location)
+                 }
                 SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) { Speed ->
-                    this.txtSpeed.text =
-                        "${SharedData.convertSpeed(Speed.keys.first()).toInt()}${SharedData.toUnit}"
+                    this.txtSpeed.text =StringUtils.convert(Speed.keys.first())
                     FontUtils.setFont(requireContext(), this.txtSpeed)
 
                 }
-            }
         }
     }
 
-      fun mapAsync() {
+    private fun addPolylineIfValidState() {
+        val state = sharedPreferencesState.getString(MyLocationConstants.STATE, null)
+        if ((state == MyLocationConstants.START || state == MyLocationConstants.PAUSE || state == MyLocationConstants.RESUME) && check) {
+        val polylineOptions= PolylineOptions().addAll(convertToListLatLng()).color(Color.GREEN).width(15f)
+            map?.addPolyline(polylineOptions)
+            polylineOption=polylineOptions
+        }    }
+
+    private fun updateLocationUI(location: Location?) {
+      with(binding){
+          if (location == null) {
+              this!!.latitude.text = "0"
+              longitude.text = "0"
+          } else {
+              if (i == 0 && map != null && cameraPosition == null) {
+                  val sydney = LatLng(location.latitude, location.longitude)
+                  map?.addMarker(MarkerOptions().position(sydney).title("User"))
+                  map?.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+                  i = 1
+              }
+              polylineOption.add(LatLng(location.latitude, location.longitude)).color(Color.GREEN).width(15f)
+              if (check) map?.addPolyline(polylineOption)
+              map?.moveCamera(CameraUpdateFactory.newCameraPosition(updateMoveCamera(location)))
+              this!!.latitude.text = location.latitude.toString()
+              longitude.text = location.longitude.toString()
+          }
+      }
+    }
+
+    private fun updateMoveCamera(location: Location): CameraPosition {
+        return CameraPosition.Builder()
+            .target(LatLng(location.latitude, location.longitude))
+            .zoom(map?.cameraPosition?.zoom!!)
+            .bearing(location.bearing)
+            .build()
+    }
+
+    private fun checkPermission() {
+        if (requireActivity().checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+            requireActivity().checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        ) {
+            mapAsync()
+
+        }
+    }
+
+    fun mapAsync() {
         mapFragment?.getMapAsync(callback)
 
     }
@@ -151,7 +166,7 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
 
     override fun onVisibilityPolyLine(boolean: Boolean) {
         check = boolean
-        if (boolean) map?.addPolyline(polylineOptions.addAll(convertToListLatLng())) else map?.clear()
+        if (boolean) map?.addPolyline(polylineOption.addAll(convertToListLatLng())) else map?.clear()
     }
     fun clear( ) {
  map?.clear()
