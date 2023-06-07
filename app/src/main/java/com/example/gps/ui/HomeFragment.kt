@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.OrientationEventListener
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import com.example.gps.MyLocationConstants
 import com.example.gps.R
@@ -36,12 +37,14 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentHomeBinding.bind(view)
         myDataBase = MyDataBase.getInstance(requireContext())
-        sharedPreferencesSetting =
-            requireContext().getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
+        sharedPreferencesSetting = requireContext().getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         sharedPreferencesState = requireContext().getSharedPreferences("state", MODE_PRIVATE)
         val positionsColor = sharedPreferencesSetting.getInt(SettingConstants.COLOR_DISPLAY, 2)
+         binding.speed.backgroundCircleColor=if(AppCompatDelegate.getDefaultNightMode()!=AppCompatDelegate.MODE_NIGHT_YES||AppCompatDelegate.getDefaultNightMode()!=AppCompatDelegate.MODE_NIGHT_UNSPECIFIED) Color.WHITE else Color.BLACK
+        binding.speed.speedTextColor=if(AppCompatDelegate.getDefaultNightMode()!=AppCompatDelegate.MODE_NIGHT_YES) Color.WHITE else Color.BLACK
+        binding.speed.textColor=if(AppCompatDelegate.getDefaultNightMode()!=AppCompatDelegate.MODE_NIGHT_YES) Color.WHITE else Color.BLACK
         onColorChange(positionsColor)
-        with(binding) {
+         with(binding) {
 
             if (requireContext().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
                 onVisibilityChanged(
@@ -120,14 +123,22 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+    }
     override fun toggleButtonVisibility(boolean: Boolean) {
         binding.imgReset?.visibility = if (boolean) View.VISIBLE else View.GONE
     }
 
     override fun onColorChange(i: Int) {
         try {
-            if (i == 1) binding.speed.trianglesColor = Color.BLUE
-            binding.speed.setSpeedometerColor(ColorUtils.checkColor(i));
+             binding.speed.speedTextColor = ColorUtils.checkColor(i)
+            binding.speed.textColor = ColorUtils.checkColor(i)
+            binding.speed.trianglesColor = ColorUtils.checkColor(i)
+            binding.speed.unitTextColor = ColorUtils.checkColor(i)
+            binding.speed.setSpeedometerColor(ColorUtils.checkColor(i))
+
         } catch (e: Exception) {
         }
     }

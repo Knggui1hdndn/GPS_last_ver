@@ -17,6 +17,7 @@ import android.view.View.MeasureSpec
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.FileProvider.getUriForFile
 import com.example.gps.MyApplication
 import com.example.gps.R
@@ -34,12 +35,12 @@ import java.io.IOException
 
 
 class SplashActivity : AppCompatActivity() {
+
     @SuppressLint("MissingInflatedId")
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-
 
        createTimer(3L)
 

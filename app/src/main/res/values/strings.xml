@@ -6,4 +6,20 @@
     <string name="title_notifications">Bản đồ</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="wraning_limit">Cảnh báo tốc độ giới hạn tối đa</string>
+    <string name="unit_speed">Đơn vị tốc độ</string>
+    <string name="max_speed_analog">Tốc độ tối đa của đồng hồ analog</string>
+    <string name="show_speed_in_noti">Hiển thi tốc độ trong Notification</string>
+    <string name="track_on_map">Bật theo dõi trên bản đồ</string>
+    <string name="speed_alarm">Báo động tốc độ</string>
+    <string name="general_settings">CÀI ĐẶT CHUNG</string>
+    <string name="color_display">Màu hiển thị</string>
+    <string name="clock_display">Hiển thị đồng hồ</string>
+    <string name="show_btn_reset">Hiển thị nút đặt lại</string>
+    <string name="reset_distance">Đặt lại công tơ mét</string>
+    <string name="let_go">Đi nào</string>
+    <string name="ng_h_o_qu_ng_ng">đồng hồ đo quãng đường</string>
+    <string name="average_speed">Tốc độ trung bình</string>
+    <string name="distance">Khoảng cách</string>
+    <string name="max_speed">Tốc độ tối đa</string>
 </resources>

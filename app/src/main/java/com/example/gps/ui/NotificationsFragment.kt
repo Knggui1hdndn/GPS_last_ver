@@ -139,16 +139,14 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
     }
 
     private fun updateMoveCamera(location: Location): CameraPosition {
-        return CameraPosition.Builder()
-            .target(LatLng(location.latitude, location.longitude))
-            .zoom(map?.cameraPosition?.zoom!!)
-            .bearing(location.bearing)
-            .build()
+        return CameraPosition.Builder().target(LatLng(location.latitude, location.longitude))
+            .zoom(map?.cameraPosition?.zoom!!).bearing(location.bearing).build()
     }
 
     private fun checkPermission() {
-        if (requireActivity().checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-            requireActivity().checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        if (requireActivity().checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || requireActivity().checkSelfPermission(
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
         ) {
             mapAsync()
 
@@ -161,11 +159,9 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
     }
 
     private fun convertToListLatLng(): List<LatLng> {
-        val listMovement = MyDataBase.getInstance(requireContext()).locationDao()
-            .getLocationData(
-                MyDataBase.getInstance(requireContext()).movementDao()
-                    .getLastMovementDataId()
-            )
+        val listMovement = MyDataBase.getInstance(requireContext()).locationDao().getLocationData(
+            MyDataBase.getInstance(requireContext()).movementDao().getLastMovementDataId()
+        )
 
         return listMovement.map { LatLng(it.latitude, it.longitude) }.toList()
     }
@@ -183,7 +179,7 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
 
     override fun onVisibilityPolyLine(boolean: Boolean) {
         check = boolean
-        if (boolean) map?.addPolyline(polylineOption ) else map?.clear()
+        if (boolean) map?.addPolyline(polylineOption) else map?.clear()
     }
 
     fun clear() {

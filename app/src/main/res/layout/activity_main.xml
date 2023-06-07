@@ -5,18 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.HistoryActivity">
-<androidx.appcompat.widget.Toolbar
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/mToolBar"
-    app:title="Lịch sử di chuyển"
-    app:titleTextColor="@color/white"
-    android:layout_alignParentTop="true"/>
- <androidx.recyclerview.widget.RecyclerView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/rcy"
-    android:layout_below="@id/mToolBar"
-    />
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/mToolBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        app:title="Lịch sử di chuyển"
+        app:titleTextColor="@color/white" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcy"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/mToolBar" />
 
 </RelativeLayout>

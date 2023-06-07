@@ -48,6 +48,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                style="@style/BackgroundTint"
                 android:weightSum="10">
 
                 <View
@@ -61,7 +62,7 @@
                     android:layout_height="65dp"
                     android:layout_gravity="bottom|end"
                     android:layout_weight="5"
-                    android:background="@color/black"
+                    style="@style/BottomNavication"
                     app:itemIconTint="@color/color2"
                     app:itemTextColor="#6C6969"
                     app:menu="@menu/bottom_nav_menu" />

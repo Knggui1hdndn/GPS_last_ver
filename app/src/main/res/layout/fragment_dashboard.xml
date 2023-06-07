@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
-    android:gravity="center_horizontal"
+     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:weightSum="10">
 
@@ -54,7 +53,7 @@
                 android:layout_centerVertical="true"
                 android:text="KM/H"
                 android:textColor="@color/teal_200"
-                android:textSize="25sp" />
+                android:textSize="22sp" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -66,10 +65,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="đồng hồ đo quãng đường"
+                    android:text="@string/ng_h_o_qu_ng_ng"
                     android:textColor="#838080"
 
-                    android:textSize="25sp" />
+                    android:textSize="20sp" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -81,7 +80,7 @@
                         android:layout_height="wrap_content"
                         android:text="000000"
                         android:textColor="#838080"
-                        android:textSize="25sp" />
+                        android:textSize="20sp" />
 
                     <TextView
                         android:id="@+id/txtKm3"

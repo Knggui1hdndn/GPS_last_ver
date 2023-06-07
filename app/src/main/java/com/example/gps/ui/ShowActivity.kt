@@ -25,6 +25,7 @@ import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.FileProvider
 import com.example.gps.R
 import com.example.gps.SettingConstants
@@ -112,7 +113,6 @@ class ShowActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setupMyActivity()
         setBackgroundColor()
-
         setFont()
 
         bottom.imgCap.setOnClickListener {
@@ -170,8 +170,8 @@ class ShowActivity : AppCompatActivity() {
         return ""
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private fun setupMyActivity() {
+     @SuppressLint("NewApi")
+     private fun setupMyActivity() {
         binding = ActivityShowBinding.inflate(layoutInflater)
         bottom = binding.bottom
         setContentView(binding.root)

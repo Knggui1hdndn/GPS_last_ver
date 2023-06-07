@@ -6,6 +6,8 @@ import android.app.Service
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
+import android.content.res.Configuration
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
@@ -13,13 +15,10 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -57,12 +56,12 @@ class MainActivity2 : AppCompatActivity() {
     private fun setUnitSpeepAndDistance() {
         try {
             SharedData.toUnit = getCurrentUnit()
-             when (SharedData.toUnit) {
+            when (SharedData.toUnit) {
                 "km/h" -> SharedData.toUnitDistance = "km"
                 "mph" -> SharedData.toUnitDistance = "mi"
                 "knot" -> SharedData.toUnitDistance = "nm"
             }
-         } catch (e: Exception) {
+        } catch (e: Exception) {
             Log.d("okok312o1", "${e.message}")
 
         }
@@ -72,22 +71,33 @@ class MainActivity2 : AppCompatActivity() {
     @SuppressLint("UseCompatLoadingForDrawables", "SetTextI18n", "MissingPermission", "InlinedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setUpActivity()
+        checkOpenFirst()
+        setDataDefault()
+        SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
+    }
+
+    private fun setUpActivity() {
         binding = ActivityMain2Binding.inflate(layoutInflater)
-        SharedData.activity = this
+         SharedData.activity = this
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         setUnitSpeepAndDistance()
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_home_black_24dp)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = ""
         sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         binding.times.typeface = Typeface.createFromAsset(assets, "font_lcd.ttf")
         binding.times.text = "00 : 00 : 00"
         val navView: BottomNavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_activity_main2)
-        binding.times.visibility = if(sharedPreferences.getBoolean(CLOCK_DISPLAY, true)) View.VISIBLE else View.GONE
-         val appBarConfiguration = AppBarConfiguration(
+        val checkShowClock = sharedPreferences.getBoolean(CLOCK_DISPLAY, false)
+        binding.times.visibility = if (checkShowClock) View.VISIBLE else View.GONE
+        val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
+                R.id.navigation_home,
+                R.id.navigation_dashboard,
+                R.id.navigation_notifications
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -95,52 +105,63 @@ class MainActivity2 : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, _, _ ->
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_home_black_24dp)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
+        if (resources.configuration.orientation==Configuration.ORIENTATION_LANDSCAPE){
+            binding.toolbar.visibility=View.GONE
+        }
+    }
 
+    private fun setDataDefault() {
+        try {
+            val navHostFragment =
+                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as? NavHostFragment
+            navHostFragment?.childFragmentManager?.fragments?.getOrNull(0)?.childFragmentManager?.findFragmentById(
+                R.id.frag
+            )?.let { fragment ->
+                if (fragment is ParameterFragment) {
+                    fragment.setDataWhenComeBack()
+                }
+            }
+            navHostFragment?.childFragmentManager?.fragments?.getOrNull(0)?.let { fragment ->
+                if (fragment is HomeFragment) {
+                    fragment.setSpeedAndUnit()
+                }
+            }
+        } catch (_: Exception) {
         }
 
-        navController.addOnDestinationChangedListener { controller, destination, arguments -> }
-        if (!sharedPreferences.getBoolean(
-                SettingConstants.CHECK_OPEN,
-                false
-            )
-        ) {
+    }
+
+    private fun checkOpenFirst() {
+        if (!sharedPreferences.getBoolean(SettingConstants.CHECK_OPEN, false)) {
             val myDataBase = MyDataBase.getInstance(this)
             val builder = AlertDialog.Builder(this)
             val list = arrayOf("Mph", "Km", "Knot")
-            builder.setTitle("Chọn đơn vị đo").setItems(
-                list
-            ) { dialog, which ->
-                sharedPreferences.edit().apply {
-                    putBoolean(SettingConstants.CHECK_OPEN, true)
-                    putInt(SettingConstants.COLOR_DISPLAY, 2)
-                    putBoolean(SettingConstants.DISPLAY_SPEED, true)
-                    putBoolean(SettingConstants.TRACK_ON_MAP, true)
-                    putBoolean(SettingConstants.SHOW_RESET_BUTTON, true)
-                    putBoolean(SettingConstants.SPEED_ALARM, true)
-                }.apply()
+            builder.setCancelable(false)
+            builder.setTitle("Chọn đơn vị đo").setItems(list) { dialog, which ->
+                saveInShared()
                 myDataBase.SpeedDao().insertSpeed(Speed(1, which + 1 == 1))
                 myDataBase.SpeedDao().insertSpeed(Speed(2, which + 1 == 2))
                 myDataBase.SpeedDao().insertSpeed(Speed(3, which + 1 == 3))
                 insert(myDataBase)
                 setUnitSpeepAndDistance()
-                val navHostFragment: NavHostFragment? = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?
-                (navHostFragment!!.childFragmentManager.fragments[0] as HomeFragment).setSpeedAndUnit()
-                (navHostFragment.childFragmentManager.fragments[0].childFragmentManager.findFragmentById(R.id.frag) as ParameterFragment).setDataWhenComeBack()
+                setDataDefault()
                 dialog.cancel()
             }
             builder.create().show()
         }
-        try {
-            val navHostFragment: NavHostFragment? =
-                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?
-            (navHostFragment?.childFragmentManager?.fragments?.get(0)?.childFragmentManager?.findFragmentById(
-                R.id.frag
-            ) as ParameterFragment).setDataWhenComeBack()
-            (navHostFragment.childFragmentManager.fragments[0] as HomeFragment).setSpeedAndUnit()
-        } catch (e: java.lang.Exception) {
-        }
+    }
 
-         SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
+
+    private fun saveInShared() {
+        sharedPreferences.edit().apply {
+            putBoolean(SettingConstants.CHECK_OPEN, true)
+            putInt(SettingConstants.COLOR_DISPLAY, 2)
+            putBoolean(SettingConstants.DISPLAY_SPEED, true)
+            putBoolean(SettingConstants.TRACK_ON_MAP, true)
+            putBoolean(SettingConstants.SHOW_RESET_BUTTON, true)
+            putBoolean(SettingConstants.SPEED_ALARM, true)
+        }.apply()
     }
 
     private fun insert(myDataBase: MyDataBase) {
@@ -155,7 +176,8 @@ class MainActivity2 : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         binding.navView.itemIconTintList = getColorRes()
-        binding.times.visibility = if (sharedPreferences.getBoolean(CLOCK_DISPLAY, true)) View.VISIBLE else View.GONE
+        binding.times.visibility =
+            if (sharedPreferences.getBoolean(CLOCK_DISPLAY, true)) View.VISIBLE else View.GONE
 
     }
 
@@ -164,8 +186,7 @@ class MainActivity2 : AppCompatActivity() {
             SettingConstants.SETTING,
             Service.MODE_PRIVATE
         ).getInt(SettingConstants.COLOR_DISPLAY, 2)
-        Log.d("okookoo", intColor.toString())
-        when (intColor) {
+         when (intColor) {
             1 -> return getColorStateList(R.color.color1)
             3 -> return getColorStateList(R.color.color2)
             2 -> return getColorStateList(R.color.color3)
@@ -177,8 +198,12 @@ class MainActivity2 : AppCompatActivity() {
         return getColorStateList(R.color.color2)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.history, menu)
+        val check = AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES
+        menu!!.getItem(0).iconTintList =
+            if (check) ColorStateList.valueOf(Color.BLACK) else ColorStateList.valueOf(Color.WHITE)
         return true
     }
 

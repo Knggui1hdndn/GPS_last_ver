@@ -5,23 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-     tools:context=".ui.setting.Setting">
+    tools:context=".ui.setting.Setting">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/mToolBar"
-        android:layout_alignParentTop="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:title="Cài đặt"
-        app:titleTextColor="@color/white" />
+        android:layout_alignParentTop="true"
+          app:title="Cài đặt"
+        />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_below="@+id/mToolBar"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/btnLetGo"
-        android:layout_height="wrap_content">
+        android:layout_below="@+id/mToolBar">
 
         <LinearLayout
+            style="@style/BackgroundTint1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -29,11 +30,12 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="#0d0d0d"
                 app:cardCornerRadius="20dp"
+                style="@style/BackgroundTint1"
                 app:cardUseCompatPadding="true">
 
                 <LinearLayout
+                    style="@style/BackgroundTint1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -48,7 +50,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
 
-                            android:background="#0d0d0d"
                             android:orientation="vertical">
 
                             <TextView
@@ -56,7 +57,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="10dp"
                                 android:layout_marginTop="15dp"
-                                android:text="Đơn vị tốc độ"
+                                android:text="@string/unit_speed"
                                 android:textColor="#ABB5AFAF" />
 
                             <LinearLayout
@@ -68,45 +69,45 @@
 
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/btnMph"
+                                    style="@style/Button"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="3"
-                                    android:backgroundTint="#0d0d0d"
                                     android:baselineAligned="false"
                                     android:padding="11dp"
                                     android:text="Mph"
                                     app:cornerRadius="25dp"
-                                    app:strokeColor="#AAA3A3"
+                                    app:strokeColor="@color/strokeColor"
                                     app:strokeWidth="0.5dp" />
 
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/btnKm"
+                                    style="@style/Button"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="5dp"
                                     android:layout_marginEnd="5dp"
                                     android:layout_weight="3"
-                                    android:backgroundTint="#0d0d0d"
 
                                     android:padding="11dp"
 
                                     android:text="Km"
                                     app:cornerRadius="25dp"
-                                    app:strokeColor="#AAA3A3"
+                                    app:strokeColor="@color/strokeColor"
                                     app:strokeWidth="0.5dp" />
 
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/btnKnot"
+                                    style="@style/Button"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="3"
 
-                                    android:backgroundTint="#0d0d0d"
+                                    android:layout_weight="3"
                                     android:padding="11dp"
 
                                     android:text="Knot"
                                     app:cornerRadius="25dp"
-                                    app:strokeColor="#AAA3A3"
+                                    app:strokeColor="@color/strokeColor"
                                     app:strokeWidth="0.5dp" />
                             </LinearLayout>
                         </LinearLayout>
@@ -116,7 +117,6 @@
 
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="#0d0d0d"
                         android:orientation="vertical">
 
                         <TextView
@@ -136,40 +136,40 @@
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnOto"
+                                style="@style/Button"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="3"
-                                android:backgroundTint="#0d0d0d"
                                 android:padding="11dp"
                                 android:text="Ô tô"
                                 app:cornerRadius="25dp"
-                                app:strokeColor="#AAA3A3"
+                                app:strokeColor="@color/strokeColor"
                                 app:strokeWidth="0.5dp" />
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnBicycle"
+                                style="@style/Button"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="5dp"
                                 android:layout_marginEnd="5dp"
                                 android:layout_weight="3"
-                                android:backgroundTint="#0d0d0d"
                                 android:padding="11dp"
                                 android:text="Xe đạp"
                                 app:cornerRadius="25dp"
-                                app:strokeColor="#AAA3A3"
+                                app:strokeColor="@color/strokeColor"
                                 app:strokeWidth="0.5dp" />
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnTrain"
+                                style="@style/Button"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="3"
-                                android:backgroundTint="#0d0d0d"
                                 android:padding="11dp"
                                 android:text="Tàu hỏa"
                                 app:cornerRadius="25dp"
-                                app:strokeColor="#AAA3A3"
+                                app:strokeColor="@color/strokeColor"
                                 app:strokeWidth="0.5dp" />
                         </LinearLayout>
                     </LinearLayout>
@@ -177,7 +177,6 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="#0d0d0d"
                         android:orientation="vertical"
                         android:padding="10dp">
 
@@ -190,18 +189,18 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="7"
-                                android:text="Cảnh báo tốc độ giới hạn tối đa" />
+                                android:text="@string/wraning_limit" />
 
                             <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnWarningLimit"
+                                style="@style/Button"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="3"
-                                android:backgroundTint="#0d0d0d"
                                 android:padding="11dp"
                                 android:text="Mph"
-                                android:id="@+id/btnWarningLimit"
 
-                                app:strokeColor="#AAA3A3"
+                                app:strokeColor="@color/strokeColor"
                                 app:strokeWidth="0.5dp" />
                         </LinearLayout>
 
@@ -215,19 +214,19 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="7"
-                                android:text="Tốc độ tối đa của đồng hồ analog" />
+                                android:text="@string/max_speed_analog" />
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnMaxSpeepAnalog"
+                                style="@style/Button"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="3"
-                                android:backgroundTint="#0d0d0d"
                                 android:padding="11dp"
-                                app:iconGravity="end"
-                                app:icon="@drawable/baseline_arrow_drop_down_24"
                                 android:text="Mph"
-                                app:strokeColor="#AAA3A3"
+                                app:icon="@drawable/baseline_arrow_drop_down_24"
+                                app:iconGravity="end"
+                                app:strokeColor="@color/strokeColor"
                                 app:strokeWidth="0.5dp" />
                         </LinearLayout>
 
@@ -242,7 +241,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="7"
-                                android:text="Hiển thij tốc độ trong Notification" />
+                                android:text="@string/show_speed_in_noti" />
 
                             <Switch
                                 android:id="@+id/swtShowSpeedInNoti"
@@ -267,7 +266,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="7"
-                                android:text="Bật theo dõi trên bản đồ" />
+                                android:text="@string/track_on_map" />
 
                             <Switch
                                 android:id="@+id/swtTrackOnMap"
@@ -286,14 +285,13 @@
 
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp"
-                            android:background="#0d0d0d"
                             android:weightSum="10">
 
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="7"
-                                android:text="Báo động tốc độ" />
+                                android:text="@string/speed_alarm" />
 
                             <Switch
                                 android:id="@+id/swtAlarm"
@@ -314,21 +312,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
-                android:text="CÀI ĐẶT CHUNG"
+                android:text="@string/general_settings"
                 android:textColor="#ABB5AFAF"
                 android:textStyle="bold" />
 
             <androidx.cardview.widget.CardView
+                style="@style/BackgroundTint1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="#0d0d0d"
                 app:cardCornerRadius="20dp"
                 app:cardUseCompatPadding="true">
 
                 <LinearLayout
+                    style="@style/BackgroundTint1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#0d0d0d"
                     android:orientation="vertical"
                     android:padding="10dp"
 
@@ -344,7 +342,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_weight="3"
-                            android:text="Màu hiển thị" />
+                            android:text="@string/color_display" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -358,7 +356,7 @@
                                 android:layout_height="30dp"
                                 android:layout_marginStart="5dp"
                                 android:layout_marginEnd="5dp"
-                                android:backgroundTint="@color/white"
+                                android:backgroundTint="@color/color_1"
                                 app:cornerRadius="15dp"
                                 app:strokeColor="#837C7C"
                                 app:strokeWidth="1.5dp" />
@@ -369,8 +367,7 @@
                                 android:layout_height="30dp"
                                 android:layout_marginStart="5dp"
                                 android:layout_marginEnd="5dp"
-
-                                android:backgroundTint="@color/teal_200"
+                                android:backgroundTint="@color/color_2"
                                 app:cornerRadius="10dp"
                                 app:strokeColor="#837C7C"
                                 app:strokeWidth="1.5dp" />
@@ -381,7 +378,7 @@
                                 android:layout_height="30dp"
                                 android:layout_marginStart="5dp"
                                 android:layout_marginEnd="5dp"
-                                android:backgroundTint="#FF0000"
+                                android:backgroundTint="@color/color_3"
                                 app:cornerRadius="10dp"
 
                                 app:strokeColor="#837C7C"
@@ -393,7 +390,7 @@
                                 android:layout_height="30dp"
                                 android:layout_marginStart="5dp"
                                 android:layout_marginEnd="5dp"
-                                android:backgroundTint="#FFE500"
+                                android:backgroundTint="@color/color_4"
                                 app:cornerRadius="10dp"
                                 app:strokeColor="#837C7C"
 
@@ -405,7 +402,7 @@
                                 android:layout_height="30dp"
                                 android:layout_marginStart="5dp"
                                 android:layout_marginEnd="5dp"
-                                android:backgroundTint="@color/purple_200"
+                                android:backgroundTint="@color/color_5"
                                 app:cornerRadius="10dp"
                                 app:strokeColor="#837C7C"
                                 app:strokeWidth="1.5dp" />
@@ -416,7 +413,7 @@
                                 android:layout_height="30dp"
                                 android:layout_marginStart="5dp"
                                 android:layout_marginEnd="5dp"
-                                android:backgroundTint="#00FF0A"
+                                android:backgroundTint="@color/color_6"
                                 app:cornerRadius="10dp"
                                 app:strokeColor="#837C7C"
                                 app:strokeWidth="1.5dp" />
@@ -427,7 +424,7 @@
                                 android:layout_height="30dp"
                                 android:layout_marginStart="5dp"
                                 android:layout_marginEnd="5dp"
-                                android:backgroundTint="#03A9F4"
+                                android:backgroundTint="@color/color_7"
                                 app:cornerRadius="10dp"
                                 app:strokeColor="#837C7C"
                                 app:strokeWidth="1.5dp" />
@@ -446,7 +443,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="7"
-                            android:text="Hiển thị đồng hồ" />
+                            android:text="@string/clock_display" />
 
                         <Switch
                             android:id="@+id/swtClockDisplay"
@@ -470,15 +467,15 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="7"
-                            android:text="Hiển thị nút đặt lại" />
+                            android:text="@string/show_btn_reset" />
 
                         <Switch
+                            android:id="@+id/swtShowReset"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="3"
                             android:checked="true"
                             android:padding="11dp"
-                            android:id="@+id/swtShowReset"
                             android:trackTint="@color/teal_200"
                             android:trackTintMode="add"
                             tools:ignore="UseSwitchCompatOrMaterialXml" />
@@ -500,22 +497,22 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Đặt lại công tơ mét" />
+                                android:text="@string/reset_distance" />
 
                             <TextView
+                                android:id="@+id/txtDistance"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="000000 km/h"
-android:id="@+id/txtDistance"
                                 android:textColor="#AAA3A3" />
                         </LinearLayout>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnResetDistance"
+                            style="@style/Button"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="3"
-                            android:backgroundTint="#0d0d0d"
                             android:text="Mph"
                             app:cornerRadius="25dp"
                             app:icon="@drawable/baseline_refresh_24"
@@ -528,12 +525,13 @@ android:id="@+id/txtDistance"
             </androidx.cardview.widget.CardView>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
     <Button
+        android:id="@+id/btnLetGo"
+        style="@style/BackgroundTint"
         android:layout_width="match_parent"
-        android:layout_alignParentBottom="true"
         android:layout_height="wrap_content"
-        android:text="Đi nào"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        android:id="@+id/btnLetGo"/>
+        android:layout_alignParentBottom="true"
+        android:text="@string/let_go"
+        android:textStyle="bold" />
 </RelativeLayout>

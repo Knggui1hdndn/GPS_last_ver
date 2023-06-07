@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottom_sheet"
+    style="@style/BackgroundTint"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/border1"
@@ -20,43 +21,40 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="Trip_23/05/2023_15:40:46"
-            android:textColor="@color/white"
             android:textSize="20sp"
 
 
             android:textStyle="bold" />
 
-        <TextView
+        <ImageView
             android:id="@+id/imgDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="5dp"
             android:layout_toLeftOf="@id/imgCap"
-            android:drawableStart="@drawable/baseline_delete_outline_24"
-            android:textColor="@color/white"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+        android:src="@drawable/baseline_delete_outline_24"/>
 
-        <TextView
+        <ImageView
             android:id="@+id/imgCap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-             android:layout_marginTop="20dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="5dp"
             android:layout_toLeftOf="@id/imgShare"
-            android:drawableStart="@drawable/baseline_fit_screen_24"
-            android:textColor="@color/white"
+            android:src="@drawable/baseline_fit_screen_24"
             android:textSize="20sp"
             android:textStyle="bold" />
-        <TextView
+
+        <ImageView
             android:id="@+id/imgShare"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="20dp"
-            android:drawableStart="@drawable/baseline_share_24"
-            android:textColor="@color/white"
+            android:src="@drawable/baseline_share_24"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -112,8 +110,10 @@
             android:layout_alignTop="@id/start"
             android:layout_marginStart="30dp"
             android:layout_toRightOf="@id/start"
-            android:singleLine="true"
-            android:text="gfsfxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            android:ellipsize="end"
+            android:maxLines="2"
+
+            android:text="gfsfxxxxxxxxxxxxxxxxxxxxxxxưdwddddddddddddddddddddddddđxxxxxxxxxxx"
             android:textColor="#9A9494" />
 
         <TextView
@@ -124,8 +124,9 @@
             android:layout_alignStart="@id/txtAddressStart"
             android:layout_alignTop="@id/end"
             android:layout_toRightOf="@id/end"
-            android:singleLine="true"
-            android:text="gfsfxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="gfsfxxxxxxxxxxxxxxxxxxxxxxxxxxfgfgfdgxxxxxxxxx"
             android:textColor="#9A9494"
 
             />
@@ -142,80 +143,94 @@
             android:layout_height="wrap_content"
             android:weightSum="10">
 
-            <LinearLayout
+            <androidx.cardview.widget.CardView
+
+                style="@style/BackgroundTint"
                 android:layout_width="0dp"
                 android:layout_height="80dp"
                 android:layout_margin="5dp"
                 android:layout_weight="5"
-                android:background="@drawable/border"
-                android:orientation="vertical"
-                app:cornerRadius="5dp"
-                app:strokeColor="@color/white"
-                app:strokeWidth="2dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="10dp"
-                    android:text="Tốc độ tối đa"
-                    android:textColor="#9A9494" />
+                app:cardCornerRadius="5dp"
+                app:cardUseCompatPadding="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:gravity="center">
+                    android:orientation="vertical"
+                    app:cornerRadius="5dp"
+                    app:strokeColor="@color/white"
+                    app:strokeWidth="2dp">
 
                     <TextView
-                        android:id="@+id/txtSpeed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:singleLine="true"
-                        android:text="5km/h"
-                        android:textSize="20dp"
-                        android:textColor="@color/teal_200" />
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:text="Tốc độ tối đa"
+                        android:textColor="#9A9494" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="5dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/txtSpeed"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:singleLine="true"
+                            android:text="5km/h"
+                            android:textColor="@color/teal_200"
+                            android:textSize="20dp" />
 
 
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-            <LinearLayout
+            <androidx.cardview.widget.CardView
+                style="@style/BackgroundTint"
                 android:layout_width="0dp"
-
                 android:layout_height="80dp"
                 android:layout_margin="5dp"
                 android:layout_weight="5"
-                android:background="@drawable/border"
-                android:orientation="vertical"
-                app:cornerRadius="5dp"
-                app:strokeColor="@color/white"
-                app:strokeWidth="2dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="10dp"
-                    android:text="Tốc độ trung bình"
-                    android:textColor="#9A9494" />
+                app:cardCornerRadius="5dp"
+                app:cardUseCompatPadding="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:gravity="center">
+                    android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/txtAverageSpeed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="20dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:text="Tốc độ trung bình"
+                        android:textColor="#9A9494" />
 
-                        android:singleLine="true"
-                        android:text="5"
-                        android:textColor="@color/teal_200" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="5dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center">
 
+                        <TextView
+                            android:id="@+id/txtAverageSpeed"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:singleLine="true"
+                            android:text="5"
+                            android:textColor="@color/teal_200"
+                            android:textSize="20dp" />
+
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+
         </LinearLayout>
 
         <LinearLayout
@@ -223,55 +238,64 @@
             android:layout_height="wrap_content"
             android:weightSum="10">
 
-            <LinearLayout
-                android:layout_width="0dp"
+            <androidx.cardview.widget.CardView
 
+                style="@style/BackgroundTint"
+                android:layout_width="0dp"
                 android:layout_height="80dp"
                 android:layout_margin="5dp"
                 android:layout_weight="5"
-                android:background="@drawable/border"
-                android:orientation="vertical"
-                app:cornerRadius="5dp"
-                app:strokeColor="@color/white"
-                app:strokeWidth="2dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="10dp"
-                    android:text="Khoảng cách"
-                    android:textColor="#9A9494" />
+                app:cardCornerRadius="5dp"
+                app:cardUseCompatPadding="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:gravity="center">
+                    android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/txtDistance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="20dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:text="Khoảng cách"
+                        android:textColor="#9A9494" />
 
-                        android:singleLine="true"
-                        android:text="5km/h"
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center">
 
-                        android:textColor="@color/teal_200" />
+                        <TextView
+                            android:id="@+id/txtDistance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:singleLine="true"
+
+                            android:text="5km/h"
+                            android:textColor="@color/teal_200"
+
+                            android:textSize="20dp" />
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-            <LinearLayout
+            <androidx.cardview.widget.CardView
+
+                style="@style/BackgroundTint"
                 android:layout_width="0dp"
-
                 android:layout_height="80dp"
                 android:layout_margin="5dp"
                 android:layout_weight="5"
-                android:background="@drawable/border"
+                app:cardCornerRadius="5dp"
+                app:cardUseCompatPadding="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
-                app:cornerRadius="5dp"
-                app:strokeColor="@color/white"
-                app:strokeWidth="2dp">
+                android:layout_marginTop="10dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -288,15 +312,16 @@
 
                     <TextView
                         android:id="@+id/txtTime"
-                        android:textSize="20dp"
-
                         android:layout_width="wrap_content"
+
                         android:layout_height="wrap_content"
                         android:singleLine="true"
                         android:text="00 : 00 : 00"
-                        android:textColor="@color/teal_200" />
+                        android:textColor="@color/teal_200"
+                        android:textSize="20dp" />
                 </LinearLayout>
             </LinearLayout>
+            </androidx.cardview.widget.CardView>
         </LinearLayout>
 
     </LinearLayout>
