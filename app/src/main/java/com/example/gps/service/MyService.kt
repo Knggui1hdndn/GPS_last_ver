@@ -80,7 +80,7 @@ class MyService : Service(), LocationChangeListener {
             this,
             0,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+               PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
         val sharedPreferences =
             application.getSharedPreferences(SettingConstants.SETTING, Context.MODE_PRIVATE)

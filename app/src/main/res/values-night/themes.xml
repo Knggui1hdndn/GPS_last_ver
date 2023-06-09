@@ -39,6 +39,7 @@
     <style name="Button">
         <item name="android:backgroundTint">#0d0d0d</item>
         <item name="android:textColor">@color/white</item>
+        <item name="android:iconTint">@color/black</item>
     </style>
 
     <style name="MyTheme" parent="@android:style/TextAppearance">

@@ -43,7 +43,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
             if (granted.entries.all { it.value }) {
                 start()
-                val fragment = checkFragmnetNotification()
+                val fragment = checkFragmentNotification()
                 if (fragment is NotificationsFragment) {
                     fragment.mapAsync()
                 }
@@ -86,7 +86,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
             startService(MyLocationConstants.PAUSE)
         }
         binding.btnStop.setOnClickListener {
-            val fragment = checkFragmnetNotification()
+            val fragment = checkFragmentNotification()
             if (fragment is NotificationsFragment) {
                 fragment.clear()
 
@@ -148,7 +148,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
     private fun onDataChangeWithOrientationLandscape() {
         with(binding) {
             if (requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                val fragment = checkFragmnetNotification()
+                val fragment = checkFragmentNotification()
                 if (fragment is NotificationsFragment) {
                     times!!.visibility = View.GONE
                 }
@@ -160,22 +160,20 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
                     startActivity(Intent(requireActivity(), Setting::class.java))
                 }
                 stop!!.setOnClickListener {
-                    val fragment = checkFragmnetNotification()
+                    val fragment = checkFragmentNotification()
                     if (fragment is NotificationsFragment) {
                         fragment.clear()
                     }
                     stopService()
                 }
                 imgRotateScreen1!!.setOnClickListener {
-                    requireActivity().requestedOrientation =
-                        ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+                    requireActivity().requestedOrientation =  ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
                 }
             }
         }
     }
 
-    private fun checkFragmnetNotification(): Fragment? {
-
+    private fun checkFragmentNotification(): Fragment? {
         return (requireActivity().supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?)?.childFragmentManager?.fragments?.get(
             0
         )

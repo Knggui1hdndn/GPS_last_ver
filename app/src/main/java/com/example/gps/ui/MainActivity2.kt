@@ -1,6 +1,7 @@
 package com.example.gps.ui
 
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
@@ -74,7 +75,7 @@ class MainActivity2 : AppCompatActivity() {
         setUpActivity()
         checkOpenFirst()
         setDataDefault()
-        SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
+         SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
     }
 
     private fun setUpActivity() {

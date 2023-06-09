@@ -120,7 +120,6 @@ class ShowActivity : AppCompatActivity() {
             binding.imgChange.visibility = View.GONE
             getDialogCapScreen().show()
 
-
         }
 
         bottom.imgDelete.setOnClickListener {
@@ -146,16 +145,6 @@ class ShowActivity : AppCompatActivity() {
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        Log.d("okkkok", "dfjfhjksadfh")
-
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-    }
 
     private fun formatTripInformation(): String {
         with(mData2) {
@@ -211,9 +200,8 @@ class ShowActivity : AppCompatActivity() {
                 this@ShowActivity,
                 binding.mCoordinatorLayout
             )
-            img.setImageBitmap(returnedBitmap!!)
-            snapShortMap {
-                bitmapScreen = drawImage(it, returnedBitmap)
+             snapShortMap {
+                bitmapScreen = drawImage(it, returnedBitmap!!)
                 img.setImageBitmap(bitmapScreen)
             }
             imgClose.setOnClickListener {

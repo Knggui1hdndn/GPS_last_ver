@@ -60,8 +60,7 @@ class Map() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
         myDataBase = MyDataBase.getInstance(context)
         sharedPreferences = context.getSharedPreferences("state", Service.MODE_PRIVATE)
-        notificationManager =
-            context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager = context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
         sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         sensor = sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 

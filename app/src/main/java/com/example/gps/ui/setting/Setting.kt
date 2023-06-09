@@ -79,38 +79,39 @@ class Setting : AppCompatActivity() {
     private var dashboardFragment: DashboardFragment? = null
     private var notificationsFragment: NotificationsFragment? = null
     var color = Color.BLACK
+    private var distance: Int = 0
 
     @SuppressLint("CommitPrefEdits", "SetTextI18n", "RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingBinding.inflate(layoutInflater)
         setContentView(binding.root)
-         initView()
+        initView()
         if (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES) {
             color = Color.WHITE
-        }else{
+        } else {
             binding.mToolBar.setTitleTextColor(Color.WHITE)
         }
         setSupportActionBar(binding.mToolBar)
-
         supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
-        vehicleDao = MyDataBase.getInstance(this).vehicleDao()
         myDataBase = MyDataBase.getInstance(this)
+        vehicleDao = myDataBase.vehicleDao()
         checkUnitClick = myDataBase.SpeedDao().getChecked().type
         colorPosition = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, 0)
         mainActivity2 = getActivity(SharedData.activity) as MainActivity2
-        navHostFragment = (mainActivity2.supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?)!!
+        navHostFragment =
+            (mainActivity2.supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?)!!
         childFragment = navHostFragment.childFragmentManager.fragments[0]
-        parameterFragment = childFragment.childFragmentManager.findFragmentById(R.id.frag) as ParameterFragment
+        parameterFragment =
+            childFragment.childFragmentManager.findFragmentById(R.id.frag) as ParameterFragment
+
+        distance = getSharedPreferences("state", Service.MODE_PRIVATE).getInt(
+            MyLocationConstants.DISTANCE,
+            0
+        )
         setBackgroundALL()
-        txtDistance.text = SharedData.convertDistance(
-            getSharedPreferences("state", Service.MODE_PRIVATE).getInt(
-                MyLocationConstants.DISTANCE,
-                0
-            ).toDouble()
-        ).toInt().toString()
         swtAlarm.setOnCheckedChangeListener { _, isChecked ->
             saveSettingBoolean(SettingConstants.SPEED_ALARM, isChecked)
         }
@@ -146,9 +147,7 @@ class Setting : AppCompatActivity() {
                 2 -> txtDistance.text = "000000 Km/h"
                 3 -> txtDistance.text = "000000 Knot"
             }
-            getSharedPreferences("state", Service.MODE_PRIVATE).edit().putInt(
-                MyLocationConstants.DISTANCE, 0
-            ).apply()
+            getSharedPreferences("state", Service.MODE_PRIVATE).edit().putInt(MyLocationConstants.DISTANCE, 0).apply()
         }
         btnLetGo.setOnClickListener {
             finish()
@@ -347,7 +346,9 @@ class Setting : AppCompatActivity() {
         btnMaxSpeepAnalog.text = vehicleChecked.clockSpeed.toString()
         btnWarningLimit.text = vehicleChecked.limitWarning.toString()
         SharedData.speedAnalog.value = vehicleChecked.clockSpeed
-
+        txtDistance.text = SharedData.convertDistance(
+            distance.toDouble()
+        ).toInt().toString()
 
     }
 
@@ -361,9 +362,7 @@ class Setting : AppCompatActivity() {
 
 
     private fun setBackgroundALL() {
-        btnLetGo.setBackgroundColor(
-            ColorUtils.checkColor(colorPosition)
-        )
+        btnLetGo.setBackgroundColor(ColorUtils.checkColor(colorPosition))
         btnWarningLimit.setTextColor(ColorUtils.checkColor(colorPosition))
         btnMaxSpeepAnalog.setTextColor(ColorUtils.checkColor(colorPosition))
         setBackgroundSpeedAndVehicle()
@@ -378,21 +377,26 @@ class Setting : AppCompatActivity() {
         btnKnot.setBackgroundColor(color)
 
     }
+
     private fun removeTextColorButtonUnit() {
         btnKm.setTextColor(color)
         btnMph.setTextColor(color)
         btnKnot.setTextColor(color)
     }
-fun checkWhenPositionColorIs1(){
-    if ((color==Color.WHITE  || color==Color.BLACK ) && colorPosition==1){
-        btnKm.setTextColor(color)
-        btnMph.setTextColor(color)
-        btnKnot.setTextColor(color)
+
+    private fun removeTextColorButtonVehicle() {
         btnBicycle.setTextColor(color)
         btnTrain.setTextColor(color)
         btnOto.setTextColor(color)
     }
-}
+
+    fun checkWhenPositionColorIs1() {
+        if (colorPosition == 1) {
+            removeTextColorButtonVehicle()
+            removeTextColorButtonUnit()
+        }
+    }
+
     private fun setColorSwt() {
         checkStateSwitch(swtAlarm, SettingConstants.SPEED_ALARM)
         checkStateSwitch(swtClockDisplay, SettingConstants.CLOCK_DISPLAY)
