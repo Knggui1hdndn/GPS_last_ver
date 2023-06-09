@@ -9,5 +9,6 @@ class MyLocationConstants {
          const val STATE="STATE"
         const val DISTANCE="DISTANCE"
 
+
     }
 }

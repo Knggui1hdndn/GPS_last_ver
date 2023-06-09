@@ -10,5 +10,6 @@ class SettingConstants {
         const val DISPLAY_SPEED = "DISPLAY_SPEED"
         const val CHECK_OPEN = "CHECK_OPEN"
         const val CLOCK_DISPLAY = "CLOCK_DISPLAY"
+        const val UNIT="UNIT"
     }
 }

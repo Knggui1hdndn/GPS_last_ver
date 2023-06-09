@@ -35,7 +35,7 @@ class MyApplication :
 
     override fun onCreate() {
         super.onCreate()
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         registerActivityLifecycleCallbacks(this)
         createChannelId()
         // Log the Mobile Ads SDK version.

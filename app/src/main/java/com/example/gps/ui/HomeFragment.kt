@@ -42,7 +42,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
         sharedPreferencesState = requireContext().getSharedPreferences("state", MODE_PRIVATE)
         val positionsColor = sharedPreferencesSetting.getInt(SettingConstants.COLOR_DISPLAY, 2)
         binding.speed.backgroundCircleColor =
-            if (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES || AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_UNSPECIFIED) Color.WHITE else Color.BLACK
+            if (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES ) Color.WHITE else Color.BLACK
         binding.speed.speedTextColor =
             if (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES) Color.WHITE else Color.BLACK
         binding.speed.textColor =
@@ -75,26 +75,19 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
                         SharedData.convertSpeed(it.keys.first()).toFloat(),
                         it1 / 1000
                     )
-
                 }
-
             }
-
         }
     }
 
     private fun getVehicleChecked(): Vehicle? {
         return try {
-            myDataBase.vehicleDao().getVehicleChecked(myDataBase.SpeedDao().getChecked().type)
+            myDataBase.vehicleDao().getVehicleChecked()
         } catch (e: Exception) {
             return null
         }
     }
 
-    fun getCurrentUnit(): String {
-        val myDataBase = MyDataBase.getInstance(requireContext()).SpeedDao()
-        return UnitUtils.getUnit(myDataBase.getChecked().type)
-    }
 
     private fun stopRunning() {
         val status = sharedPreferencesState.getString(MyLocationConstants.STATE, null)
@@ -117,11 +110,8 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
 
     override fun setSpeedAndUnit() {
         try {
-
             binding.speed.maxSpeed = getVehicleChecked()?.clockSpeed?.toFloat()!!
-            binding.speed.unit = UnitUtils.getUnit(myDataBase.SpeedDao().getChecked().type)
-            Log.d("okkkkkk", UnitUtils.getUnit(myDataBase.SpeedDao().getChecked().type))
-
+            binding.speed.unit = SharedData.toUnit
         } catch (e: Exception) {
             Log.d("okkkkkk", e.toString())
         }

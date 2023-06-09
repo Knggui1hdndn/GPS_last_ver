@@ -10,8 +10,11 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
@@ -66,6 +69,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
         setDataWhenComeBack()
         showOrHideView()
         setFont(binding)
+
         //set state is STOP when MyService not Running
         if (!isMyServiceRunning(MyService::class.java)) setState(MyLocationConstants.STOP);
         onDataChangeWithOrientationLandscape()
@@ -167,7 +171,8 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
                     stopService()
                 }
                 imgRotateScreen1!!.setOnClickListener {
-                    requireActivity().requestedOrientation =  ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+                    requireActivity().requestedOrientation =
+                        ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
                 }
             }
         }
@@ -237,6 +242,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
         ).getInt(SettingConstants.COLOR_DISPLAY, 2)
         with(binding) {
             FontUtils.setTextColor(intColor, this.txtMaxSpeed, txtAverageSpeed, txtDistance)
+
             btnStart.setBackgroundColor(ColorUtils.checkColor(intColor))
             btnPause.setBackgroundColor(ColorUtils.checkColor(intColor))
             btnResume.setBackgroundColor(ColorUtils.checkColor(intColor))
@@ -352,10 +358,12 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
     @SuppressLint("SetTextI18n")
     fun setDataWhenComeBack() {
         with(binding) {
-            txtDistance.text =  SharedData.convertDistance(SharedData.distanceLiveData.value!!).toInt() .toString() + SharedData.toUnitDistance
+            txtDistance.text =
+                SharedData.convertDistance(SharedData.distanceLiveData.value!!).toInt()
+                    .toString() + SharedData.toUnitDistance
             txtAverageSpeed.text = StringUtils.convert(SharedData.averageSpeedLiveData.value!!)
             txtMaxSpeed.text = StringUtils.convert(SharedData.maxSpeedLiveData.value!!)
-
+            Log.d("okokkoo", SharedData.toUnitDistance + "sssssss" + SharedData.toUnit)
         }
         setFont(binding)
 

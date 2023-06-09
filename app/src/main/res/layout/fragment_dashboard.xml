@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-     android:gravity="center_horizontal"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
     android:weightSum="10">
+
+    <fragment
+        android:id="@+id/signal"
+        android:name="com.example.gps.ui.FragmentSignal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="5"
+        android:layout_weight="4"
         android:orientation="horizontal"
         android:weightSum="9">
 
@@ -19,16 +27,15 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="9"
+            android:autoSizeMaxTextSize="4000dp"
+            android:autoSizeMinTextSize="35dp"
+            android:autoSizeTextType="uniform"
             android:gravity="center"
             android:lines="1"
-            android:ellipsize="end"
-            app:autoSizeTextType="uniform"
-             app:autoSizeMinTextSize="12sp"
-            app:autoSizeMaxTextSize="150sp"
-            app:autoSizeStepGranularity="2sp"
-
             android:text="000"
-            android:textColor="@color/teal_200" />
+            android:textColor="@color/teal_200"
+            android:textSize="4000dp"
+            tools:ignore="NestedWeights,UnusedAttribute" />
     </LinearLayout>
 
     <RelativeLayout
@@ -39,10 +46,10 @@
         android:orientation="vertical">
 
         <RelativeLayout
+            android:id="@+id/mRelativeLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="50dp"
-            android:id="@+id/mRelativeLayout"
             android:padding="20dp">
 
             <TextView
@@ -53,7 +60,8 @@
                 android:layout_centerVertical="true"
                 android:text="KM/H"
                 android:textColor="@color/teal_200"
-                android:textSize="22sp" />
+                android:textSize="22sp"
+                android:typeface="serif" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -66,9 +74,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/ng_h_o_qu_ng_ng"
-                    android:textColor="#838080"
-
-                    android:textSize="20sp" />
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -79,25 +86,24 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="000000"
-                        android:textColor="#838080"
-                        android:textSize="20sp" />
+                        android:textSize="25dp" />
 
                     <TextView
                         android:id="@+id/txtKm3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="KM"
-                        android:textColor="#838080" />
+                        android:textSize="25dp" />
                 </LinearLayout>
 
             </LinearLayout>
         </RelativeLayout>
+
         <fragment
             android:id="@+id/frag"
             android:name="com.example.gps.ui.ParameterFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-             android:layout_alignParentBottom="true"
-             />
+            android:layout_alignParentBottom="true" />
     </RelativeLayout>
 </LinearLayout>

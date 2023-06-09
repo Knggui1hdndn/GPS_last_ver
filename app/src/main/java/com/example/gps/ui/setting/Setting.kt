@@ -34,7 +34,6 @@ import com.example.gps.ui.MainActivity2
 import com.example.gps.ui.NotificationsFragment
 import com.example.gps.ui.ParameterFragment
 import com.example.gps.utils.ColorUtils
-import com.example.gps.utils.UnitUtils
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.internal.ContextUtils.getActivity
 import java.lang.Exception
@@ -88,7 +87,7 @@ class Setting : AppCompatActivity() {
         setContentView(binding.root)
         initView()
         if (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES) {
-            color = Color.WHITE
+            btnResetDistance.iconTint = ColorStateList.valueOf(Color.BLACK)
         } else {
             binding.mToolBar.setTitleTextColor(Color.WHITE)
         }
@@ -98,7 +97,6 @@ class Setting : AppCompatActivity() {
         sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         myDataBase = MyDataBase.getInstance(this)
         vehicleDao = myDataBase.vehicleDao()
-        checkUnitClick = myDataBase.SpeedDao().getChecked().type
         colorPosition = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, 0)
         mainActivity2 = getActivity(SharedData.activity) as MainActivity2
         navHostFragment =
@@ -147,7 +145,8 @@ class Setting : AppCompatActivity() {
                 2 -> txtDistance.text = "000000 Km/h"
                 3 -> txtDistance.text = "000000 Knot"
             }
-            getSharedPreferences("state", Service.MODE_PRIVATE).edit().putInt(MyLocationConstants.DISTANCE, 0).apply()
+            getSharedPreferences("state", Service.MODE_PRIVATE).edit()
+                .putInt(MyLocationConstants.DISTANCE, 0).apply()
         }
         btnLetGo.setOnClickListener {
             finish()
@@ -166,17 +165,17 @@ class Setting : AppCompatActivity() {
         }
 
         btnMph.setOnClickListener {
-            updateSpeedUnit("mph", "mi", 1)
+            updateSpeedUnit("mph", "mi")
         }
 
         btnKm.setOnClickListener {
-            updateSpeedUnit("km/h", "km", 2)
+            updateSpeedUnit("km/h", "km")
         }
         btnKnot.setOnClickListener {
-            updateSpeedUnit("knot", "nm", 3)
+            updateSpeedUnit("knot", "nm")
         }
 
-        onClickBtnColor(btnColor1, btnColor2, btnColor3, btnColor4, btnColor5, btnColor6, btnColor7)
+        onClickBtnColor(btnColor2, btnColor3, btnColor4, btnColor5, btnColor6, btnColor7)
 
     }
 
@@ -202,23 +201,56 @@ class Setting : AppCompatActivity() {
     }
 
     private fun updateVehicle(checkVehicleClick: Int) {
-        myDataBase.vehicleDao().updateUnChecked(checkUnitClick)
-        myDataBase.vehicleDao().updateVehicle(checkUnitClick, checkVehicleClick)
-        setBackgroundSpeedAndVehicle()
+        myDataBase.vehicleDao().updateUnChecked()
+        myDataBase.vehicleDao().updateVehicle(checkVehicleClick)
         this.checkVehicleClick = checkVehicleClick
+        setSpecifications()
+        removeBackgroundButtonVehicle()
+        setBackGroundButtonVehicleClick()
+        registerReceiverUnitFromFragmentM2()
     }
 
-    private fun updateSpeedUnit(speedUnit: String, distanceUnit: String, checkUnitClick: Int) {
-        Log.d("okokkos", checkUnitClick.toString() + "dd" + this.checkUnitClick)
-        if (checkUnitClick != this.checkUnitClick) {
-            this.checkUnitClick = checkUnitClick
-            SharedData.toUnitDistance = distanceUnit
-            SharedData.toUnit = speedUnit
-            myDataBase.SpeedDao().updateUnChecked()
-            myDataBase.SpeedDao().updateChecked(checkUnitClick)
-            registerReceiverUnitFromFragmentM2()
-            setBackgroundSpeedAndVehicle()
-            parameterFragment.onUnitChange()
+
+    @SuppressLint("CommitPrefEdits")
+    private fun updateSpeedUnit(speedUnit: String, distanceUnit: String) {
+        sharedPreferences.edit().putString(SettingConstants.UNIT, speedUnit)
+        SharedData.toUnitDistance = distanceUnit
+        SharedData.toUnit = speedUnit
+        registerReceiverUnitFromFragmentM2()
+        parameterFragment.onUnitChange()
+        removeBackgroundButtonUnit()
+        setBackGroundButtonUnitClick()
+    }
+
+    private fun setBackGroundButtonUnitClick() {
+        when (SharedData.toUnit) {
+            "km/h" -> {
+                btnKm.setBackgroundColor(ColorUtils.checkColor(colorPosition)); }
+
+            "mph" -> {
+                btnMph.setBackgroundColor(ColorUtils.checkColor(colorPosition));
+            }
+
+            "knot" -> {
+                btnKnot.setBackgroundColor(ColorUtils.checkColor(colorPosition));
+            }
+        }
+    }
+
+    private fun setBackGroundButtonVehicleClick() {
+
+        when (myDataBase.vehicleDao().getVehicleChecked().type) {
+            1 -> {
+                btnOto.setBackgroundColor(ColorUtils.checkColor(colorPosition));
+            }
+
+            2 -> {
+                btnBicycle.setBackgroundColor(ColorUtils.checkColor(colorPosition));
+            }
+
+            3 -> {
+                btnTrain.setBackgroundColor(ColorUtils.checkColor(colorPosition));
+            }
         }
     }
 
@@ -279,16 +311,13 @@ class Setting : AppCompatActivity() {
         val txtUrl = EditText(this)
         txtUrl.inputType = EditorInfo.TYPE_CLASS_NUMBER
         return AlertDialog.Builder(this).setView(txtUrl)
-
-
             .setPositiveButton(
                 "Đông ý"
             ) { dialog, whichButton ->
                 try {
                     val url = txtUrl.text.toString()
                     if (url.toInt() >= 0 && url.isNotEmpty()) {
-                        myDataBase.vehicleDao()
-                            .updateWarning(checkUnitClick, checkVehicleClick, url.toInt())
+                        myDataBase.vehicleDao().updateWarning(url.toInt())
                         btnWarningLimit.text = url
                     }
                 } catch (e: Exception) {
@@ -324,25 +353,22 @@ class Setting : AppCompatActivity() {
                 array, position
             ) { _, which ->
                 item = array[which].toInt()
-
             }
             setNegativeButton("Hủy Bỏ") { dialog: DialogInterface, _: Int ->
                 dialog.dismiss()
             }
             setPositiveButton("Đồng Ý") { dialog: DialogInterface, _: Int ->
-
-                myDataBase.vehicleDao().updateMaxSpeed(checkUnitClick, checkVehicleClick, item)
+                myDataBase.vehicleDao().updateMaxSpeed(item)
                 btnMaxSpeepAnalog.text = item.toString()
                 registerReceiverUnitFromFragmentM2()
                 dialog.cancel()
                 registerReceiverUnitFromFragmentM2()
-
             }
         }
     }
 
-    private fun setSpecifications(typeId: Int) {
-        val vehicleChecked = myDataBase.vehicleDao().getVehicleChecked(typeId)
+    private fun setSpecifications() {
+        val vehicleChecked = myDataBase.vehicleDao().getVehicleChecked()
         btnMaxSpeepAnalog.text = vehicleChecked.clockSpeed.toString()
         btnWarningLimit.text = vehicleChecked.limitWarning.toString()
         SharedData.speedAnalog.value = vehicleChecked.clockSpeed
@@ -365,8 +391,10 @@ class Setting : AppCompatActivity() {
         btnLetGo.setBackgroundColor(ColorUtils.checkColor(colorPosition))
         btnWarningLimit.setTextColor(ColorUtils.checkColor(colorPosition))
         btnMaxSpeepAnalog.setTextColor(ColorUtils.checkColor(colorPosition))
-        setBackgroundSpeedAndVehicle()
         setColorSwt()
+        setSpecifications()
+        setBackGroundButtonUnitClick()
+        setBackGroundButtonVehicleClick()
 
 
     }
@@ -378,24 +406,6 @@ class Setting : AppCompatActivity() {
 
     }
 
-    private fun removeTextColorButtonUnit() {
-        btnKm.setTextColor(color)
-        btnMph.setTextColor(color)
-        btnKnot.setTextColor(color)
-    }
-
-    private fun removeTextColorButtonVehicle() {
-        btnBicycle.setTextColor(color)
-        btnTrain.setTextColor(color)
-        btnOto.setTextColor(color)
-    }
-
-    fun checkWhenPositionColorIs1() {
-        if (colorPosition == 1) {
-            removeTextColorButtonVehicle()
-            removeTextColorButtonUnit()
-        }
-    }
 
     private fun setColorSwt() {
         checkStateSwitch(swtAlarm, SettingConstants.SPEED_ALARM)
@@ -405,63 +415,12 @@ class Setting : AppCompatActivity() {
         checkStateSwitch(swtTrackOnMap, SettingConstants.TRACK_ON_MAP)
     }
 
-    private fun setBackgroundSpeedAndVehicle() {
-        val type = myDataBase.SpeedDao().getChecked().type
-        removeBackgroundButtonUnit()
-        when (type) {
-            1 -> {
-                btnMph.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                setBackgroundVehicleWhenOnCreate(1)
-                setSpecifications(1)
-
-            }
-
-            2 -> {
-                btnKm.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                setBackgroundVehicleWhenOnCreate(2)
-                setSpecifications(2)
-
-            }
-
-            3 -> {
-                btnKnot.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                setBackgroundVehicleWhenOnCreate(3)
-                setSpecifications(3)
-
-            }
-        }
-    }
-
-    private fun setBackgroundVehicleWhenOnCreate(typeId: Int) {
-        removeBackgroundButtonVehicle()
-        val x = myDataBase.vehicleDao().getVehicleChecked(typeId)
-        when (x.type) {
-            1 -> {
-                btnOto.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                checkVehicleClick = 1
-            }
-
-            2 -> {
-                btnBicycle.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                checkVehicleClick = 2
-            }
-
-            3 -> {
-                btnTrain.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                checkVehicleClick = 3
-            }
-        }
-        Log.d("lslsl", myDataBase.vehicleDao().getVehicleChecked(1).type.toString())
-    }
-
 
     private fun onClickBtnColor(vararg btnColor: MaterialButton) {
         btnColor.forEach {
             it.setOnClickListener {
                 when (it.id) {
-                    R.id.btnColor1 -> {
-                        colorPosition = 1
-                    }
+
 
                     R.id.btnColor2 -> {
                         colorPosition = 2
@@ -534,7 +493,6 @@ class Setting : AppCompatActivity() {
             this@Setting.btnBicycle = this.btnBicycle
             this@Setting.btnOto = this.btnOto
             this@Setting.btnTrain = this.btnTrain
-            this@Setting.btnColor1 = this.btnColor1
             this@Setting.btnColor2 = this.btnColor2
             this@Setting.btnColor3 = this.btnColor3
             this@Setting.btnColor4 = this.btnColor4

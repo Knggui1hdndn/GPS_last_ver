@@ -1,7 +1,6 @@
 package com.example.gps.ui
 
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
@@ -16,6 +15,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -31,10 +31,8 @@ import com.example.gps.SettingConstants.Companion.CLOCK_DISPLAY
 import com.example.gps.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.ActivityMain2Binding
-import com.example.gps.model.Speed
 import com.example.gps.ui.setting.Setting
 import com.example.gps.utils.TimeUtils
-import com.example.gps.utils.UnitUtils
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
@@ -44,24 +42,22 @@ class MainActivity2 : AppCompatActivity() {
     private lateinit var binding: ActivityMain2Binding
     private var check = false
     private lateinit var sharedPreferences: SharedPreferences
-    fun getCurrentUnit(): String {
-        val myDataBase = MyDataBase.getInstance(this).SpeedDao()
-        return UnitUtils.getUnit(myDataBase.getChecked().type)
-    }
+
 
     override fun onStart() {
         super.onStart()
-        if (!check) setUnitSpeepAndDistance();check = true
+
     }
 
     private fun setUnitSpeepAndDistance() {
         try {
-            SharedData.toUnit = getCurrentUnit()
+            SharedData.toUnit = sharedPreferences.getString(SettingConstants.UNIT, "").toString()
             when (SharedData.toUnit) {
                 "km/h" -> SharedData.toUnitDistance = "km"
                 "mph" -> SharedData.toUnitDistance = "mi"
                 "knot" -> SharedData.toUnitDistance = "nm"
             }
+
         } catch (e: Exception) {
             Log.d("okok312o1", "${e.message}")
 
@@ -69,22 +65,23 @@ class MainActivity2 : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
-    @SuppressLint("UseCompatLoadingForDrawables", "SetTextI18n", "MissingPermission", "InlinedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setUpActivity()
+
         checkOpenFirst()
         setDataDefault()
-         SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
+        SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
     }
 
+    @SuppressLint("MissingPermission")
     private fun setUpActivity() {
         binding = ActivityMain2Binding.inflate(layoutInflater)
-         SharedData.activity = this
+        SharedData.activity = this
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         setUnitSpeepAndDistance()
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_home_black_24dp)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_settings_24)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = ""
         sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
@@ -101,29 +98,32 @@ class MainActivity2 : AppCompatActivity() {
                 R.id.navigation_notifications
             )
         )
+
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         navController.addOnDestinationChangedListener { _, _, _ ->
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_home_black_24dp)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
-        if (resources.configuration.orientation==Configuration.ORIENTATION_LANDSCAPE){
-            binding.toolbar.visibility=View.GONE
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            binding.toolbar.visibility = View.GONE
         }
+
     }
 
     private fun setDataDefault() {
         try {
             val navHostFragment =
                 supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as? NavHostFragment
-            navHostFragment?.childFragmentManager?.fragments?.getOrNull(0)?.childFragmentManager?.findFragmentById(
+            navHostFragment?.childFragmentManager?.fragments!![0].childFragmentManager?.findFragmentById(
                 R.id.frag
             )?.let { fragment ->
                 if (fragment is ParameterFragment) {
+                    Log.d("oisjaijx", "oko")
                     fragment.setDataWhenComeBack()
                 }
             }
-            navHostFragment?.childFragmentManager?.fragments?.getOrNull(0)?.let { fragment ->
+            navHostFragment?.childFragmentManager?.fragments!![0].let { fragment ->
                 if (fragment is HomeFragment) {
                     fragment.setSpeedAndUnit()
                 }
@@ -137,41 +137,39 @@ class MainActivity2 : AppCompatActivity() {
         if (!sharedPreferences.getBoolean(SettingConstants.CHECK_OPEN, false)) {
             val myDataBase = MyDataBase.getInstance(this)
             val builder = AlertDialog.Builder(this)
-            val list = arrayOf("Mph", "Km", "Knot")
+            val list = arrayOf("mph", "km/h", "knot")
             builder.setCancelable(false)
             builder.setTitle("Chọn đơn vị đo").setItems(list) { dialog, which ->
-                saveInShared()
-                myDataBase.SpeedDao().insertSpeed(Speed(1, which + 1 == 1))
-                myDataBase.SpeedDao().insertSpeed(Speed(2, which + 1 == 2))
-                myDataBase.SpeedDao().insertSpeed(Speed(3, which + 1 == 3))
-                insert(myDataBase)
+                saveInShared(list[which])
+                insert(myDataBase, which)
                 setUnitSpeepAndDistance()
                 setDataDefault()
                 dialog.cancel()
             }
             builder.create().show()
+        } else {
+            setUnitSpeepAndDistance()
         }
     }
 
 
-    private fun saveInShared() {
+    private fun saveInShared(which: String) {
+        SharedData.toUnit = which
         sharedPreferences.edit().apply {
             putBoolean(SettingConstants.CHECK_OPEN, true)
             putInt(SettingConstants.COLOR_DISPLAY, 2)
             putBoolean(SettingConstants.DISPLAY_SPEED, true)
+            putString(SettingConstants.UNIT, which)
             putBoolean(SettingConstants.TRACK_ON_MAP, true)
             putBoolean(SettingConstants.SHOW_RESET_BUTTON, true)
             putBoolean(SettingConstants.SPEED_ALARM, true)
         }.apply()
     }
 
-    private fun insert(myDataBase: MyDataBase) {
-        for (i in 1..3) {
-            myDataBase.vehicleDao().insertVehicle(240, 100, 1, 1, i)
-            myDataBase.vehicleDao().insertVehicle(240, 20, 2, 0, i)
-            myDataBase.vehicleDao().insertVehicle(320, 100, 3, 0, i)
-        }
-
+    private fun insert(myDataBase: MyDataBase, which: Int) {
+        myDataBase.vehicleDao().insertVehicle(240, 100, 1, if (which + 1 == 1) 1 else 0)
+        myDataBase.vehicleDao().insertVehicle(240, 20, 2, if (which + 1 == 2) 1 else 0)
+        myDataBase.vehicleDao().insertVehicle(320, 100, 3, if (which + 1 == 3) 1 else 0)
     }
 
     override fun onResume() {
@@ -187,7 +185,7 @@ class MainActivity2 : AppCompatActivity() {
             SettingConstants.SETTING,
             Service.MODE_PRIVATE
         ).getInt(SettingConstants.COLOR_DISPLAY, 2)
-         when (intColor) {
+        when (intColor) {
             1 -> return getColorStateList(R.color.color1)
             3 -> return getColorStateList(R.color.color2)
             2 -> return getColorStateList(R.color.color3)

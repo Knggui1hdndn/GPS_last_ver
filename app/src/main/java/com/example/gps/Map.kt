@@ -9,15 +9,19 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.hardware.Sensor
 import android.hardware.SensorManager
+import android.location.GnssStatus
+import android.location.GnssStatus.Callback
 import android.location.Location
+import android.location.LocationManager
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.content.getSystemService
 import com.example.gps.dao.MyDataBase
-import com.example.gps.model.MovementData
 import com.example.gps.service.MyService
 import com.example.gps.ui.ShowActivity
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -68,6 +72,7 @@ class Map() {
 
     private val countRunnable: Runnable = object : Runnable {
         override fun run() {
+
             millis += 1000
             SharedData.time.value = millis
             // Schedule the next iteration after 1 second
@@ -77,9 +82,10 @@ class Map() {
 
     private val locationCallback1 = object : LocationCallback() {
         @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-        @SuppressLint("SuspiciousIndentation")
+        @SuppressLint("SuspiciousIndentation", "MissingPermission")
         override fun onLocationResult(locationResult: LocationResult) {
             val lastLocation = locationResult.lastLocation
+            Log.d("okokokkkk", lastLocation?.accuracy.toString())
             if (lastLocation != null && previousLocation != null && myDataBase != null && previousTime != null) {
                 if (!checkStart) {
                     val movementData = myDataBase!!.movementDao().getLastMovementData()
@@ -110,6 +116,7 @@ class Map() {
                     maxSpeedLiveData.value = maxSpeed
                     averageSpeedLiveData.value = averageSpeed
                 }
+
                 myDataBase!!.locationDao().insertLocationData(
                     lastLocation.latitude, lastLocation.longitude, lastMovementDataId
                 )
@@ -156,7 +163,7 @@ class Map() {
     }
 
     private fun getWarningLimit(): Double {
-      return  myDataBase!!.vehicleDao().getVehicleChecked(myDataBase!!.SpeedDao().getChecked().type).limitWarning.toDouble()
+      return  myDataBase!!.vehicleDao().getVehicleChecked( ).limitWarning.toDouble()
     }
 
     private fun broadcastWarning() {

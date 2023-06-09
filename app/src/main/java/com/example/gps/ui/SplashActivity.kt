@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.FileProvider.getUriForFile
 import com.example.gps.MyApplication
 import com.example.gps.R
+import com.example.gps.SettingConstants
 import com.google.gson.Gson
 import okhttp3.Call
 import okhttp3.Callback
@@ -41,7 +42,6 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-
        createTimer(3L)
 
     }

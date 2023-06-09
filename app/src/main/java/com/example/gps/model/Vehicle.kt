@@ -6,24 +6,18 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "Vehicle",
-    foreignKeys = [ForeignKey(
-        entity = Speed::class,
-        parentColumns = ["type"],
-        childColumns = ["typeID"],
-        onDelete = ForeignKey.CASCADE
-    )]
+
 )
 class Vehicle(
     @PrimaryKey(autoGenerate = true)
     val id:Int,
-    val typeID: Int,
-    var type: Int,
+     var type: Int,
     var limitWarning: Int,
     var clockSpeed: Int,
     var isChecked: Boolean
 ){
     override fun toString(): String {
-        return "Vehicle(id=$id, typeID=$typeID, type=$type, limitWarning=$limitWarning, clockSpeed=$clockSpeed, isChecked=$isChecked)"
+        return "Vehicle(id=$id,   type=$type, limitWarning=$limitWarning, clockSpeed=$clockSpeed, isChecked=$isChecked)"
     }
 }
 

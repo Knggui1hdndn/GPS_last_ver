@@ -335,6 +335,7 @@ class ShowActivity : AppCompatActivity() {
     }
 
     private fun getAddressLine(endLatitude: Double, endLongitude: Double): String? {
+        if (endLatitude==0.0 && endLongitude==0.0) return null
         return try {
             val geocoder = Geocoder(
                 this@ShowActivity,

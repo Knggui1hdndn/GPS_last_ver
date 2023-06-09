@@ -7,6 +7,12 @@
     android:orientation="vertical"
     android:weightSum="10">
     <!--        app:sv_withTremble="false"-->
+    <fragment
+        android:name="com.example.gps.ui.FragmentSignal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:id="@+id/signal"/>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -20,8 +26,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="30dp"
-             app:sv_maxSpeed="280"
-                app:sv_indicatorColor="@color/color_3"
+            app:sv_indicatorColor="@color/color_3"
+            app:sv_maxSpeed="280"
              app:sv_minSpeed="0"
             app:sv_speedTextPosition="CENTER"
             app:sv_speedometerMode="NORMAL"
@@ -33,24 +39,24 @@
             android:layout_height="40dp"
             android:layout_gravity="top|end"
             android:layout_margin="30dp"
-            android:src="@drawable/baseline_refresh_24"
-            android:contentDescription="TODO" />
+            android:contentDescription="TODO"
+            android:src="@drawable/baseline_refresh_24" />
 
         <ImageView
             android:id="@+id/imgRotateScreen"
+            style="@style/BackgroundTintImg"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="start|end"
             android:layout_margin="30dp"
-            android:background="@drawable/img"
-style="@style/BackgroundTintImg"         />
+            android:background="@drawable/img" />
     </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="4"
-        android:gravity="bottom"
+        android:layout_weight="3"
+         android:gravity="bottom"
         android:orientation="vertical">
 
 

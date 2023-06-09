@@ -40,7 +40,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
         with(binding) {
             this.txtKm3.text = if (SharedData.toUnit != "km/h") "mi" else "km"
             binding.txtKm4.text = SharedData.toUnit
-            FontUtils.setFont(requireContext(), this.txtSpeed)
+            FontUtils.setFont(requireContext(), this.txtSpeed, this.txtKm4, txtKm3, txtDistance1)
             onDataChange()
             txtKm4.text = SharedData.toUnit
         }
@@ -51,10 +51,30 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
         SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) {
             val key = it.keys.first()
             binding.txtSpeed.text = "%03d".format(SharedData.convertSpeed(key).toInt())
+            with(binding)
+            {
+                FontUtils.setFont(
+                    requireContext(),
+                    this.txtSpeed,
+                     txtKm3,
+                    txtDistance1
+                )
+            }
         }
-         SharedData.distanceLiveData.observe(viewLifecycleOwner) {
+        SharedData.distanceLiveData.observe(viewLifecycleOwner) {
             if (it.toInt() != 0) {
-                binding.txtDistance1.text = "${(SharedData.convertDistance(allDistance.toDouble()) +SharedData.convertDistance(it)).toInt()}"
+                binding.txtDistance1.text = "%09d".format ( (SharedData.convertDistance(allDistance.toDouble()) + SharedData.convertDistance(
+                    it
+                )).toInt())
+                with(binding)
+                {
+                    FontUtils.setFont(
+                        requireContext(),
+                        this.txtSpeed,
+                         txtKm3,
+                        txtDistance1
+                    )
+                }
             }
         }
         setDataWhenComBack()
@@ -69,12 +89,9 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
             val convertedSpeed =
                 SharedData.convertSpeed(SharedData.currentSpeedLiveData.value!!.keys.first())
             txtSpeed.text = "%03d".format(convertedSpeed.toInt())
-            txtDistance1.text = SharedData.convertDistance(
-                sharedPreferencesStates.getInt(
-                    MyLocationConstants.DISTANCE,
-                    0
-                ).toDouble()
-            ).toInt().toString()
+            txtDistance1.text ="%09d".format (SharedData.convertDistance(
+            sharedPreferencesStates.getInt(MyLocationConstants.DISTANCE, 0).toDouble() ).toInt() )
+
         }
     }
 

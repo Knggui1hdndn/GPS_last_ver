@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
+import android.provider.CallLog.Locations
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -20,6 +21,10 @@ import com.example.gps.interfaces.MapInterface
 import com.example.gps.utils.FontUtils
 import com.example.gps.utils.MapUtils
 import com.example.gps.utils.StringUtils
+import com.google.android.gms.location.LastLocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -41,22 +46,16 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
     private val callback = OnMapReadyCallback { p0 ->
         map = p0
         map!!.apply {
-            isMyLocationEnabled = true
-            setMinZoomPreference(15.0f);
-            setMaxZoomPreference(35.0f);
+            moveCamera(CameraUpdateFactory.newLatLng(LatLng(18.683500, 105.485750)))
             uiSettings.isZoomControlsEnabled = true
             uiSettings.isRotateGesturesEnabled = true
-            map?.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-//            map?.moveCamera(CameraUpdateFactory.newLatLng(LatLng(20.99605906969354, 105.74779462069273)))
+            try {
+                map!!.isMyLocationEnabled = true
+            } catch (e: Exception) {
+            }
             map?.mapType = GoogleMap.MAP_TYPE_HYBRID
             setOnCameraMoveStartedListener {
                 resetMinMaxZoomPreference()
-                checkMoveCameraMap = true
-
-            }
-            setOnMyLocationButtonClickListener {
-                checkMoveCameraMap = false
-                true
             }
         }
     }
@@ -69,17 +68,24 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
     @SuppressLint("SuspiciousIndentation", "SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentNotificationsBinding.bind(view)
-        if (savedInstanceState != null) {
-            cameraPosition = savedInstanceState.getParcelable("cameraPosition")
-        }
+
         sharedPreferencesSetting =
             requireContext().getSharedPreferences(SettingConstants.SETTING, Context.MODE_PRIVATE)
         sharedPreferencesState =
             requireActivity().getSharedPreferences("state", Context.MODE_PRIVATE)
         check = sharedPreferencesSetting.getBoolean(SettingConstants.TRACK_ON_MAP, true)
         val positionsColor = sharedPreferencesSetting.getInt(SettingConstants.COLOR_DISPLAY, 2)
+        if (savedInstanceState != null) {
+            cameraPosition = savedInstanceState.getParcelable("cameraPosition")
+            if (sharedPreferencesState.getString(
+                    MyLocationConstants.STATE,
+                    null
+                ) == MyLocationConstants.STOP
+            ) cameraPosition == null
+        }
         onColorChange(positionsColor)
         mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        mapAsync()
         checkPermission()
 
         with(binding) {
@@ -95,7 +101,6 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
             SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) { Speed ->
                 this.txtSpeed.text = StringUtils.convert(Speed.keys.first())
                 FontUtils.setFont(requireContext(), this.txtSpeed)
-
             }
         }
     }
@@ -107,7 +112,6 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
             val polylineOptions =
                 PolylineOptions().addAll(convertToListLatLng()).color(Color.GREEN).width(15f)
             map?.addPolyline(polylineOptions)
-            checkMoveCameraMap = false
             polylineOption = polylineOptions
         }
     }
@@ -127,11 +131,6 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
                 polylineOption.add(LatLng(location.latitude, location.longitude)).color(Color.GREEN)
                     .width(15f)
                 if (check) map?.addPolyline(polylineOption);
-                if (!checkMoveCameraMap) map?.moveCamera(
-                    CameraUpdateFactory.newCameraPosition(
-                        updateMoveCamera(location)
-                    )
-                )
                 this!!.latitude.text = location.latitude.toString()
                 longitude.text = location.longitude.toString()
             }
@@ -148,9 +147,29 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
                 android.Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            mapAsync()
+            if (this@NotificationsFragment.cameraPosition != null) {
+                this@NotificationsFragment.cameraPosition?.let {
+                    CameraUpdateFactory.newCameraPosition(
+                        it
+                    )
+                }
+            } else {
+                val fusedLocationClient =
+                    LocationServices.getFusedLocationProviderClient(requireActivity())
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location ->
+                        if (location != null) {
+                            // Tạo LatLng object từ vị trí hiện tại
+                            val latLng = LatLng(location.latitude, location.longitude)
 
+                            // Di chuyển camera tới vị trí hiện tại
+                            map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+                        }
+                    }
+
+            }
         }
+
     }
 
     fun mapAsync() {
