@@ -1,6 +1,7 @@
 package com.example.gps.ui
 
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
@@ -9,8 +10,12 @@ import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Typeface
+import android.location.GnssStatus
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -34,6 +39,7 @@ import com.example.gps.databinding.ActivityMain2Binding
 import com.example.gps.ui.setting.Setting
 import com.example.gps.utils.TimeUtils
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import javax.security.auth.callback.Callback
 
 
 class MainActivity2 : AppCompatActivity() {
@@ -64,14 +70,16 @@ class MainActivity2 : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setUpActivity()
-
+        requestPermissions(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 1)
         checkOpenFirst()
         setDataDefault()
         SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
+
     }
 
     @SuppressLint("MissingPermission")
