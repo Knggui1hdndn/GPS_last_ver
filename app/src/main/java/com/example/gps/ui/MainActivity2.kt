@@ -3,9 +3,13 @@ package com.example.gps.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Instrumentation.ActivityResult
 import android.app.Service
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Color
@@ -21,41 +25,42 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.gps.ListenBattery
 import com.example.gps.R
 import com.example.gps.SettingConstants
 import com.example.gps.SettingConstants.Companion.CLOCK_DISPLAY
 import com.example.gps.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.ActivityMain2Binding
+import com.example.gps.interfaces.SignalInterface
 import com.example.gps.ui.setting.Setting
 import com.example.gps.utils.TimeUtils
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import javax.security.auth.callback.Callback
 
 
-class MainActivity2 : AppCompatActivity() {
+class MainActivity2 : AppCompatActivity(), SignalInterface {
 
 
     private lateinit var binding: ActivityMain2Binding
-    private var check = false
     private lateinit var sharedPreferences: SharedPreferences
-
-
-    override fun onStart() {
-        super.onStart()
-
-    }
-
-    private fun setUnitSpeepAndDistance() {
+    private lateinit var intentFilter: IntentFilter
+    private lateinit var broadCast: ListenBattery
+    private lateinit var navHostFragment: NavHostFragment
+    private lateinit var childFragment: Fragment
+    private lateinit var fragmentSignal: FragmentSignal
+    private fun setUnitSpeedAndDistance() {
         try {
             SharedData.toUnit = sharedPreferences.getString(SettingConstants.UNIT, "").toString()
             when (SharedData.toUnit) {
@@ -65,7 +70,7 @@ class MainActivity2 : AppCompatActivity() {
             }
 
         } catch (e: Exception) {
-            Log.d("okok312o1", "${e.message}")
+
 
         }
     }
@@ -75,6 +80,7 @@ class MainActivity2 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setUpActivity()
+
         requestPermissions(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 1)
         checkOpenFirst()
         setDataDefault()
@@ -88,7 +94,7 @@ class MainActivity2 : AppCompatActivity() {
         SharedData.activity = this
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-        setUnitSpeepAndDistance()
+        setUnitSpeedAndDistance()
         supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_settings_24)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = ""
@@ -116,14 +122,20 @@ class MainActivity2 : AppCompatActivity() {
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             binding.toolbar.visibility = View.GONE
         }
+        navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment
+        childFragment = navHostFragment?.childFragmentManager?.fragments!![0]
 
+        fragmentSignal =
+            (childFragment.childFragmentManager.findFragmentById(R.id.signal) as FragmentSignal)
+        broadCast = ListenBattery()
+        intentFilter = IntentFilter()
+        intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED)
     }
 
     private fun setDataDefault() {
         try {
-            val navHostFragment =
-                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as? NavHostFragment
-            navHostFragment?.childFragmentManager?.fragments!![0].childFragmentManager?.findFragmentById(
+            childFragment.childFragmentManager.findFragmentById(
                 R.id.frag
             )?.let { fragment ->
                 if (fragment is ParameterFragment) {
@@ -131,7 +143,7 @@ class MainActivity2 : AppCompatActivity() {
                     fragment.setDataWhenComeBack()
                 }
             }
-            navHostFragment?.childFragmentManager?.fragments!![0].let { fragment ->
+            childFragment.let { fragment ->
                 if (fragment is HomeFragment) {
                     fragment.setSpeedAndUnit()
                 }
@@ -150,13 +162,13 @@ class MainActivity2 : AppCompatActivity() {
             builder.setTitle("Chọn đơn vị đo").setItems(list) { dialog, which ->
                 saveInShared(list[which])
                 insert(myDataBase, which)
-                setUnitSpeepAndDistance()
+                setUnitSpeedAndDistance()
                 setDataDefault()
                 dialog.cancel()
             }
             builder.create().show()
         } else {
-            setUnitSpeepAndDistance()
+            setUnitSpeedAndDistance()
         }
     }
 
@@ -185,6 +197,14 @@ class MainActivity2 : AppCompatActivity() {
         binding.navView.itemIconTintList = getColorRes()
         binding.times.visibility =
             if (sharedPreferences.getBoolean(CLOCK_DISPLAY, true)) View.VISIBLE else View.GONE
+        registerReceiver(broadCast, intentFilter)
+        Log.d("okokko", "sodkf")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        unregisterReceiver(broadCast)
+        Log.d("okokko", "sodkf1")
 
     }
 
@@ -223,5 +243,59 @@ class MainActivity2 : AppCompatActivity() {
         return true
     }
 
+    override fun onBatteryDataReceived(int: Int) {
+        fragmentSignal.onBatteryDataReceived(int)
+        Log.d("okokko", "sodkf1"+int)
 
+    }
+
+    override fun onStrengthGPSDataReceived(int: Int, satelliteCount: Int) {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            result.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
+        } else {
+            getStrengthGPS()
+        }
+
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getStrengthGPS() {
+        if(this::navHostFragment.isInitialized){
+            childFragment = navHostFragment?.childFragmentManager?.fragments!![0]
+            fragmentSignal = (childFragment.childFragmentManager.findFragmentById(R.id.signal) as FragmentSignal)
+            (getSystemService(LOCATION_SERVICE) as LocationManager).registerGnssStatusCallback(
+                object : GnssStatus.Callback() {
+                    @RequiresApi(Build.VERSION_CODES.R)
+                    @SuppressLint("MissingPermission")
+                    override fun onSatelliteStatusChanged(status: GnssStatus) {
+                        val satelliteCount = status.satelliteCount
+                        var totalSignalStrength = 0.0
+                        for (i in 0 until satelliteCount) {
+                            val cn0DbHz = status.getCn0DbHz(i)
+                            totalSignalStrength += cn0DbHz
+                        }
+                        val averageSignalStrength = totalSignalStrength / satelliteCount
+                        fragmentSignal.onStrengthGPSDataReceived(
+                            averageSignalStrength.toInt(),
+                            status.satelliteCount
+                        )
+                    }
+                }, Handler(
+                    Looper.getMainLooper()!!
+                )
+            )
+        }
+
+    }
+
+    private val result =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
+            if (granted.entries.all { it.value }) {
+                getStrengthGPS()
+            }
+        }
 }

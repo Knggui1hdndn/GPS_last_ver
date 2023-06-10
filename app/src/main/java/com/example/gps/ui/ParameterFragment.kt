@@ -185,6 +185,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
     }
 
     private fun start() {
+        (requireActivity() as MainActivity2).onStrengthGPSDataReceived(0, 0)
         insertMovementData()
         setState(MyLocationConstants.START)
         hideBtnStart()
@@ -219,6 +220,9 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
     }
 
     private fun stopService() {
+        ((requireActivity() as MainActivity2).supportFragmentManager.fragments[0].childFragmentManager.findFragmentById(
+            R.id.signal
+        ) as FragmentSignal).onStrengthGPSDataReceived(0, 0)
         val status = requireContext().getSharedPreferences("state", Context.MODE_PRIVATE)
             .getString(MyLocationConstants.STATE, null)
         if (status != MyLocationConstants.STOP && status != null) {

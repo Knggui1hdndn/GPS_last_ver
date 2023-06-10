@@ -12,17 +12,13 @@ import com.google.android.gms.location.DetectedActivity
 class MyReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        Toast.makeText(context,"Activity:  ",Toast.LENGTH_SHORT).show()
-
         if (ActivityTransitionResult.hasResult(intent)) {
             val result = ActivityTransitionResult.extractResult(intent)
             if (result != null) {
                 for (event in result.transitionEvents) {
                     val activityType = event.activityType
                     val transitionType = event.transitionType
-                     // Xử lý thông tin về hoạt động và sự chuyển đổi
-                    Log.d("kjklfda", (activityType+transitionType).toString())
-                 }
+                  }
             }
         }
     }

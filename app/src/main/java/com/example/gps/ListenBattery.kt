@@ -15,16 +15,11 @@ class ListenBattery : BroadcastReceiver() {
     @SuppressLint("UnsafeProtectedBroadcastReceiver")
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent != null) {
-
             if (intent.action.equals(Intent.ACTION_BATTERY_CHANGED)) {
                 val level: Int = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
                 val scale: Int = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
-                val intent=Intent(ACTION_BATTERY_CHANGED)
-                intent.putExtra(
-                    "pin",(level * 100 / scale.toFloat()).toString() + " % "
-                )
-                context!!.sendBroadcast(intent)
-            }
+                (context as MainActivity2).onBatteryDataReceived((level * 100 / scale.toFloat()).toInt())
+             }
         }
     }
 }
