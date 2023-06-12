@@ -4,20 +4,15 @@ import android.annotation.SuppressLint
 import android.app.Service
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.gps.MyLocationConstants
+import com.example.gps.constants.MyLocationConstants
 import com.example.gps.utils.FontUtils
 import com.example.gps.R
-import com.example.gps.SettingConstants
-import com.example.gps.SharedData
-import com.example.gps.dao.MyDataBase
+import com.example.gps.constants.SettingConstants
+import com.example.gps.`object`.SharedData
 import com.example.gps.databinding.FragmentDashboardBinding
 import com.example.gps.interfaces.DigitalInterface
-import com.example.gps.utils.StringUtils
-import java.math.BigDecimal
 
 class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterface {
 
@@ -89,7 +84,8 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
             val convertedSpeed =
                 SharedData.convertSpeed(SharedData.currentSpeedLiveData.value!!.keys.first())
             txtSpeed.text = "%03d".format(convertedSpeed.toInt())
-            txtDistance1.text ="%09d".format (SharedData.convertDistance(
+            txtDistance1.text ="%09d".format (
+                SharedData.convertDistance(
                 sharedPreferencesStates.getInt(MyLocationConstants.DISTANCE, 0).toDouble() ).toInt() )
 
         }

@@ -2,7 +2,7 @@ package com.example.gps.utils
 
 import android.graphics.Color
 import android.util.Log
-import com.example.gps.ColorConstants
+import com.example.gps.constants.ColorConstants
 
 class ColorUtils {
     companion object {

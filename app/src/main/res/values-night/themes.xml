@@ -41,12 +41,19 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:iconTint" tools:targetApi="o">@color/black</item>
     </style>
-
+    <style name="BackgroundDialog">
+        <item name="android:backgroundTint">@color/black</item>
+    </style>
+    <style name="TextDialog">
+        <item name="android:textColor">@color/white</item>
+    </style>
     <style name="MyTheme" parent="@android:style/TextAppearance">
         <item name="android:textColor">#ffffffff</item>
     </style>
 
     <style name="Theme.GPS" parent="Base.Theme.GPS" />
-
+   <style name="BckGroundTip">
+       <item name="android:background">@color/backGroundTip</item>
+   </style>
 
 </resources>

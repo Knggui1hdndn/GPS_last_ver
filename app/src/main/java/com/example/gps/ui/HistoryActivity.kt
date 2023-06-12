@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gps.R
-import com.example.gps.SettingConstants
+import com.example.gps.constants.SettingConstants
 import com.example.gps.dao.MyDataBase
 import com.example.gps.model.MovementData
 

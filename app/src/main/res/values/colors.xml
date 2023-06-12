@@ -17,4 +17,6 @@
     <color name="unchanged">#6C6969</color>
     <color name="strokeColor">#AAA3A3</color>
     <color name="itemTextColor">#6C6969</color>
+    <color name="backgroundbuttonsettingopstions">#515151</color>
+    <color name="backGroundTip">#303030</color>
 </resources>

@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Looper
 import androidx.annotation.RequiresApi
 import com.example.gps.interfaces.MotionCalculatorInterface
+import com.example.gps.`object`.SharedData
 import com.example.gps.presenter.MotionCalculatorPresenter
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Granularity

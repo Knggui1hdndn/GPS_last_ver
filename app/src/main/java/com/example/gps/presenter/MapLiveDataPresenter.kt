@@ -1,9 +1,7 @@
 package com.example.gps.presenter
 
-import android.app.Activity
-import android.content.Context
 import androidx.fragment.app.Fragment
-import com.example.gps.SharedData
+import com.example.gps.`object`.SharedData
 import com.example.gps.interfaces.MapLiveDataInterface
 
 class MapLiveDataPresenter(

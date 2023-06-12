@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-     <uses-permission
+
+    <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -12,7 +14,8 @@
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="32"
         tools:ignore="ScopedStorage" />
-    <uses-permission android:name="android.permission.BATTERY_STATS"
+    <uses-permission
+        android:name="android.permission.BATTERY_STATS"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -23,31 +26,34 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
-        android:requestLegacyExternalStorage="true"
-
-
         android:name=".MyApplication"
         android:allowBackup="true"
         android:appCategory="audio"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/img_1"
+        android:icon="@drawable/logo"
         android:label="GPS Speedometer"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GPS"
         tools:targetApi="31">
+        <activity
+            android:name=".ui.TipActivity"
+            android:exported="true" >
+
+        </activity>
+
         <meta-data
             android:name="com.google.android.gms.car.application"
             android:resource="@xml/automotive_app_desc" />
-
         <!--
          Main music service, provides media browsing and media playback services to
          consumers through MediaBrowserService and MediaSession. Consumers connect to it through
          MediaBrowser (for browsing) and MediaController (for playback control)
         -->
         <provider
-            android:name=".MyFileProvider"
+            android:name=".provider.MyFileProvider"
             android:authorities="com.example.gps"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -55,20 +61,30 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
         <receiver
-            android:name=".MyReceiver"
+            android:name=".broadcast.MyReceiver"
             android:enabled="true"
             android:exported="true" />
 
         <activity
-            android:name=".ui.setting.Setting"
+            android:name=".ui.SettingOptionsActivitys"
+            android:exported="true"
+            tools:ignore="DuplicateActivity">
+
+        </activity>
+        <activity
+            android:name=".ui.Setting"
             android:exported="false" />
         <activity
             android:name=".ui.MainActivity2"
             android:exported="true"
-            android:launchMode="singleTop"
->
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.ShowActivity"
@@ -89,19 +105,15 @@
         <activity android:name=".ui.HistoryActivity" />
         <activity
             android:name=".ui.SplashActivity"
+            android:exported="true"></activity>
+
+        <receiver
+            android:name=".broadcast.ListenBattery"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <receiver android:name=".ListenBattery"
-            android:exported="true">
-            <intent-filter >
-                <action android:name="android.intent.action.ACTION_POWER_CONNECTED"/>
-                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED"/>
-                <action android:name="android.intent.action.BATTERY_CHANGED"/>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+                <action android:name="android.intent.action.BATTERY_CHANGED" />
             </intent-filter>
         </receiver>
     </application>

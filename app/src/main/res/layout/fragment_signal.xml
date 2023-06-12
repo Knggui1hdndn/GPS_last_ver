@@ -3,7 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_centerVertical="true"
-    android:padding="15dp">
+    android:paddingEnd="15dp"
+    android:paddingLeft="15dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
 
     <ImageView
         android:id="@+id/a"
@@ -21,38 +24,31 @@
         android:text="0/0" />
     />
 
-    <ImageView
-        style="@style/BackgroundTintImg"
-
-        android:id="@+id/b"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/baseline_battery_std_24" />
-
-    <TextView
-        android:id="@+id/pin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/b"
-        android:text="Pin" />
-    />
 
     <ImageView
         android:id="@+id/c"
         style="@style/BackgroundTintImg"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
+        android:layout_centerInParent="true"
         android:src="@drawable/thu_song" />
 
     <TextView
         android:id="@+id/txtStrengthNetwork"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="8dp"
-        android:layout_toLeftOf="@id/c"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="5dp"
+        android:layout_toRightOf="@id/c"
         android:text="0%" />
     />
+
+    <ImageView
+        android:id="@+id/imgRotate"
+        style="@style/BackgroundTintImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
+        android:src="@drawable/screen_rotation" />
 </RelativeLayout>

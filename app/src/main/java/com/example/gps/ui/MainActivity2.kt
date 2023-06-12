@@ -3,12 +3,11 @@ package com.example.gps.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Instrumentation.ActivityResult
 import android.app.Service
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
-import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
@@ -24,7 +23,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -37,15 +35,14 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.example.gps.ListenBattery
+import com.example.gps.broadcast.ListenBattery
 import com.example.gps.R
-import com.example.gps.SettingConstants
-import com.example.gps.SettingConstants.Companion.CLOCK_DISPLAY
-import com.example.gps.SharedData
+import com.example.gps.constants.SettingConstants
+import com.example.gps.constants.SettingConstants.Companion.CLOCK_DISPLAY
+import com.example.gps.`object`.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.ActivityMain2Binding
 import com.example.gps.interfaces.SignalInterface
-import com.example.gps.ui.setting.Setting
 import com.example.gps.utils.TimeUtils
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -229,6 +226,8 @@ class MainActivity2 : AppCompatActivity(), SignalInterface {
         val check = AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES
         menu!!.getItem(0).iconTintList =
             if (check) ColorStateList.valueOf(Color.BLACK) else ColorStateList.valueOf(Color.WHITE)
+        menu!!.getItem(1).iconTintList =
+            if (check) ColorStateList.valueOf(Color.BLACK) else ColorStateList.valueOf(Color.WHITE)
         return true
     }
 
@@ -237,13 +236,26 @@ class MainActivity2 : AppCompatActivity(), SignalInterface {
             val intent = Intent(this, HistoryActivity::class.java)
             startActivity(intent)
         }
+        if (item.itemId == R.id.theme) {
+           AlertDialog.Builder(this).apply {
+               title="Theme"
+           setMessage("Chọn theme")
+               setNegativeButton("Trắng",{ dialogInterface: DialogInterface, i: Int ->
+                   sharedPreferences.edit().putBoolean(SettingConstants.THEME,true).apply()
+                   AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+               })
+               setPositiveButton("Đen",{ dialogInterface: DialogInterface, i: Int ->
+                   sharedPreferences.edit().putBoolean(SettingConstants.THEME,false).apply()
+                   AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+               }).show()
+           }
+        }
         if (item.itemId == android.R.id.home) startActivity(Intent(this, Setting::class.java))
         return true
     }
 
     override fun onBatteryDataReceived(int: Int) {
         fragmentSignal.onBatteryDataReceived(int)
-        Log.d("okokko", "sodkf1"+int)
 
     }
 

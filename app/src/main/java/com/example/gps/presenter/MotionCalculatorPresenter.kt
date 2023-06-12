@@ -10,11 +10,12 @@ import android.media.MediaPlayer
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.annotation.RequiresApi
-import com.example.gps.MyLocationConstants
+import com.example.gps.constants.MyLocationConstants
 import com.example.gps.R
-import com.example.gps.SettingConstants
-import com.example.gps.SharedData
+import com.example.gps.constants.SettingConstants
+import com.example.gps.`object`.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.interfaces.MotionCalculatorInterface
 import com.example.gps.service.MyService
@@ -51,7 +52,7 @@ class MotionCalculatorPresenter(
     override fun calculateDistance(lastLocation: Location): Double {
         if (this::previousLocation.isInitialized) {
             val distanceInMeters = lastLocation.distanceTo(previousLocation)
-            distance += distanceInMeters / 1000.0
+            distance += distanceInMeters/1000
             sharedPreferences.edit().putInt(
                 MyLocationConstants.DISTANCE,
                 (sharedPreferences.getInt(
@@ -69,6 +70,7 @@ class MotionCalculatorPresenter(
     override fun calculateSpeed(lastLocation: Location): Double {
         if (!lastLocation.hasSpeed()) return 0.0
         val speed =  if (lastLocation.hasSpeedAccuracy() && lastLocation.hasSpeed()) (lastLocation.speed * 3.6) else 0.0
+
         if (sharedPreferencesSetting.getBoolean(SettingConstants.SPEED_ALARM, false)) {
             when {
                 SharedData.convertSpeed(speed) > SharedData.convertSpeed(getWarningLimit().toDouble()) -> {
@@ -90,7 +92,13 @@ class MotionCalculatorPresenter(
     }
 
     override fun getAverageSpeed(): Double {
-        return if (timer > 0) (distance / (timer / 1000.0)) * 3.6 else 0.0 // Đổi từ mét/giây sang kilômét/giờ
+        return if (timer > 0) {
+            Log.d("okkkkkkk", "$distance   ${timer / 1000}")
+            ((distance*1000)/ (timer / 1000.0)) * 3.6
+
+        }else {
+            0.0
+        }
     }
 
     // Phương thức truy cập dữ liệu

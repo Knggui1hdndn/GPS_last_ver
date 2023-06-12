@@ -1,4 +1,4 @@
-package com.example.gps
+package com.example.gps.broadcast
 
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver

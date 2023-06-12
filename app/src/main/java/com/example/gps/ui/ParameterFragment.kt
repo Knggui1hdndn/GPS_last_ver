@@ -9,10 +9,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
@@ -20,10 +20,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
-import com.example.gps.MyLocationConstants
+import com.example.gps.constants.MyLocationConstants
 import com.example.gps.R
-import com.example.gps.SettingConstants
-import com.example.gps.SharedData
+import com.example.gps.constants.SettingConstants
+import com.example.gps.`object`.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.FragmentParameterBinding
 import com.example.gps.interfaces.MapLiveDataInterface
@@ -31,8 +31,7 @@ import com.example.gps.interfaces.MeasurementInterFace
 import com.example.gps.model.MovementData
 import com.example.gps.presenter.MapLiveDataPresenter
 import com.example.gps.service.MyService
-import com.example.gps.ui.setting.Setting
-import com.example.gps.utils.CheckPermission
+import com.example.gps.`object`.CheckPermission
 import com.example.gps.utils.ColorUtils
 import com.example.gps.utils.FontUtils
 import com.example.gps.utils.StringUtils
@@ -48,11 +47,16 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
     private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
             if (granted.entries.all { it.value }) {
-                start()
-                val fragment = checkFragmentNotification()
-                if (fragment is NotificationsFragment) {
-                    fragment.mapAsync()
+                if (requireActivity().checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    start()
+                    val fragment = checkFragmentNotification()
+                    if (fragment is NotificationsFragment) {
+                        fragment.mapAsync()
+                    }
+                }else{
+                    checkLocationBackground()
                 }
+
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -61,7 +65,9 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
                 ).show()
             }
         }
-
+fun checkLocationBackground(){
+    resultLauncher.launch(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+}
     @RequiresApi(Build.VERSION_CODES.Q)
     @SuppressLint("SetTextI18n", "RestrictedApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -74,6 +80,9 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
         showOrHideView()
         setFont(binding)
         val mapLiveDataPresenter = MapLiveDataPresenter(this, this)
+        mapLiveDataPresenter.getDistance()
+        mapLiveDataPresenter.getAverageSpeed()
+        mapLiveDataPresenter.getMaxSpeed()
         //set state is STOP when MyService not Running
         if (!isMyServiceRunning(MyService::class.java)) setState(MyLocationConstants.STOP);
         onDataChangeWithOrientationLandscape()
@@ -109,21 +118,18 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
     @SuppressLint("SetTextI18n")
     private fun onDataChangeWithOrientationPortrait() {
         with(binding) {
-
-
             this.btnStart.setOnClickListener {
                 if (!CheckPermission.hasLocationPermission(requireContext())) {
                     resultLauncher.launch(
                         arrayOf(
                             Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.ACCESS_BACKGROUND_LOCATION
                         )
                     )
+
                 } else {
                     start()
                 }
-
             }
         }
     }
@@ -380,7 +386,6 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
         binding.txtAverageSpeed.text = string
         setFont(binding)
     }
-
 
 
 }

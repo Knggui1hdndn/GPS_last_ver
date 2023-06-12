@@ -1,4 +1,4 @@
-package com.example.gps.ui.setting
+package com.example.gps.ui
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -8,7 +8,6 @@ import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
@@ -21,15 +20,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
-import com.example.gps.MyLocationConstants
+import com.example.gps.constants.MyLocationConstants
 import com.example.gps.R
-import com.example.gps.SettingConstants
-import com.example.gps.SharedData
+import com.example.gps.constants.SettingConstants
+import com.example.gps.`object`.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.dao.VehicleDao
 import com.example.gps.databinding.ActivitySettingBinding
-import com.example.gps.ui.DashboardFragment
-import com.example.gps.ui.HomeFragment
 import com.example.gps.ui.MainActivity2
 import com.example.gps.ui.NotificationsFragment
 import com.example.gps.ui.ParameterFragment
@@ -88,6 +85,7 @@ class Setting : AppCompatActivity() {
         initView()
         if (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES) {
             btnResetDistance.iconTint = ColorStateList.valueOf(Color.BLACK)
+            color=Color.WHITE
         } else {
             binding.mToolBar.setTitleTextColor(Color.WHITE)
         }

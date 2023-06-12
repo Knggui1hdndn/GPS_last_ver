@@ -1,4 +1,4 @@
-package com.example.gps
+package com.example.gps.constants
 
 class MyLocationConstants {
     companion object {

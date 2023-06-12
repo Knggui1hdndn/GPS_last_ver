@@ -9,22 +9,19 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import android.view.OrientationEventListener
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
-import com.example.gps.MyLocationConstants
+import com.example.gps.constants.MyLocationConstants
 import com.example.gps.R
-import com.example.gps.SettingConstants
-import com.example.gps.SharedData
+import com.example.gps.constants.SettingConstants
+import com.example.gps.`object`.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.FragmentHomeBinding
 import com.example.gps.interfaces.HomeInterface
 import com.example.gps.model.Vehicle
 import com.example.gps.service.MyService
 import com.example.gps.utils.ColorUtils
-import com.example.gps.utils.UnitUtils
 
 
 class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
@@ -57,13 +54,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
                     )
                 )
 
-                imgRotateScreen!!.setOnClickListener {
-                    requireActivity().requestedOrientation =
-                        ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-                }
-                imgReset!!.setOnClickListener {
-                    stopRunning()
-                }
+
             } else {
                 sharedPreferencesSetting.getInt(SettingConstants.COLOR_DISPLAY, 2)
             }
@@ -100,8 +91,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
     }
 
     override fun onVisibilityChanged(boolean: Boolean) {
-        binding.imgReset!!.visibility = if (!boolean) View.GONE else View.VISIBLE
-    }
+     }
 
     override fun onMaxSpeedAnalogChange(speed: Int) {
         binding.speed.maxSpeed = speed.toFloat()
@@ -122,8 +112,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
     }
 
     override fun toggleButtonVisibility(boolean: Boolean) {
-        binding.imgReset?.visibility = if (boolean) View.VISIBLE else View.GONE
-    }
+     }
 
     override fun onColorChange(i: Int) {
         try {

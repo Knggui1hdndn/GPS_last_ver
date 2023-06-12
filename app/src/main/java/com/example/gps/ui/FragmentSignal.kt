@@ -39,7 +39,7 @@ class FragmentSignal : Fragment(R.layout.fragment_signal), SignalInterface {
     @SuppressLint("SetTextI18n")
     override fun onBatteryDataReceived(int: Int) {
         if (this::binding.isInitialized) {
-            binding.pin.text = "$int%"
+           // binding.pin.text = "$int%"
         }
     }
 

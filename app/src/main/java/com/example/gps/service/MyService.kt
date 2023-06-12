@@ -12,10 +12,10 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.example.gps.LocationChangeListener
 import com.example.gps.Map
-import com.example.gps.MyLocationConstants
+import com.example.gps.constants.MyLocationConstants
 import com.example.gps.R
-import com.example.gps.SettingConstants
-import com.example.gps.SharedData
+import com.example.gps.constants.SettingConstants
+import com.example.gps.`object`.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.presenter.MotionCalculatorPresenter
 import com.example.gps.ui.MainActivity2

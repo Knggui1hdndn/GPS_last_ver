@@ -1,6 +1,6 @@
 package com.example.gps.utils
 
-import com.example.gps.SharedData
+import com.example.gps.`object`.SharedData
 
 class StringUtils {
     companion object{

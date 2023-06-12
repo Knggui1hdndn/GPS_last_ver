@@ -15,6 +15,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
+import com.example.gps.constants.SettingConstants
 import com.example.gps.ui.MainActivity2
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
@@ -35,8 +36,15 @@ class MyApplication :
 
     override fun onCreate() {
         super.onCreate()
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        val sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
+//        if (sharedPreferences.getBoolean(SettingConstants.THEME, true)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+//        } else {
+//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+//        }
+
         registerActivityLifecycleCallbacks(this)
+
         createChannelId()
         // Log the Mobile Ads SDK version.
         MobileAds.initialize(this) {}
@@ -50,6 +58,7 @@ class MyApplication :
         // Show the ad (if available) when the app moves to foreground.
         currentActivity?.let { appOpenAdManager.showAdIfAvailable(it) }
     }
+
     private fun createChannelId() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel =
@@ -132,7 +141,7 @@ class MyApplication :
                 request,
                 AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT,
                 object : AppOpenAd.AppOpenAdLoadCallback() {
- //Load ads
+                    //Load ads
                     override fun onAdLoaded(ad: AppOpenAd) {
                         appOpenAd = ad
                         isLoadingAd = false
@@ -141,7 +150,7 @@ class MyApplication :
 //                        Toast.makeText(context, "onAdLoaded", Toast.LENGTH_SHORT).show()
                     }
 
-         //load ad error
+                    //load ad error
                     override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                         isLoadingAd = false
                         Log.d(LOG_TAG, "onAdFailedToLoad: " + loadAdError.message)
@@ -188,7 +197,10 @@ class MyApplication :
          * @param activity the activity that shows the app open ad
          * @param onShowAdCompleteListener the listener to be notified when an app open ad is complete
          */
-        fun showAdIfAvailable(activity: Activity, onShowAdCompleteListener: OnShowAdCompleteListener) {
+        fun showAdIfAvailable(
+            activity: Activity,
+            onShowAdCompleteListener: OnShowAdCompleteListener
+        ) {
             // If the app open ad is already showing, do not show the ad again.
             //Nếu quảng cáo mở và ứng dụng đã hiển thị, không hiển thị lại quảng cáo.
             if (isShowingAd) {
@@ -199,7 +211,10 @@ class MyApplication :
             // If the app open ad is not available yet, invoke the callback then load the ad.
             //Nếu quảng cáo mở ứng dụng chưa có sẵn, hãy gọi lại, sau đó tải quảng cáo.
             if (!isAdAvailable()) {
-                Log.d(LOG_TAG, "The app open ad is not ready yet.")//quảng cáo mở ứng dụng chưa sẵn sàng
+                Log.d(
+                    LOG_TAG,
+                    "The app open ad is not ready yet."
+                )//quảng cáo mở ứng dụng chưa sẵn sàng
                 onShowAdCompleteListener.onShowAdComplete()
                 loadAd(activity)
                 return

@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/match_constraint"
-    style="@style/BackgroundTint"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     android:orientation="vertical"
     tools:context=".ui.SplashActivity">
 
@@ -15,14 +15,14 @@
 
         <ImageView
             android:id="@+id/a"
-
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/a"
-            android:scaleType="centerCrop" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/logo" />
 
         <ImageView
-android:background="@color/black"            android:layout_width="match_parent"
+            style="@style/BackgroundTintImg"
+            android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_gravity="bottom" />
 
