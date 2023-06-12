@@ -9,16 +9,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
-import android.content.res.ColorStateList
 import android.content.res.Configuration
-import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import com.example.gps.MyLocationConstants
@@ -27,16 +26,20 @@ import com.example.gps.SettingConstants
 import com.example.gps.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.FragmentParameterBinding
+import com.example.gps.interfaces.MapLiveDataInterface
 import com.example.gps.interfaces.MeasurementInterFace
 import com.example.gps.model.MovementData
+import com.example.gps.presenter.MapLiveDataPresenter
 import com.example.gps.service.MyService
 import com.example.gps.ui.setting.Setting
+import com.example.gps.utils.CheckPermission
 import com.example.gps.utils.ColorUtils
 import com.example.gps.utils.FontUtils
 import com.example.gps.utils.StringUtils
 import com.example.gps.utils.TimeUtils
 
-class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInterFace {
+class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInterFace,
+    MapLiveDataInterface.View {
     private lateinit var binding: FragmentParameterBinding
     private var intColor: Int = 0
     private var check = false
@@ -59,6 +62,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
             }
         }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     @SuppressLint("SetTextI18n", "RestrictedApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentParameterBinding.bind(view)
@@ -69,7 +73,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
         setDataWhenComeBack()
         showOrHideView()
         setFont(binding)
-
+        val mapLiveDataPresenter = MapLiveDataPresenter(this, this)
         //set state is STOP when MyService not Running
         if (!isMyServiceRunning(MyService::class.java)) setState(MyLocationConstants.STOP);
         onDataChangeWithOrientationLandscape()
@@ -101,44 +105,19 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     @SuppressLint("SetTextI18n")
     private fun onDataChangeWithOrientationPortrait() {
         with(binding) {
-            SharedData.maxSpeedLiveData.observe(viewLifecycleOwner) {
-                this.txtMaxSpeed.text = if (it <= 0) "0" + SharedData.toUnit else String.format(
-                    "%.0f",
-                    SharedData.convertSpeed(it)
-                ) + SharedData.toUnit
-                setFont(binding)
-            }
 
-
-            SharedData.distanceLiveData.observe(viewLifecycleOwner) {
-                this.txtDistance.text =
-                    String.format(
-                        "%.2f",
-                        SharedData.convertDistance(it)
-                    ) + SharedData.toUnitDistance
-                setFont(binding)
-            }
-
-            SharedData.averageSpeedLiveData.observe(viewLifecycleOwner) {
-                this.txtAverageSpeed.text =
-                    if (it <= 0) "0" + SharedData.toUnit else String.format(
-                        "%.0f",
-                        SharedData.convertSpeed(it)
-                    ) + SharedData.toUnit
-                setFont(binding)
-            }
 
             this.btnStart.setOnClickListener {
-                if (requireContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                    requireContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                ) {
+                if (!CheckPermission.hasLocationPermission(requireContext())) {
                     resultLauncher.launch(
                         arrayOf(
                             Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_BACKGROUND_LOCATION
                         )
                     )
                 } else {
@@ -367,7 +346,6 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
                     .toString() + SharedData.toUnitDistance
             txtAverageSpeed.text = StringUtils.convert(SharedData.averageSpeedLiveData.value!!)
             txtMaxSpeed.text = StringUtils.convert(SharedData.maxSpeedLiveData.value!!)
-            Log.d("okokkoo", SharedData.toUnitDistance + "sssssss" + SharedData.toUnit)
         }
         setFont(binding)
 
@@ -387,4 +365,22 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
 
         }
     }
+
+    override fun showMaxSpeed(string: String) {
+        binding.txtMaxSpeed.text = string
+        setFont(binding)
+    }
+
+    override fun showDistance(string: String) {
+        binding.txtDistance.text = string
+        setFont(binding)
+    }
+
+    override fun showAverageSpeed(string: String) {
+        binding.txtAverageSpeed.text = string
+        setFont(binding)
+    }
+
+
+
 }

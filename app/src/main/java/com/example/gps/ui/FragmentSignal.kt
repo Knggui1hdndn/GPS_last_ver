@@ -46,10 +46,6 @@ class FragmentSignal : Fragment(R.layout.fragment_signal), SignalInterface {
     override fun onStrengthGPSDataReceived(strength: Int, satelliteCount: Int) {
         if (this::binding.isInitialized) {
             binding.txtStrengthGPS.text = "${strength}/${satelliteCount}"
-            Log.d(
-                "okokokdasd",
-                (((strength / satelliteCount) * 100).toString()) + "$strength  $satelliteCount"
-            )
             binding.txtStrengthNetwork.text =
                 "${((strength.toFloat() / satelliteCount) * 100).toInt()}%"
         }

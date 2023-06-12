@@ -16,6 +16,8 @@ import com.example.gps.MyLocationConstants
 import com.example.gps.R
 import com.example.gps.SettingConstants
 import com.example.gps.SharedData
+import com.example.gps.dao.MyDataBase
+import com.example.gps.presenter.MotionCalculatorPresenter
 import com.example.gps.ui.MainActivity2
 
 
@@ -27,7 +29,15 @@ class MyService : Service(), LocationChangeListener {
 
     override fun onCreate() {
         super.onCreate()
-        map = Map(applicationContext, this)
+        map = Map(
+            applicationContext,
+            MotionCalculatorPresenter(
+                this,
+                mutableListOf(),
+                MyDataBase.getInstance(applicationContext)
+            ),
+            this
+        )
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -38,29 +48,32 @@ class MyService : Service(), LocationChangeListener {
     private fun handle(action: String?) {
         when (action) {
             MyLocationConstants.START -> {
-                map.checkStart = false
+                map.setStart()
                 map.startCallBack()
                 startForeground(1, getNotifications("0", "0", "0"))
-                map.postDelayed()
             }
 
             MyLocationConstants.PAUSE -> {
-                map.checkPause = true
                 map.removeCallBack()
-                map.removeHandler()
             }
 
             MyLocationConstants.RESUME -> {
-                map.checkPause = true
-                map.postDelayed()
                 map.startCallBack()
             }
 
             MyLocationConstants.STOP -> {
-                map.checkStop = true
+                map.setStop()
                 map.removeCallBack()
-                map.removeHandler()
                 SharedData.time.value = 0
+                map = Map(
+                    applicationContext,
+                    MotionCalculatorPresenter(
+                        this,
+                        mutableListOf(),
+                        MyDataBase.getInstance(applicationContext)
+                    ),
+                    this
+                )
             }
         }
     }
@@ -80,13 +93,16 @@ class MyService : Service(), LocationChangeListener {
             this,
             0,
             intent,
-               PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
         val sharedPreferences =
             application.getSharedPreferences(SettingConstants.SETTING, Context.MODE_PRIVATE)
         val checkHide = sharedPreferences.getBoolean(SettingConstants.DISPLAY_SPEED, true)
 
-        notificationLayout.setTextViewText(R.id.txtKm, if (checkHide) SharedData.convertSpeed(km.toDouble()).toInt().toString() else "")
+        notificationLayout.setTextViewText(
+            R.id.txtKm,
+            if (checkHide) SharedData.convertSpeed(km.toDouble()).toInt().toString() else ""
+        )
 
 
         notificationLayout.setTextViewText(
@@ -102,7 +118,7 @@ class MyService : Service(), LocationChangeListener {
             R.id.txtMaxSpeed,
             SharedData.convertSpeed(maxSpeed.toDouble()).toInt().toString()
         )
-        notificationLayout.setTextViewText(R.id.unit1,if (checkHide) SharedData.toUnit else "")
+        notificationLayout.setTextViewText(R.id.unit1, if (checkHide) SharedData.toUnit else "")
         notificationLayout.setTextViewText(R.id.unit2, SharedData.toUnit)
         notificationLayout.setTextViewText(R.id.unit3, SharedData.toUnit)
         return NotificationCompat.Builder(this, "1")

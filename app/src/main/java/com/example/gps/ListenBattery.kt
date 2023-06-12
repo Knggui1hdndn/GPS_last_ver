@@ -8,9 +8,6 @@ import android.os.BatteryManager
 import com.example.gps.ui.MainActivity2
 
 class ListenBattery : BroadcastReceiver() {
-    companion object {
-        const val ACTION_BATTERY_CHANGED = "BATTERY_CHANGED"
-    }
 
     @SuppressLint("UnsafeProtectedBroadcastReceiver")
     override fun onReceive(context: Context?, intent: Intent?) {

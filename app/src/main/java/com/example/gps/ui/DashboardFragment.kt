@@ -56,7 +56,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
                 FontUtils.setFont(
                     requireContext(),
                     this.txtSpeed,
-                     txtKm3,
+                    txtKm3,
                     txtDistance1
                 )
             }
@@ -71,7 +71,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
                     FontUtils.setFont(
                         requireContext(),
                         this.txtSpeed,
-                         txtKm3,
+                        txtKm3,
                         txtDistance1
                     )
                 }
@@ -90,7 +90,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), DigitalInterfac
                 SharedData.convertSpeed(SharedData.currentSpeedLiveData.value!!.keys.first())
             txtSpeed.text = "%03d".format(convertedSpeed.toInt())
             txtDistance1.text ="%09d".format (SharedData.convertDistance(
-            sharedPreferencesStates.getInt(MyLocationConstants.DISTANCE, 0).toDouble() ).toInt() )
+                sharedPreferencesStates.getInt(MyLocationConstants.DISTANCE, 0).toDouble() ).toInt() )
 
         }
     }
