@@ -37,16 +37,15 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentHomeBinding.bind(view)
         myDataBase = MyDataBase.getInstance(requireContext())
-        sharedPreferencesSetting =
-            requireContext().getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
+       sharedPreferencesSetting = requireContext().getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         sharedPreferencesState = requireContext().getSharedPreferences("state", MODE_PRIVATE)
         val positionsColor = sharedPreferencesSetting.getInt(SettingConstants.COLOR_DISPLAY, 2)
-        binding.speed.backgroundCircleColor =
-            if (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES ) Color.WHITE else Color.BLACK
-        binding.speed.speedTextColor =
-            if (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES) Color.WHITE else Color.BLACK
-        binding.speed.textColor =
-            if (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES) Color.WHITE else Color.BLACK
+        val isNightMode = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
+        val backgroundColor = if (isNightMode) Color.BLACK else Color.WHITE
+        val textColor = if (isNightMode) Color.BLACK else Color.WHITE
+        binding.speed.backgroundCircleColor = backgroundColor
+        binding.speed.speedTextColor = textColor
+        binding.speed.textColor = textColor
         onColorChange(positionsColor)
         with(binding) {
 

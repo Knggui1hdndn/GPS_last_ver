@@ -80,9 +80,7 @@ class MainActivity2 : AppCompatActivity(), SignalInterface {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setUpActivity()
-
-        requestPermissions(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 1)
-        checkOpenFirst()
+       checkOpenFirst()
         setDataDefault()
         SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
 
@@ -255,7 +253,7 @@ class MainActivity2 : AppCompatActivity(), SignalInterface {
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            result.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
+           return
         } else {
             getStrengthGPS()
         }
@@ -265,7 +263,7 @@ class MainActivity2 : AppCompatActivity(), SignalInterface {
     @SuppressLint("MissingPermission")
     private fun getStrengthGPS() {
         if(this::navHostFragment.isInitialized){
-            childFragment = navHostFragment?.childFragmentManager?.fragments!![0]
+            childFragment = navHostFragment.childFragmentManager?.fragments!![0]
             fragmentSignal = (childFragment.childFragmentManager.findFragmentById(R.id.signal) as FragmentSignal)
             (getSystemService(LOCATION_SERVICE) as LocationManager).registerGnssStatusCallback(
                 object : GnssStatus.Callback() {
@@ -292,8 +290,7 @@ class MainActivity2 : AppCompatActivity(), SignalInterface {
 
     }
 
-    private val result =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
+    private val result =  registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
             if (granted.entries.all { it.value }) {
                 getStrengthGPS()
             }

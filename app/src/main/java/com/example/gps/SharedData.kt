@@ -8,19 +8,15 @@ import androidx.lifecycle.MutableLiveData
 
 @SuppressLint("StaticFieldLeak")
 object SharedData {
-    val averageSpeedLiveData = MutableLiveData<Double>(0.0)
-    val maxSpeedLiveData = MutableLiveData<Double>(0.0)
-    val currentSpeedLiveData = MutableLiveData<HashMap<Double, Long>>(hashMapOf(0.0 to 0L))
-    val distanceLiveData = MutableLiveData<Double>(0.0)
+    val averageSpeedLiveData = MutableLiveData(0.0)
+    val maxSpeedLiveData = MutableLiveData(0.0)
+    val currentSpeedLiveData = MutableLiveData(hashMapOf(0.0 to 0L))
+    val distanceLiveData = MutableLiveData (0.0)
     val locationLiveData = MutableLiveData<Location>()
-
-
     val speedAnalog = MutableLiveData<Int>()
     val time = MutableLiveData<Long>(0)
-    val checkPermission = MutableLiveData<Boolean>( )
     var fromUnit = "km/h"
     var toUnit = ""
-
     var fromUnitDistance = "km"
     var toUnitDistance = ""
     var checkService = false
