@@ -4,18 +4,25 @@ import android.location.Location
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Polyline
+import java.util.function.BiPredicate
 
 interface MapInterface : DisplayInterface, MeasurementInterFace {
     interface View {
         fun onVisibilityPolyLine(boolean: Boolean)
-        fun drawPolyLine(latLng: LatLng)
+
         fun setMap(googleMap: GoogleMap)
-     }
+        fun clearMap()
+        fun showCurrentSpeed(string: String)
+        fun onMoveCamera()
+        fun onCameraIdle()
+    }
 
     interface Presenter {
-        fun updateLocationUI(location: Location?)
-        fun getPolyLine(polyline: Polyline)
+        fun updatePolyLine()
+        fun getCurrentSpeed()
         fun getCurrentPosition()
+        fun isServiceRunning(serviceClass: Class<*>):Boolean
+        fun conVertToLatLng():List<LatLng>
         fun setUpMap()
     }
 }

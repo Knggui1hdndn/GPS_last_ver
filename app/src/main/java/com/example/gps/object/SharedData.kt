@@ -14,6 +14,7 @@ object SharedData {
     val distanceLiveData = MutableLiveData (0.0)
     val locationLiveData = MutableLiveData<Location>()
     val speedAnalog = MutableLiveData<Int>()
+    val color = MutableLiveData<Int>()
     val time = MutableLiveData<Long>(0)
     var fromUnit = "km/h"
     var toUnit = ""

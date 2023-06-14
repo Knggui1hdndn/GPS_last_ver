@@ -4,21 +4,21 @@
     <item
         android:id="@+id/subcribe"
         android:icon="@drawable/subcribe"
-        android:title="History"
-        app:showAsAction="always" />
-    <item
-        android:id="@+id/reset"
-        android:icon="@drawable/tip"
-        android:title="History"
+        android:title="Subcribe"
         app:showAsAction="always" />
     <item
         android:id="@+id/tip"
+        android:icon="@drawable/tip"
+        android:title="Tip"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/history"
         android:icon="@drawable/reset1"
         android:title="History"
         app:showAsAction="always" />
     <item
         android:id="@+id/settings"
         android:icon="@drawable/setting"
-        android:title="theme"
+        android:title="Setting"
         app:showAsAction="always" />
 </menu>

@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
+import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -37,18 +38,17 @@ import com.example.gps.utils.FontUtils
 import com.example.gps.utils.StringUtils
 import com.example.gps.utils.TimeUtils
 
-class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInterFace,
+class ParameterFragment : Fragment(R.layout.fragment_parameter) ,
     ParameterContracts.View {
     private lateinit var binding: FragmentParameterBinding
     private lateinit var presenter: ParameterPresenter
     private var intColor: Int = 0
     private var check = false
     private var sharedPreferences: SharedPreferences? = null
-    private lateinit var myDataBase: MyDataBase
     private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
             if (granted.entries.all { it.value }) {
-                if (granted.get(Manifest.permission.ACCESS_BACKGROUND_LOCATION) ==true) presenter.startService() else check()
+                if (granted.get(Manifest.permission.ACCESS_BACKGROUND_LOCATION) == true) presenter.startService() else check()
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -67,13 +67,26 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentParameterBinding.bind(view)
         sharedPreferences = requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
-         presenter = ParameterPresenter(this, this)
-        setBackGround()
-        setDataWhenComeBack()
+        presenter = ParameterPresenter(this, this)
         presenter.updateUIState()
         presenter.getDistance()
         presenter.getAverageSpeed()
         presenter.getMaxSpeed()
+        SharedData.color.observe(viewLifecycleOwner) {
+            with(binding){
+                txtDistance.setTextColor(ColorUtils.checkColor(it))
+                txtAvgSpeed.setTextColor(ColorUtils.checkColor(it))
+                txtMaxSpeed.setTextColor(ColorUtils.checkColor(it))
+                txtStartTime.setTextColor(ColorUtils.checkColor(it))
+                btnStart.backgroundTintList= ColorStateList.valueOf(ColorUtils.checkColor(it))
+                btnStop.backgroundTintList= ColorStateList.valueOf(ColorUtils.checkColor(it))
+                imgPause.imageTintList= ColorStateList.valueOf(ColorUtils.checkColor(it))
+                imgReset.imageTintList= ColorStateList.valueOf(ColorUtils.checkColor(it))
+                imgResume.imageTintList= ColorStateList.valueOf(ColorUtils.checkColor(it))
+            }
+        }
+
+
 
         if (!presenter.isMyServiceRunning(MyService::class.java)) presenter.setState(
             MyLocationConstants.STOP
@@ -91,7 +104,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
                     arrayOf(
                         Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.ACCESS_COARSE_LOCATION,
-                  )
+                    )
                 )
             } else {
                 presenter.startService()
@@ -100,6 +113,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
         }
         binding.btnStop?.setOnClickListener {
             presenter.stopService()
+            (requireActivity() as MainActivity2).sendDataToSecondFragment()
         }
         binding.imgPause?.setOnClickListener {
             presenter.pauseService()
@@ -113,25 +127,10 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
     }
 
     override fun onResume() {
-        if (sharedPreferences?.getString(
-                MyLocationConstants.STATE,
-                ""
-            ) != MyLocationConstants.START
-        ) {
-            presenter.updateUIState()
-        }
+        presenter.updateUIState()
         super.onResume()
     }
 
-    private fun setBackGround() {
-        intColor = requireActivity().getSharedPreferences(
-            SettingConstants.SETTING,
-            Context.MODE_PRIVATE
-        ).getInt(SettingConstants.COLOR_DISPLAY, 2)
-        with(binding) {
-
-        }
-    }
 
     override fun onPause() {
         super.onPause()
@@ -151,20 +150,9 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
     }
 
 
-    @SuppressLint("SetTextI18n")
-    fun setDataWhenComeBack() {
 
 
-    }
 
-
-    override fun onUnitChange() {
-        setDataWhenComeBack()
-    }
-
-    override fun onColorChange(i: Int) {
-
-    }
 
     override fun showMaxSpeed(string: String) {
         binding.txtMaxSpeed?.text = string

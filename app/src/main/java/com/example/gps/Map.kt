@@ -27,7 +27,8 @@ class Map(
     private val motion: MotionCalculatorPresenter,
     locationChangeListener: LocationChangeListener
 ) : MotionCalculatorInterface.MapInterFace {
-    private var fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
+    private var fusedLocationClient: FusedLocationProviderClient =
+        LocationServices.getFusedLocationProviderClient(context)
     private var checkStart: Boolean = false
     private var checkStop: Boolean = false
 
@@ -71,18 +72,18 @@ class Map(
         motion.stopTimer()
         if (checkStop) {
             motion.updateMovementDataWhenStop()
-            checkStop=false
-            checkStart=false
+            checkStop = false
+            checkStart = false
         }
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
     override fun setStop() {
-        checkStop=true
+        checkStop = true
     }
 
     override fun setStart() {
-        checkStart=true
+        checkStart = true
     }
 
 

@@ -25,8 +25,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             app:sv_indicatorColor="@color/color_3"
-            app:sv_maxSpeed="280"
+             app:sv_maxSpeed="280"
             app:sv_minSpeed="0"
+            app:sv_speedometerColor="@color/black"
             app:sv_speedTextPosition="CENTER"
             app:sv_speedometerMode="NORMAL"
             app:sv_trianglesColor="@color/black" />

@@ -3,6 +3,8 @@ package com.example.gps.ui
 import android.annotation.SuppressLint
 import android.app.Service
 import android.content.SharedPreferences
+import android.content.pm.ActivityInfo
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -13,6 +15,7 @@ import com.example.gps.constants.SettingConstants
 import com.example.gps.`object`.SharedData
 import com.example.gps.databinding.FragmentDashboardBinding
 import com.example.gps.interfaces.DigitalInterface
+import com.example.gps.utils.ColorUtils
 import com.example.gps.utils.TimeUtils
 
 class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
@@ -33,5 +36,29 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         SharedData.time.observe(viewLifecycleOwner) {
             binding.time?.text = TimeUtils.formatTime(it)
         }
+        binding.imgRotate?.setOnClickListener {
+            requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        }
+        SharedData.color.observe(viewLifecycleOwner) {
+            with(binding){
+                txtSpeed?.setTextColor(ColorUtils.checkColor(it))
+                txtUnit?.setTextColor(ColorUtils.checkColor(it))
+                time?.setTextColor(ColorUtils.checkColor(it))
+
+            }
+        }
+        SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) {
+            it[it.keys.first()]?.let { it1 ->
+                this.binding.txtSpeed.text =
+                    if (it1 <= 0) "000" else "%03d".format(SharedData.convertSpeed(it1.toDouble()).toInt())
+            }
+ }
+        FontUtils.setFont(requireContext(), binding.time, binding.txtUnit, binding.txtSpeed)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        this.binding.txtUnit?.text = SharedData.toUnit
+
     }
 }

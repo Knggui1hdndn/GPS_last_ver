@@ -26,11 +26,9 @@ class HistoryAdapter(private val i: Int) :
         fun bind(movementData: MovementData) {
             with(binding) {
 
-                btnSeeMore.strokeColor = ColorStateList.valueOf(ColorUtils.checkColor(i))
-                btnSeeMore.setTextColor(ColorUtils.checkColor(i))
-                a.setBackgroundColor(ColorUtils.checkColor(i))
 
-                binding.btnSeeMore.setOnClickListener {
+
+                binding.mLinear.setOnClickListener {
                     val intent = Intent(it.context, ShowActivity::class.java)
                     intent.putExtra("movementData", movementData)
                     binding.root.context.startActivity(intent)
@@ -38,11 +36,11 @@ class HistoryAdapter(private val i: Int) :
 
                 val calendar = Calendar.getInstance()
                 txtDate.text =
-                    "${calendar.get(Calendar.DAY_OF_MONTH)}\nthg ${calendar.get(Calendar.MONTH) + 1}\n${calendar.get(
+                    "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(
                         Calendar.YEAR
                     )}"
                 txtMaxSpeed.text = movementData.maxSpeed.toString()
-                txtTime.text = TimeUtils.formatTime(movementData.time)
+
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     Geocoder(binding.root.context, Locale.getDefault()).getFromLocation(

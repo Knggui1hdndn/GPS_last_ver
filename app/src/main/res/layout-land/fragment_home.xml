@@ -20,17 +20,29 @@
             android:gravity="bottom"
             android:orientation="vertical">
 
-            <com.github.anastr.speedviewlib.AwesomeSpeedometer
-                android:id="@+id/speed"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
+         <FrameLayout
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             >
+             <com.github.anastr.speedviewlib.AwesomeSpeedometer
+                 android:id="@+id/speed"
+                 android:layout_width="wrap_content"
+                 android:layout_height="match_parent"
+                 android:layout_gravity="center"
                  app:sv_backgroundCircleColor="@color/black"
-                app:sv_maxSpeed="280"
-                app:sv_minSpeed="0"
-                app:sv_speedTextPosition="CENTER"
-                app:sv_speedometerMode="NORMAL"
-                app:sv_trianglesColor="@color/white" />
+                 app:sv_maxSpeed="280"
+                 app:sv_minSpeed="0"
+                 app:sv_speedTextPosition="CENTER"
+                 app:sv_speedometerMode="NORMAL"
+                 app:sv_trianglesColor="@color/white" />
+             <ImageView
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_gravity="bottom"
+                 android:id="@+id/imgRotate"
+                 android:layout_margin ="20dp"
+                 android:src="@drawable/screen_rotation" />
+         </FrameLayout>
         </LinearLayout>
 
         <fragment

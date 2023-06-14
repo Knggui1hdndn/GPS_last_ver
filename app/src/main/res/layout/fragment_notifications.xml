@@ -8,6 +8,7 @@
     android:weightSum="10">
 
     <FrameLayout
+
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="5.3">
@@ -60,7 +61,7 @@
             android:layout_gravity="start|top"
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
-            android:src="@drawable/current_speed" />
+            android:src="@drawable/current_position" />
 
         <ImageView
             android:id="@+id/imgTypeMap"
@@ -88,6 +89,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="4.7"
+        android:id="@+id/mLinear"
         android:gravity="bottom"
         android:orientation="vertical">
 

@@ -1,48 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mLinear"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-<TextView
-    android:layout_width="5dp"
-    android:layout_height="match_parent"
-    android:background="@color/teal_200"
-    android:layout_alignParentTop="true"
-    android:layout_alignParentStart="true"
-    android:id="@+id/a"
-    android:layout_alignBottom="@id/txtDate"
-    />
-    <TextView
-        android:layout_toRightOf="@id/a"
-        android:id="@+id/txtDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#59757171"
-        android:gravity="center"
-        android:padding="5dp"
-        android:text="21 \nthg 5\n2023"
-        android:textColor="@color/white" />
+    android:padding="10dp">
+
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_toLeftOf="@id/btnSeeMore"
-        android:gravity="center_vertical"
-        android:paddingStart="15dp"
+        android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_alignBottom="@id/txtDate"
-        android:layout_toRightOf="@+id/txtDate"
+        android:gravity="center_vertical"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/txtStart"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
+            android:layout_height="wrap_content">
 
-            android:text="Thon 8 le xa tu son kieen thuy hai phong"
-           />
+            <ImageView
+                style="@style/BackgroundTintImg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/baseline_location_on_24" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start:"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/txtStart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+
+                android:text="Thon 8 le xa tu son kieen thuy hai phong" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -51,47 +47,38 @@
             android:orientation="horizontal">
 
             <ImageView
+                style="@style/BackgroundTintImg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/baseline_access_time_24" />
+                android:layout_marginStart="24dp"
+                android:src="@drawable/date" />
+
             <TextView
-                android:id="@+id/txtTime"
+                android:id="@+id/txtDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="10dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="00 : 00 : 00 s"
-                />
+                android:text="00 : 00 : 00 s" />
+
             <ImageView
+                style="@style/BackgroundTintImg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:src="@drawable/baseline_speed_24" />
+
             <TextView
                 android:id="@+id/txtMaxSpeed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="0 km/h"
-                 />
+                android:text="0 km/h" />
         </LinearLayout>
     </LinearLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnSeeMore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        style="@style/BackgroundTint"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="5dp"
-         android:text="Xem"
-        android:textColor="@color/teal_200"
-        app:cornerRadius="25dp"
-        app:strokeColor="@color/teal_200"
-        app:strokeWidth="2dp" />
 </RelativeLayout>

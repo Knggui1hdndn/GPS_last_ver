@@ -1,7 +1,18 @@
 package com.example.gps.interfaces
 
-interface  SignalInterface{
-    fun onBatteryDataReceived(int: Int)
-    fun onStrengthGPSDataReceived(strength: Int, satelliteCount: Int)
+import android.annotation.SuppressLint
+import android.location.GnssStatus
+import android.os.Build
+import androidx.annotation.RequiresApi
 
+interface SignalInterface {
+    interface View {
+
+        fun onStrengthGPSDataReceived(strength: Int, satelliteCount: Int)
+    }
+
+    interface Presenter {
+        fun registerGnssStatusCallback()
+        fun unRegisterGnssStatusCallback()
+    }
 }

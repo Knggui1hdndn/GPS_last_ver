@@ -4,47 +4,46 @@ package com.example.gps.ui
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Service
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
-import android.graphics.Color
-import android.graphics.Typeface
+import android.location.GnssStatus
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.viewpager2.widget.ViewPager2
-import com.example.gps.broadcast.ListenBattery
 import com.example.gps.R
 import com.example.gps.constants.SettingConstants
-import com.example.gps.constants.SettingConstants.Companion.CLOCK_DISPLAY
 import com.example.gps.`object`.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.ActivityMain2Binding
 import com.example.gps.interfaces.SignalInterface
 import com.example.gps.ui.adpater.TabAdapter
-import com.example.gps.utils.TimeUtils
 import com.google.android.material.tabs.TabLayoutMediator
 
+interface onRecever {
+    fun sendDataToSecondFragment()
+}
 
-class MainActivity2 : AppCompatActivity(), SignalInterface {
+class MainActivity2 : AppCompatActivity(), onRecever {
 
 
-    private lateinit var binding: ActivityMain2Binding
+    lateinit var binding: ActivityMain2Binding
+    lateinit var tabAdapter: TabAdapter
+    lateinit var viewPager: ViewPager2
     private lateinit var sharedPreferences: SharedPreferences
-     private lateinit var broadCast: ListenBattery
-     private lateinit var fragmentSignal: FragmentSignal
     private fun setUnitSpeedAndDistance() {
         try {
             SharedData.toUnit = sharedPreferences.getString(SettingConstants.UNIT, "").toString()
@@ -65,7 +64,7 @@ class MainActivity2 : AppCompatActivity(), SignalInterface {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setUpActivity()
-      //  SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
+        //  SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
 
     }
 
@@ -74,33 +73,33 @@ class MainActivity2 : AppCompatActivity(), SignalInterface {
         binding = ActivityMain2Binding.inflate(layoutInflater)
         SharedData.activity = this
         setContentView(binding.root)
-        binding.toolbar.title= "ODOMETER"
-
+        binding.toolbar.title = "ODOMETER"
         setSupportActionBar(binding.toolbar)
         setUnitSpeedAndDistance()
-
-
         supportActionBar?.title = "ODOMETER"
         sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
 //        binding.times.typeface = Typeface.createFromAsset(assets, "font_lcd.ttf")
-
-        val tabAdapter = TabAdapter(supportFragmentManager, lifecycle)
+        checkOpenFirst()
+        tabAdapter = TabAdapter(supportFragmentManager, lifecycle)
+        viewPager = binding.viewPager2
+        viewPager.setPageTransformer { page, position ->
+            if (position == 2F) {
+                binding.viewPager2.isUserInputEnabled = false
+            }
+        }
         binding.viewPager2.adapter = tabAdapter
-
-        TabLayoutMediator(binding.tabLayout!!, binding.viewPager2!!) { tab, position ->
-
+        TabLayoutMediator(binding.tabLayout, viewPager) { tab, position ->
             when (position) {
                 0 -> tab.text = "Analog"
                 1 -> tab.text = "Kĩ thuật số"
                 2 -> {
                     tab.text = "Bản đồ"
-                     val currentFragment = tabAdapter.createFragment(2) as NotificationsFragment
                 }
             }
         }.attach()
-        binding.viewPager2.isUserInputEnabled = false
+
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-         }
+        }
 
 
     }
@@ -148,11 +147,11 @@ class MainActivity2 : AppCompatActivity(), SignalInterface {
         super.onResume()
 
 
-     }
+    }
 
     override fun onPause() {
         super.onPause()
-         Log.d("okokko", "sodkf1")
+        Log.d("okokko", "sodkf1")
 
     }
 
@@ -176,42 +175,33 @@ class MainActivity2 : AppCompatActivity(), SignalInterface {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
-
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
+        when (item.itemId) {
+            R.id.settings ->startActivity(Intent(this,Setting::class.java))
+                R.id.history ->startActivity(Intent(this,HistoryActivity::class.java))
+                R.id.tip ->startActivity(Intent(this,TipActivity::class.java))
+                R.id.subcribe ->startActivity(Intent(this,Setting::class.java))
+        }
         return true
     }
 
-    override fun onBatteryDataReceived(int: Int) {
-        fragmentSignal.onBatteryDataReceived(int)
+    override fun sendDataToSecondFragment() {
 
-    }
-
-    override fun onStrengthGPSDataReceived(int: Int, satelliteCount: Int) {
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return
-        } else {
-            getStrengthGPS()
+        try {
+            val frag = getSupportFragmentManager().findFragmentByTag("f" + 0);
+            val frag1 = getSupportFragmentManager().findFragmentByTag("f" + 1);
+            (frag!!.childFragmentManager.findFragmentById(R.id.signal) as FragmentSignal).onStrengthGPSDataReceived(
+                0,
+                0
+            )
+            (frag1!!.childFragmentManager.findFragmentById(R.id.signal) as FragmentSignal).onStrengthGPSDataReceived(
+                0,
+                0
+            )
+        } catch (_: java.lang.Exception) {
         }
-
     }
-
-    @SuppressLint("MissingPermission")
-    private fun getStrengthGPS() {
-
-
-    }
-
-    private val result =  registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
-            if (granted.entries.all { it.value }) {
-                getStrengthGPS()
-            }
-        }
 }

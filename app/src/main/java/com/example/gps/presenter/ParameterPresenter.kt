@@ -36,7 +36,6 @@ class ParameterPresenter(
 
     override fun getDistance() {
         SharedData.distanceLiveData.observe(context.viewLifecycleOwner) {
-
             view.showDistance(
                 String.format(
                     "%.2f",
@@ -132,6 +131,7 @@ class ParameterPresenter(
     private fun hidePause() {
         view.hidePause()
         view.showResume()
+        view.showReset()
     }
 
     private fun hideResume() {

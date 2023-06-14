@@ -43,6 +43,7 @@ class MotionCalculatorPresenter(
         override fun run() {
             timer += 1000
             SharedData.time.value = timer
+            Log.d("okkokook",timer.toString())
             handler.postDelayed(this, 1000)
         }
     }

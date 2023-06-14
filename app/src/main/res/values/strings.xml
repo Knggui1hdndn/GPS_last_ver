@@ -19,7 +19,7 @@
     <string name="reset_distance">Đặt lại công tơ mét</string>
     <string name="let_go">Đi nào</string>
     <string name="ng_h_o_qu_ng_ng">đồng hồ đo quãng đường</string>
-    <string name="average_speed">Tốc độ trung bình</string>
-    <string name="distance">Khoảng cách</string>
-    <string name="max_speed">Tốc độ tối đa</string>
+    <string name="average_speed">Avg Speed</string>
+    <string name="distance">Distance</string>
+    <string name="max_speed">Max Speed</string>
 </resources>

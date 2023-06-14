@@ -43,13 +43,12 @@
         android:layout_toRightOf="@id/c"
         android:text="0%" />
     />
-
     <ImageView
-        android:id="@+id/imgRotate"
+        android:id="@+id/imgRotatesa"
         style="@style/BackgroundTintImg"
         android:layout_width="wrap_content"
+android:layout_alignParentEnd="true"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerInParent="true"
-        android:src="@drawable/screen_rotation" />
+         android:src="@drawable/screen_rotation" />
+
 </RelativeLayout>

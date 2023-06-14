@@ -12,7 +12,7 @@ class ColorUtils {
             when (position) {
                 8 -> color=Color.parseColor(ColorConstants.COLOR_1_1)
 
-                1 -> color=Color.parseColor(ColorConstants.COLOR_1)
+                1 -> color=Color.parseColor(Color.BLACK.toString())
                 2 -> color=Color.parseColor(ColorConstants.COLOR_2)
                 3 -> color=Color.parseColor(ColorConstants.COLOR_3)
                 4 -> color=Color.parseColor(ColorConstants.COLOR_4)

@@ -29,7 +29,7 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
 
 
-class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
+class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private lateinit var binding: FragmentHomeBinding
     private lateinit var sharedPreferencesSetting: SharedPreferences
@@ -42,31 +42,28 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
         sharedPreferencesSetting =
             requireContext().getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         sharedPreferencesState = requireContext().getSharedPreferences("state", MODE_PRIVATE)
-        val positionsColor = sharedPreferencesSetting.getInt(SettingConstants.COLOR_DISPLAY, 2)
-        val isNightMode = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
+        val isNightMode =
+            AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
         val backgroundColor = if (isNightMode) Color.BLACK else Color.WHITE
-        val textColor = if (isNightMode) Color.BLACK else Color.WHITE
+        val textColor = if (!isNightMode) Color.BLACK else Color.WHITE
         binding.speed.backgroundCircleColor = backgroundColor
-        binding.speed.speedTextColor = textColor
-        binding.speed.textColor = textColor
-        onColorChange(positionsColor)
-//        requireActivity().requestedOrientation =
-//            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+
+
         with(binding) {
-
-            SharedData.time.observe(viewLifecycleOwner) { binding.time?.text = TimeUtils.formatTime(it) }
-
+            imgRotate?.setOnClickListener {
+                requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            }
+            SharedData.time.observe(viewLifecycleOwner) {
+                binding.time?.text = TimeUtils.formatTime(it)
+            }
+            SharedData.speedAnalog.observe(viewLifecycleOwner) {
+                binding.speed.maxSpeed = it.toFloat()
+            }
             if (requireContext().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                onVisibilityChanged(
-                    sharedPreferencesSetting.getBoolean(
-                        SettingConstants.SHOW_RESET_BUTTON,
-                        true
-                    )
-                )
+
             } else {
                 sharedPreferencesSetting.getInt(SettingConstants.COLOR_DISPLAY, 2)
             }
-
             SharedData.currentSpeedLiveData.observe(viewLifecycleOwner) {
                 it[it.keys.first()]?.let { it1 ->
                     this.speed.speedTo(
@@ -76,53 +73,20 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
                 }
             }
         }
-    }
-
-    private fun getVehicleChecked(): Vehicle? {
-        return try {
-            myDataBase.vehicleDao().getVehicleChecked()
-        } catch (e: Exception) {
-            return null
+        SharedData.color.observe(viewLifecycleOwner) {
+            binding.speed.speedTextColor = textColor
+            binding.speed.textColor = textColor
+            binding.speed.trianglesColor = ColorUtils.checkColor(it)
+            binding.speed.unitTextColor = ColorUtils.checkColor(it)
+            binding.time?.setTextColor(ColorUtils.checkColor(it))
+            binding.speed.setSpeedometerColor(ColorUtils.checkColor(it))
         }
     }
 
-    override fun onVisibilityChanged(boolean: Boolean) {
-    }
-
-    override fun onMaxSpeedAnalogChange(speed: Int) {
-        binding.speed.maxSpeed = speed.toFloat()
-    }
-
-    override fun setSpeedAndUnit() {
-        try {
-            binding.speed.maxSpeed = getVehicleChecked()?.clockSpeed?.toFloat()!!
-            binding.speed.unit = SharedData.toUnit
-        } catch (e: Exception) {
-            Log.d("okkkkkk", e.toString())
-        }
-    }
 
     override fun onResume() {
         super.onResume()
-
+        binding.speed.unit = SharedData.toUnit
     }
 
-    override fun toggleButtonVisibility(boolean: Boolean) {
-    }
-
-    override fun onColorChange(i: Int) {
-        try {
-            binding.speed.speedTextColor = ColorUtils.checkColor(i)
-            binding.speed.textColor = ColorUtils.checkColor(i)
-            binding.speed.trianglesColor = ColorUtils.checkColor(i)
-            binding.speed.unitTextColor = ColorUtils.checkColor(i)
-            binding.speed.setSpeedometerColor(ColorUtils.checkColor(i))
-
-        } catch (e: Exception) {
-        }
-    }
-
-    override fun onUnitChange() {
-        setSpeedAndUnit()
-    }
 }

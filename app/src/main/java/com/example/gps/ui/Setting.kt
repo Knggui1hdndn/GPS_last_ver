@@ -8,7 +8,9 @@ import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.MenuItem
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
@@ -18,22 +20,16 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.NavHostFragment
-import com.example.gps.constants.MyLocationConstants
 import com.example.gps.R
+import com.example.gps.constants.MyLocationConstants
 import com.example.gps.constants.SettingConstants
-import com.example.gps.`object`.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.dao.VehicleDao
 import com.example.gps.databinding.ActivitySettingBinding
-import com.example.gps.ui.MainActivity2
-import com.example.gps.ui.NotificationsFragment
-import com.example.gps.ui.ParameterFragment
+import com.example.gps.`object`.SharedData
 import com.example.gps.utils.ColorUtils
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.internal.ContextUtils.getActivity
-import java.lang.Exception
 
 
 class Setting : AppCompatActivity() {
@@ -61,19 +57,15 @@ class Setting : AppCompatActivity() {
     private lateinit var btnColor7: MaterialButton
     private lateinit var btnResetDistance: MaterialButton
     private lateinit var txtDistance: TextView
-    private lateinit var btnWarningLimit: MaterialButton
+    private lateinit var edtWarningLimit: EditText
     private lateinit var vehicleDao: VehicleDao
     private var colorPosition = 1
     private var checkUnitClick = 0
     private var checkVehicleClick = 0
     private lateinit var mainActivity2: MainActivity2
     private lateinit var myDataBase: MyDataBase
-    private lateinit var navHostFragment: NavHostFragment
-    private lateinit var parameterFragment: ParameterFragment
-    private lateinit var childFragment: Fragment
-    private var homeFragment: HomeFragment? = null
-    private var dashboardFragment: DashboardFragment? = null
-    private var notificationsFragment: NotificationsFragment? = null
+
+
     var color = Color.BLACK
     private var distance: Int = 0
 
@@ -85,7 +77,7 @@ class Setting : AppCompatActivity() {
         initView()
         if (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES) {
             btnResetDistance.iconTint = ColorStateList.valueOf(Color.BLACK)
-            color=Color.WHITE
+            color = Color.WHITE
         } else {
             binding.mToolBar.setTitleTextColor(Color.WHITE)
         }
@@ -98,7 +90,36 @@ class Setting : AppCompatActivity() {
         colorPosition = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, 0)
         mainActivity2 = getActivity(SharedData.activity) as MainActivity2
 
+        edtWarningLimit.setOnKeyListener(object : DialogInterface.OnKeyListener,
+            View.OnKeyListener {
+            override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
+                if (event != null) {
+                    if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                        try {
+                            val url = edtWarningLimit.text.toString()
+                            if (url.toInt() >= 0 && url.isNotEmpty()) {
+                                myDataBase.vehicleDao().updateWarning(url.toInt())
+                                edtWarningLimit.setText(url)
+                            }
+                        } catch (e: Exception) {
+                            Toast.makeText(
+                                this@Setting,
+                                "Tốc độ không để trống",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        return true
+                    }
+                }
+                return false
+            }
 
+            override fun onKey(dialog: DialogInterface?, keyCode: Int, event: KeyEvent?): Boolean {
+                return false
+            }
+
+        }
+        )
 
         distance = getSharedPreferences("state", Service.MODE_PRIVATE).getInt(
             MyLocationConstants.DISTANCE,
@@ -127,11 +148,9 @@ class Setting : AppCompatActivity() {
         }
 
 
+
         btnMaxSpeepAnalog.setOnClickListener {
             getDialogSpeedAnalog().show()
-        }
-        btnWarningLimit.setOnClickListener {
-            getDialogWarningLimit().show()
         }
 
         btnResetDistance.setOnClickListener {
@@ -143,9 +162,7 @@ class Setting : AppCompatActivity() {
             getSharedPreferences("state", Service.MODE_PRIVATE).edit()
                 .putInt(MyLocationConstants.DISTANCE, 0).apply()
         }
-        btnLetGo.setOnClickListener {
-            finish()
-        }
+
 
         btnOto.setOnClickListener {
             updateVehicle(1)
@@ -169,19 +186,41 @@ class Setting : AppCompatActivity() {
         btnKnot.setOnClickListener {
             updateSpeedUnit("knot", "nm")
         }
-
+        with(binding) {
+            dark.setOnClickListener {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            }
+            night.setOnClickListener {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+            btnAnalog.setOnClickListener {
+                removeBackGroundViewMode()
+                btnAnalog.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+            }
+            btnMap.setOnClickListener {
+                removeBackGroundViewMode()
+                btnMap.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+            }
+            btnDigital.setOnClickListener {
+                removeBackGroundViewMode()
+                btnDigital.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+            }
+        }
         onClickBtnColor(btnColor2, btnColor3, btnColor4, btnColor5, btnColor6, btnColor7)
+        removeBackGroundViewMode()
+    }
 
+    private fun removeBackGroundViewMode() {
+        with(binding) {
+            btnAnalog.setBackgroundColor(color)
+            btnMap.setBackgroundColor(color)
+            btnDigital.setBackgroundColor(color)
+        }
     }
 
     private fun toggleShowReset() {
         saveSettingBoolean(SettingConstants.SHOW_RESET_BUTTON, swtShowReset.isChecked)
-        when (childFragment) {
-            is HomeFragment -> {
-                if (homeFragment == null) homeFragment = childFragment as HomeFragment
-                homeFragment!!.onVisibilityChanged(swtShowReset.isChecked)
-            }
-        }
+
     }
 
     private fun toggleClockVisibilityLandscape() {
@@ -212,7 +251,6 @@ class Setting : AppCompatActivity() {
         SharedData.toUnitDistance = distanceUnit
         SharedData.toUnit = speedUnit
         registerReceiverUnitFromFragmentM2()
-        parameterFragment.onUnitChange()
         removeBackgroundButtonUnit()
         setBackGroundButtonUnitClick()
     }
@@ -251,55 +289,38 @@ class Setting : AppCompatActivity() {
 
 
     private fun registerReceiverUnitFromFragmentM2() {
-        when (childFragment) {
-            is HomeFragment -> {
-                if (homeFragment == null) homeFragment = childFragment as HomeFragment
-                homeFragment!!.onUnitChange()
-            }
+        SharedData.speedAnalog.value = SharedData.speedAnalog.value
+        SharedData.locationLiveData.value = SharedData.locationLiveData.value
+        SharedData.averageSpeedLiveData.value = SharedData.averageSpeedLiveData.value
+        SharedData.distanceLiveData.value = SharedData.distanceLiveData.value
+        SharedData.maxSpeedLiveData.value = SharedData.maxSpeedLiveData.value
+        SharedData.currentSpeedLiveData.value = SharedData.currentSpeedLiveData.value
 
-            is DashboardFragment -> {
-                if (dashboardFragment == null) dashboardFragment =
-                    childFragment as DashboardFragment
-//                dashboardFragment!!.onUnitChange()
-            }
-
-            is NotificationsFragment -> {
-                if (notificationsFragment == null) notificationsFragment =
-                    childFragment as NotificationsFragment
-
-            }
-        }
     }
 
     private fun registerReceiverColorFromFragmentM2() {
-        when (childFragment) {
-            is HomeFragment -> {
-                if (homeFragment == null) homeFragment = childFragment as HomeFragment
-                homeFragment!!.onColorChange(colorPosition)
-            }
-
-            is DashboardFragment -> {
-                if (dashboardFragment == null) dashboardFragment =
-                    childFragment as DashboardFragment
-//                dashboardFragment!!.onColorChange(colorPosition)
-            }
-
-            is NotificationsFragment -> {
-                if (notificationsFragment == null) notificationsFragment =
-                    childFragment as NotificationsFragment
-
-            }
-        }
+//        when (childFragment) {
+//            is HomeFragment -> {
+//                if (homeFragment == null) homeFragment = childFragment as HomeFragment
+//                homeFragment!!.onColorChange(colorPosition)
+//            }
+//
+//            is DashboardFragment -> {
+//                if (dashboardFragment == null) dashboardFragment =
+//                    childFragment as DashboardFragment
+////                dashboardFragment!!.onColorChange(colorPosition)
+//            }
+//
+//            is NotificationsFragment -> {
+//                if (notificationsFragment == null) notificationsFragment =
+//                    childFragment as NotificationsFragment
+//
+//            }
+//        }
     }
 
     private fun toggleTrackOnMap() {
-        when (childFragment) {
-            is NotificationsFragment -> {
-                if (notificationsFragment == null) notificationsFragment =
-                    childFragment as NotificationsFragment
-                notificationsFragment!!.onVisibilityPolyLine(swtTrackOnMap.isChecked)
-            }
-        }
+
     }
 
     private fun getDialogWarningLimit(): Dialog {
@@ -313,7 +334,7 @@ class Setting : AppCompatActivity() {
                     val url = txtUrl.text.toString()
                     if (url.toInt() >= 0 && url.isNotEmpty()) {
                         myDataBase.vehicleDao().updateWarning(url.toInt())
-                        btnWarningLimit.text = url
+                        edtWarningLimit.setText(url)
                     }
                 } catch (e: Exception) {
                     Toast.makeText(this, "Tốc độ không để trống", Toast.LENGTH_SHORT).show()
@@ -353,6 +374,7 @@ class Setting : AppCompatActivity() {
                 dialog.dismiss()
             }
             setPositiveButton("Đồng Ý") { dialog: DialogInterface, _: Int ->
+                SharedData.speedAnalog.value = item
                 myDataBase.vehicleDao().updateMaxSpeed(item)
                 btnMaxSpeepAnalog.text = item.toString()
                 registerReceiverUnitFromFragmentM2()
@@ -365,12 +387,9 @@ class Setting : AppCompatActivity() {
     private fun setSpecifications() {
         val vehicleChecked = myDataBase.vehicleDao().getVehicleChecked()
         btnMaxSpeepAnalog.text = vehicleChecked.clockSpeed.toString()
-        btnWarningLimit.text = vehicleChecked.limitWarning.toString()
+        edtWarningLimit.setText(vehicleChecked.limitWarning.toString())
         SharedData.speedAnalog.value = vehicleChecked.clockSpeed
-        txtDistance.text = SharedData.convertDistance(
-            distance.toDouble()
-        ).toInt().toString()
-
+        txtDistance.text = SharedData.convertDistance(distance.toDouble()).toInt().toString()
     }
 
 
@@ -383,8 +402,7 @@ class Setting : AppCompatActivity() {
 
 
     private fun setBackgroundALL() {
-        btnLetGo.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-        btnWarningLimit.setTextColor(ColorUtils.checkColor(colorPosition))
+        edtWarningLimit.setTextColor(ColorUtils.checkColor(colorPosition))
         btnMaxSpeepAnalog.setTextColor(ColorUtils.checkColor(colorPosition))
         setColorSwt()
         setSpecifications()
@@ -444,7 +462,7 @@ class Setting : AppCompatActivity() {
                     }
 
                 }
-                parameterFragment.onColorChange(colorPosition)
+                SharedData.color.value = colorPosition
                 registerReceiverColorFromFragmentM2()
                 saveColorChecked()
                 removeBackgroundButtonUnit()
@@ -481,7 +499,6 @@ class Setting : AppCompatActivity() {
             this@Setting.swtTrackOnMap = this.swtTrackOnMap
             this@Setting.swtClockDisplay = this.swtClockDisplay
             this@Setting.btnKnot = this.btnKnot
-            this@Setting.btnLetGo = this.btnLetGo
             this@Setting.btnMph = this.btnMph
             this@Setting.btnKm = this.btnKm
             this@Setting.btnMph = this.btnMph
@@ -494,7 +511,7 @@ class Setting : AppCompatActivity() {
             this@Setting.btnColor5 = this.btnColor5
             this@Setting.btnColor6 = this.btnColor6
             this@Setting.btnColor7 = this.btnColor7
-            this@Setting.btnWarningLimit = this.btnWarningLimit
+            this@Setting.edtWarningLimit = this.edtWarningLimit
             this@Setting.btnResetDistance = this.btnResetDistance
             this@Setting.btnMaxSpeepAnalog = this.btnMaxSpeepAnalog
         }
