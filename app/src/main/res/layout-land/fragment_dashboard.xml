@@ -3,17 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-     android:gravity="center_horizontal"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
     android:weightSum="10">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-         android:orientation="horizontal"
+        android:orientation="horizontal"
         android:weightSum="10">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="5"
@@ -24,88 +24,43 @@
             <TextView
                 android:id="@+id/txtSpeed"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="8"
-                 android:ellipsize="end"
+                android:layout_height="match_parent"
+                android:ellipsize="end"
                 android:gravity="center"
                 android:lines="1"
                 android:text="000"
                 android:textColor="@color/teal_200"
-                app:autoSizeMaxTextSize="150sp"
+                app:autoSizeMaxTextSize="180sp"
                 app:autoSizeMinTextSize="12sp"
-
                 app:autoSizeStepGranularity="2sp"
                 app:autoSizeTextType="uniform" />
 
-            <RelativeLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/txtKm4"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                 android:gravity="bottom"
-                android:orientation="vertical">
+                android:layout_gravity="bottom|end"
+                android:layout_margin="20dp"
+                android:text="KM/H"
+                android:textColor="@color/teal_200"
+                android:textSize="25sp"
+                android:textStyle="italic" />
 
-                <RelativeLayout
-                    android:id="@+id/mRelativeLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="20dp">
-
-                    <TextView
-                        android:id="@+id/txtKm4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:text="KM/H"
-                        android:textStyle="italic"
-                        android:textColor="@color/teal_200"
-                        android:textSize="25sp" />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_toLeftOf="@id/txtKm4"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/ng_h_o_qu_ng_ng"
-                             android:textStyle="bold"
-                            android:textSize="23sp" />
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:id="@+id/txtDistance1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="000000"
-                                 android:textSize="25sp" />
-
-                            <TextView
-                                android:id="@+id/txtKm3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="KM"
-                              />
-                        </LinearLayout>
-
-                    </LinearLayout>
-                </RelativeLayout>
-
-            </RelativeLayout>
-        </LinearLayout>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_margin ="20dp"
+                 android:src="@drawable/screen_rotation" />
+        </FrameLayout>
 
         <fragment
             android:id="@+id/frag"
             android:name="com.example.gps.ui.ParameterFragment"
             android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_gravity="bottom|end"
-             android:layout_height="match_parent"
-            android:layout_marginBottom="65dp"
-             android:layout_weight="5" />
+            android:layout_weight="5" />
 
     </LinearLayout>
 

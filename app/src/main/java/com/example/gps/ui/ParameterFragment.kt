@@ -9,10 +9,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
@@ -26,10 +26,10 @@ import com.example.gps.constants.SettingConstants
 import com.example.gps.`object`.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.FragmentParameterBinding
-import com.example.gps.interfaces.MapLiveDataInterface
 import com.example.gps.interfaces.MeasurementInterFace
+import com.example.gps.interfaces.ParameterContracts
 import com.example.gps.model.MovementData
-import com.example.gps.presenter.MapLiveDataPresenter
+import com.example.gps.presenter.ParameterPresenter
 import com.example.gps.service.MyService
 import com.example.gps.`object`.CheckPermission
 import com.example.gps.utils.ColorUtils
@@ -38,8 +38,9 @@ import com.example.gps.utils.StringUtils
 import com.example.gps.utils.TimeUtils
 
 class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInterFace,
-    MapLiveDataInterface.View {
+    ParameterContracts.View {
     private lateinit var binding: FragmentParameterBinding
+    private lateinit var presenter: ParameterPresenter
     private var intColor: Int = 0
     private var check = false
     private var sharedPreferences: SharedPreferences? = null
@@ -47,16 +48,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
     private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
             if (granted.entries.all { it.value }) {
-                if (requireActivity().checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    start()
-                    val fragment = checkFragmentNotification()
-                    if (fragment is NotificationsFragment) {
-                        fragment.mapAsync()
-                    }
-                }else{
-                    checkLocationBackground()
-                }
-
+                if (granted.get(Manifest.permission.ACCESS_BACKGROUND_LOCATION) ==true) presenter.startService() else check()
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -65,163 +57,70 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter), MeasurementInte
                 ).show()
             }
         }
-fun checkLocationBackground(){
-    resultLauncher.launch(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
-}
+
+    fun check() {
+        resultLauncher.launch(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+    }
+
     @RequiresApi(Build.VERSION_CODES.Q)
     @SuppressLint("SetTextI18n", "RestrictedApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentParameterBinding.bind(view)
         sharedPreferences = requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
-        myDataBase = MyDataBase.getInstance(requireContext())
+         presenter = ParameterPresenter(this, this)
         setBackGround()
-        setTextDefault()
         setDataWhenComeBack()
-        showOrHideView()
-        setFont(binding)
-        val mapLiveDataPresenter = MapLiveDataPresenter(this, this)
-        mapLiveDataPresenter.getDistance()
-        mapLiveDataPresenter.getAverageSpeed()
-        mapLiveDataPresenter.getMaxSpeed()
-        //set state is STOP when MyService not Running
-        if (!isMyServiceRunning(MyService::class.java)) setState(MyLocationConstants.STOP);
-        onDataChangeWithOrientationLandscape()
-        onDataChangeWithOrientationPortrait()
-        handleOrientationClickAll()
+        presenter.updateUIState()
+        presenter.getDistance()
+        presenter.getAverageSpeed()
+        presenter.getMaxSpeed()
 
+        if (!presenter.isMyServiceRunning(MyService::class.java)) presenter.setState(
+            MyLocationConstants.STOP
+        );
+
+        handleOrientationClickAll()
+        SharedData.toUnit = "km/h"
+        SharedData.toUnitDistance = "km"
     }
 
     private fun handleOrientationClickAll() {
-        binding.btnResume.setOnClickListener {
-            setState(MyLocationConstants.RESUME)
-            hideBtnResume()
-            startService(MyLocationConstants.RESUME)
-        }
-        binding.btnPause.setOnClickListener {
-            setState(MyLocationConstants.PAUSE)
-            hideBtnPause()
-            startService(MyLocationConstants.PAUSE)
-        }
-        binding.btnStop.setOnClickListener {
-            val fragment = checkFragmentNotification()
-            if (fragment is NotificationsFragment) {
-                fragment.clear()
-
+        binding.btnStart?.setOnClickListener {
+            if (!CheckPermission.hasLocationPermission(requireContext())) {
+                resultLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                  )
+                )
+            } else {
+                presenter.startService()
             }
-            setState(MyLocationConstants.STOP)
-            hideBtnStop()
-            startService(MyLocationConstants.STOP)
+
+        }
+        binding.btnStop?.setOnClickListener {
+            presenter.stopService()
+        }
+        binding.imgPause?.setOnClickListener {
+            presenter.pauseService()
+        }
+        binding.imgResume?.setOnClickListener {
+            presenter.resumeService()
+        }
+        binding.imgReset?.setOnClickListener {
+            presenter.stopService()
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
-    @SuppressLint("SetTextI18n")
-    private fun onDataChangeWithOrientationPortrait() {
-        with(binding) {
-            this.btnStart.setOnClickListener {
-                if (!CheckPermission.hasLocationPermission(requireContext())) {
-                    resultLauncher.launch(
-                        arrayOf(
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION,
-                        )
-                    )
-
-                } else {
-                    start()
-                }
-            }
+    override fun onResume() {
+        if (sharedPreferences?.getString(
+                MyLocationConstants.STATE,
+                ""
+            ) != MyLocationConstants.START
+        ) {
+            presenter.updateUIState()
         }
-    }
-
-    private fun onDataChangeWithOrientationLandscape() {
-        with(binding) {
-            if (requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                val fragment = checkFragmentNotification()
-                if (fragment is NotificationsFragment) {
-                    times!!.visibility = View.GONE
-                }
-
-                SharedData.time.observe(viewLifecycleOwner) {
-                    times!!.text = TimeUtils.formatTime(it)
-                }
-                settings!!.setOnClickListener {
-                    startActivity(Intent(requireActivity(), Setting::class.java))
-                }
-                stop!!.setOnClickListener {
-                    val fragment = checkFragmentNotification()
-                    if (fragment is NotificationsFragment) {
-                        fragment.clear()
-                    }
-                    stopService()
-                }
-                imgRotateScreen1!!.setOnClickListener {
-                    requireActivity().requestedOrientation =
-                        ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
-                }
-            }
-        }
-    }
-
-    private fun checkFragmentNotification(): Fragment? {
-        return (requireActivity().supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?)?.childFragmentManager?.fragments?.get(
-            0
-        )
-    }
-
-    private fun start() {
-        (requireActivity() as MainActivity2).onStrengthGPSDataReceived(0, 0)
-        insertMovementData()
-        setState(MyLocationConstants.START)
-        hideBtnStart()
-        startService(MyLocationConstants.START)
-    }
-
-
-    @SuppressLint("SetTextI18n")
-    private fun setTextDefault() {
-        with(binding) {
-            this.txtMaxSpeed.text = "0" + SharedData.toUnit
-            this.txtDistance.text = "0" + SharedData.toUnitDistance
-            this.txtAverageSpeed.text = "0" + SharedData.toUnit
-        }
-    }
-
-    private fun insertMovementData() {
-        myDataBase.movementDao().insertMovementData(
-            MovementData(
-                0,
-                System.currentTimeMillis(),
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0
-            )
-        )
-    }
-
-    private fun stopService() {
-        ((requireActivity() as MainActivity2).supportFragmentManager.fragments[0].childFragmentManager.findFragmentById(
-            R.id.signal
-        ) as FragmentSignal).onStrengthGPSDataReceived(0, 0)
-        val status = requireContext().getSharedPreferences("state", Context.MODE_PRIVATE)
-            .getString(MyLocationConstants.STATE, null)
-        if (status != MyLocationConstants.STOP && status != null) {
-            val intent = Intent(requireContext(), MyService::class.java)
-            intent.action = MyLocationConstants.STOP
-            requireActivity().startService(intent)
-            SharedData.checkService = true
-        }
-    }
-
-    fun toggleClockVisibilityLandscape(boolean: Boolean) {
-        if (requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            binding.times?.visibility = if (boolean) View.VISIBLE else View.GONE
-        }
+        super.onResume()
     }
 
     private fun setBackGround() {
@@ -230,115 +129,23 @@ fun checkLocationBackground(){
             Context.MODE_PRIVATE
         ).getInt(SettingConstants.COLOR_DISPLAY, 2)
         with(binding) {
-            FontUtils.setTextColor(intColor, this.txtMaxSpeed, txtAverageSpeed, txtDistance)
 
-            btnStart.setBackgroundColor(ColorUtils.checkColor(intColor))
-            btnPause.setBackgroundColor(ColorUtils.checkColor(intColor))
-            btnResume.setBackgroundColor(ColorUtils.checkColor(intColor))
         }
     }
-
-    private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
-        val manager =
-            requireActivity().getSystemService(AppCompatActivity.ACTIVITY_SERVICE) as ActivityManager
-        for (service in manager.getRunningServices(Int.MAX_VALUE)) {
-            if (serviceClass.name == service.service.className) {
-                return true
-            }
-        }
-        return false
-    }
-
-    private fun showOrHideView() {
-        when (sharedPreferences?.getString(MyLocationConstants.STATE, null)) {
-            MyLocationConstants.START -> {
-                hideBtnStart()
-            }
-
-            MyLocationConstants.PAUSE -> {
-                hideBtnPause()
-            }
-
-            MyLocationConstants.RESUME -> {
-                hideBtnResume()
-            }
-
-            MyLocationConstants.STOP -> {
-                hideBtnStop()
-            }
-        }
-    }
-
-    private fun hideBtnStart() {
-        with(binding) {
-            this.btnStart.visibility = View.GONE
-            mframeLayout.visibility = View.VISIBLE
-            btnStop.visibility = View.VISIBLE
-        }
-    }
-
-    private fun hideBtnPause() {
-        with(binding) {
-            this.btnStart.visibility = View.GONE
-            btnPause.visibility = View.GONE
-            btnResume.visibility = View.VISIBLE
-            mframeLayout.visibility = View.VISIBLE
-            btnStop.visibility = View.VISIBLE
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-    }
-
-    override fun onStop() {
-        super.onStop()
-    }
-
-    private fun hideBtnResume() {
-        with(binding) {
-            this.btnStart.visibility = View.GONE
-            btnPause.visibility = View.VISIBLE
-            btnResume.visibility = View.GONE
-            mframeLayout.visibility = View.VISIBLE
-            btnStop.visibility = View.VISIBLE
-        }
-    }
-
-    fun hideBtnStop() {
-        with(binding) {
-            this.btnStart.visibility = View.VISIBLE
-            mframeLayout.visibility = View.GONE
-            btnStop.visibility = View.GONE
-        }
-    }
-
-
-    private fun startService(action: String) {
-        val intent = Intent(requireContext(), MyService::class.java)
-        intent.action = action
-        requireActivity().startService(intent)
-    }
-
-    private fun setState(state: String) {
-        sharedPreferences!!.edit().putString(MyLocationConstants.STATE, state).apply()
-    }
-
 
     override fun onPause() {
         super.onPause()
+
         check = false
         if (SharedData.checkService) {
-            hideBtnStop();setState(MyLocationConstants.STOP);SharedData.checkService =
-                false
+
         }
     }
 
-    private fun setFont(binding: FragmentParameterBinding) {
+    private fun setFont() {
         with(binding) {
             FontUtils.setFont(
-                requireContext(), txtDistance, txtAverageSpeed, txtMaxSpeed
+                requireContext(), txtDistance, txtAvgSpeed, txtMaxSpeed, txtStartTime
             )
         }
     }
@@ -346,14 +153,7 @@ fun checkLocationBackground(){
 
     @SuppressLint("SetTextI18n")
     fun setDataWhenComeBack() {
-        with(binding) {
-            txtDistance.text =
-                SharedData.convertDistance(SharedData.distanceLiveData.value!!).toInt()
-                    .toString() + SharedData.toUnitDistance
-            txtAverageSpeed.text = StringUtils.convert(SharedData.averageSpeedLiveData.value!!)
-            txtMaxSpeed.text = StringUtils.convert(SharedData.maxSpeedLiveData.value!!)
-        }
-        setFont(binding)
+
 
     }
 
@@ -363,28 +163,72 @@ fun checkLocationBackground(){
     }
 
     override fun onColorChange(i: Int) {
-        with(binding) {
-            FontUtils.setTextColor(i, this.txtMaxSpeed, txtAverageSpeed, txtDistance)
-            btnStart.setBackgroundColor(ColorUtils.checkColor(i))
-            btnPause.setBackgroundColor(ColorUtils.checkColor(i))
-            btnResume.setBackgroundColor(ColorUtils.checkColor(i))
 
-        }
     }
 
     override fun showMaxSpeed(string: String) {
-        binding.txtMaxSpeed.text = string
-        setFont(binding)
+        binding.txtMaxSpeed?.text = string
+        setFont()
     }
 
     override fun showDistance(string: String) {
-        binding.txtDistance.text = string
-        setFont(binding)
+
+        binding.txtDistance?.text = string
+        setFont()
     }
 
     override fun showAverageSpeed(string: String) {
-        binding.txtAverageSpeed.text = string
-        setFont(binding)
+        binding.txtAvgSpeed?.text = string
+        setFont()
+    }
+
+    override fun hideStart() {
+        binding.btnStart.visibility = View.INVISIBLE
+    }
+
+    override fun hideStop() {
+        binding.btnStop.visibility = View.INVISIBLE
+
+    }
+
+    override fun hideReset() {
+        binding.imgReset.visibility = View.INVISIBLE
+
+    }
+
+    override fun hideResume() {
+        binding.imgResume.visibility = View.INVISIBLE
+
+    }
+
+    override fun hidePause() {
+        binding.imgPause.visibility = View.INVISIBLE
+
+    }
+
+    override fun showStart() {
+        binding.btnStart.visibility = View.VISIBLE
+
+    }
+
+    override fun showStop() {
+        binding.btnStop.visibility = View.VISIBLE
+
+    }
+
+    override fun showReset() {
+        binding.imgReset.visibility = View.VISIBLE
+
+    }
+
+    override fun showResume() {
+        binding.imgResume.visibility = View.VISIBLE
+
+    }
+
+    override fun showPause() {
+        binding.imgPause.visibility = View.VISIBLE
+
     }
 
 

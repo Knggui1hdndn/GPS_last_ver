@@ -6,19 +6,14 @@ import android.annotation.SuppressLint
 import android.app.Service
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Typeface
-import android.location.GnssStatus
-import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -29,12 +24,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
+import androidx.viewpager2.widget.ViewPager2
 import com.example.gps.broadcast.ListenBattery
 import com.example.gps.R
 import com.example.gps.constants.SettingConstants
@@ -43,8 +33,9 @@ import com.example.gps.`object`.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.ActivityMain2Binding
 import com.example.gps.interfaces.SignalInterface
+import com.example.gps.ui.adpater.TabAdapter
 import com.example.gps.utils.TimeUtils
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.tabs.TabLayoutMediator
 
 
 class MainActivity2 : AppCompatActivity(), SignalInterface {
@@ -52,11 +43,8 @@ class MainActivity2 : AppCompatActivity(), SignalInterface {
 
     private lateinit var binding: ActivityMain2Binding
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var intentFilter: IntentFilter
-    private lateinit var broadCast: ListenBattery
-    private lateinit var navHostFragment: NavHostFragment
-    private lateinit var childFragment: Fragment
-    private lateinit var fragmentSignal: FragmentSignal
+     private lateinit var broadCast: ListenBattery
+     private lateinit var fragmentSignal: FragmentSignal
     private fun setUnitSpeedAndDistance() {
         try {
             SharedData.toUnit = sharedPreferences.getString(SettingConstants.UNIT, "").toString()
@@ -77,9 +65,7 @@ class MainActivity2 : AppCompatActivity(), SignalInterface {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setUpActivity()
-       checkOpenFirst()
-        setDataDefault()
-        SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
+      //  SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
 
     }
 
@@ -88,65 +74,37 @@ class MainActivity2 : AppCompatActivity(), SignalInterface {
         binding = ActivityMain2Binding.inflate(layoutInflater)
         SharedData.activity = this
         setContentView(binding.root)
+        binding.toolbar.title= "ODOMETER"
+
         setSupportActionBar(binding.toolbar)
         setUnitSpeedAndDistance()
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_settings_24)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = ""
+
+
+        supportActionBar?.title = "ODOMETER"
         sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
-        binding.times.typeface = Typeface.createFromAsset(assets, "font_lcd.ttf")
-        binding.times.text = "00 : 00 : 00"
-        val navView: BottomNavigationView = binding.navView
-        val navController = findNavController(R.id.nav_host_fragment_activity_main2)
-        val checkShowClock = sharedPreferences.getBoolean(CLOCK_DISPLAY, false)
-        binding.times.visibility = if (checkShowClock) View.VISIBLE else View.GONE
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home,
-                R.id.navigation_dashboard,
-                R.id.navigation_notifications
-            )
-        )
+//        binding.times.typeface = Typeface.createFromAsset(assets, "font_lcd.ttf")
 
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
-        navController.addOnDestinationChangedListener { _, _, _ ->
-            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_home_black_24dp)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        }
+        val tabAdapter = TabAdapter(supportFragmentManager, lifecycle)
+        binding.viewPager2.adapter = tabAdapter
+
+        TabLayoutMediator(binding.tabLayout!!, binding.viewPager2!!) { tab, position ->
+
+            when (position) {
+                0 -> tab.text = "Analog"
+                1 -> tab.text = "Kĩ thuật số"
+                2 -> {
+                    tab.text = "Bản đồ"
+                     val currentFragment = tabAdapter.createFragment(2) as NotificationsFragment
+                }
+            }
+        }.attach()
+        binding.viewPager2.isUserInputEnabled = false
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            binding.toolbar.visibility = View.GONE
-        }
-        navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment
-        childFragment = navHostFragment?.childFragmentManager?.fragments!![0]
+         }
 
-        fragmentSignal =
-            (childFragment.childFragmentManager.findFragmentById(R.id.signal) as FragmentSignal)
-        broadCast = ListenBattery()
-        intentFilter = IntentFilter()
-        intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED)
-    }
-
-    private fun setDataDefault() {
-        try {
-            childFragment.childFragmentManager.findFragmentById(
-                R.id.frag
-            )?.let { fragment ->
-                if (fragment is ParameterFragment) {
-                    Log.d("oisjaijx", "oko")
-                    fragment.setDataWhenComeBack()
-                }
-            }
-            childFragment.let { fragment ->
-                if (fragment is HomeFragment) {
-                    fragment.setSpeedAndUnit()
-                }
-            }
-        } catch (_: Exception) {
-        }
 
     }
+
 
     private fun checkOpenFirst() {
         if (!sharedPreferences.getBoolean(SettingConstants.CHECK_OPEN, false)) {
@@ -158,7 +116,6 @@ class MainActivity2 : AppCompatActivity(), SignalInterface {
                 saveInShared(list[which])
                 insert(myDataBase, which)
                 setUnitSpeedAndDistance()
-                setDataDefault()
                 dialog.cancel()
             }
             builder.create().show()
@@ -189,17 +146,13 @@ class MainActivity2 : AppCompatActivity(), SignalInterface {
 
     override fun onResume() {
         super.onResume()
-        binding.navView.itemIconTintList = getColorRes()
-        binding.times.visibility =
-            if (sharedPreferences.getBoolean(CLOCK_DISPLAY, true)) View.VISIBLE else View.GONE
-        registerReceiver(broadCast, intentFilter)
-        Log.d("okokko", "sodkf")
-    }
+
+
+     }
 
     override fun onPause() {
         super.onPause()
-        unregisterReceiver(broadCast)
-        Log.d("okokko", "sodkf1")
+         Log.d("okokko", "sodkf1")
 
     }
 
@@ -222,35 +175,13 @@ class MainActivity2 : AppCompatActivity(), SignalInterface {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.history, menu)
-        val check = AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES
-        menu!!.getItem(0).iconTintList =
-            if (check) ColorStateList.valueOf(Color.BLACK) else ColorStateList.valueOf(Color.WHITE)
-        menu!!.getItem(1).iconTintList =
-            if (check) ColorStateList.valueOf(Color.BLACK) else ColorStateList.valueOf(Color.WHITE)
+        menuInflater.inflate(R.menu.menu_main, menu)
+
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.history) {
-            val intent = Intent(this, HistoryActivity::class.java)
-            startActivity(intent)
-        }
-        if (item.itemId == R.id.theme) {
-           AlertDialog.Builder(this).apply {
-               title="Theme"
-           setMessage("Chọn theme")
-               setNegativeButton("Trắng",{ dialogInterface: DialogInterface, i: Int ->
-                   sharedPreferences.edit().putBoolean(SettingConstants.THEME,true).apply()
-                   AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-               })
-               setPositiveButton("Đen",{ dialogInterface: DialogInterface, i: Int ->
-                   sharedPreferences.edit().putBoolean(SettingConstants.THEME,false).apply()
-                   AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-               }).show()
-           }
-        }
-        if (item.itemId == android.R.id.home) startActivity(Intent(this, Setting::class.java))
+
         return true
     }
 
@@ -265,7 +196,7 @@ class MainActivity2 : AppCompatActivity(), SignalInterface {
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-           return
+            return
         } else {
             getStrengthGPS()
         }
@@ -274,31 +205,7 @@ class MainActivity2 : AppCompatActivity(), SignalInterface {
 
     @SuppressLint("MissingPermission")
     private fun getStrengthGPS() {
-        if(this::navHostFragment.isInitialized){
-            childFragment = navHostFragment.childFragmentManager?.fragments!![0]
-            fragmentSignal = (childFragment.childFragmentManager.findFragmentById(R.id.signal) as FragmentSignal)
-            (getSystemService(LOCATION_SERVICE) as LocationManager).registerGnssStatusCallback(
-                object : GnssStatus.Callback() {
-                    @RequiresApi(Build.VERSION_CODES.R)
-                    @SuppressLint("MissingPermission")
-                    override fun onSatelliteStatusChanged(status: GnssStatus) {
-                        val satelliteCount = status.satelliteCount
-                        var totalSignalStrength = 0.0
-                        for (i in 0 until satelliteCount) {
-                            val cn0DbHz = status.getCn0DbHz(i)
-                            totalSignalStrength += cn0DbHz
-                        }
-                        val averageSignalStrength = totalSignalStrength / satelliteCount
-                        fragmentSignal.onStrengthGPSDataReceived(
-                            averageSignalStrength.toInt(),
-                            status.satelliteCount
-                        )
-                    }
-                }, Handler(
-                    Looper.getMainLooper()!!
-                )
-            )
-        }
+
 
     }
 

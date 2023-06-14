@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.os.Looper
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.example.gps.interfaces.MotionCalculatorInterface
 import com.example.gps.`object`.SharedData

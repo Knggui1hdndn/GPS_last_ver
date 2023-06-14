@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
+    android:gravity="bottom"
     android:orientation="vertical"
     android:weightSum="10">
 
@@ -13,9 +13,9 @@
         android:name="com.example.gps.ui.FragmentSignal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="0.5" />
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="4"
@@ -24,10 +24,9 @@
 
         <TextView
             android:id="@+id/txtSpeed"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="9"
-            android:autoSizeMaxTextSize="4000dp"
+             android:autoSizeMaxTextSize="4000dp"
             android:autoSizeMinTextSize="35dp"
             android:autoSizeTextType="uniform"
             android:gravity="center"
@@ -36,74 +35,49 @@
             android:textColor="@color/teal_200"
             android:textSize="4000dp"
             tools:ignore="NestedWeights,UnusedAttribute" />
-    </LinearLayout>
+        <TextView
+            android:id="@+id/txtUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+             android:gravity="center"
+            android:lines="1"
+            android:text="Km"
+             android:textColor="@color/teal_200"
+            android:textSize="30sp"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="bottom|right"
+            tools:ignore="NestedWeights,UnusedAttribute" />
+    </FrameLayout>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.8"
+        android:layout_margin="5dp"
+        android:background="@drawable/background_button_verti"
+        android:text="00:00:00"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="25dp"
+        app:backgroundTint="@null"
+        app:cornerRadius="20dp"
+        />
+    <com.google.android.gms.ads.AdView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="5"
+        android:layout_weight="4.7"
         android:gravity="bottom"
         android:orientation="vertical">
-
-        <RelativeLayout
-            android:id="@+id/mRelativeLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
-            android:padding="20dp">
-
-            <TextView
-                android:id="@+id/txtKm4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:text="KM/H"
-                android:textColor="@color/teal_200"
-                android:textSize="22sp"
-                android:typeface="serif" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_toLeftOf="@id/txtKm4"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/ng_h_o_qu_ng_ng"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/txtDistance1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="000000"
-                        android:textSize="25dp" />
-
-                    <TextView
-                        android:id="@+id/txtKm3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="KM"
-                        android:textSize="25dp" />
-                </LinearLayout>
-
-            </LinearLayout>
-        </RelativeLayout>
 
         <fragment
             android:id="@+id/frag"
             android:name="com.example.gps.ui.ParameterFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true" />
-    </RelativeLayout>
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 </LinearLayout>

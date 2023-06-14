@@ -97,11 +97,8 @@ class Setting : AppCompatActivity() {
         vehicleDao = myDataBase.vehicleDao()
         colorPosition = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, 0)
         mainActivity2 = getActivity(SharedData.activity) as MainActivity2
-        navHostFragment =
-            (mainActivity2.supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main2) as NavHostFragment?)!!
-        childFragment = navHostFragment.childFragmentManager.fragments[0]
-        parameterFragment =
-            childFragment.childFragmentManager.findFragmentById(R.id.frag) as ParameterFragment
+
+
 
         distance = getSharedPreferences("state", Service.MODE_PRIVATE).getInt(
             MyLocationConstants.DISTANCE,
@@ -189,7 +186,7 @@ class Setting : AppCompatActivity() {
 
     private fun toggleClockVisibilityLandscape() {
         saveSettingBoolean(SettingConstants.CLOCK_DISPLAY, swtClockDisplay.isChecked)
-        parameterFragment.toggleClockVisibilityLandscape(swtClockDisplay.isChecked)
+//        parameterFragment.toggleClockVisibilityLandscape(swtClockDisplay.isChecked)
 
 
     }
@@ -263,13 +260,13 @@ class Setting : AppCompatActivity() {
             is DashboardFragment -> {
                 if (dashboardFragment == null) dashboardFragment =
                     childFragment as DashboardFragment
-                dashboardFragment!!.onUnitChange()
+//                dashboardFragment!!.onUnitChange()
             }
 
             is NotificationsFragment -> {
                 if (notificationsFragment == null) notificationsFragment =
                     childFragment as NotificationsFragment
-                notificationsFragment!!.onUnitChange()
+
             }
         }
     }
@@ -284,13 +281,13 @@ class Setting : AppCompatActivity() {
             is DashboardFragment -> {
                 if (dashboardFragment == null) dashboardFragment =
                     childFragment as DashboardFragment
-                dashboardFragment!!.onColorChange(colorPosition)
+//                dashboardFragment!!.onColorChange(colorPosition)
             }
 
             is NotificationsFragment -> {
                 if (notificationsFragment == null) notificationsFragment =
                     childFragment as NotificationsFragment
-                notificationsFragment!!.onColorChange(colorPosition)
+
             }
         }
     }

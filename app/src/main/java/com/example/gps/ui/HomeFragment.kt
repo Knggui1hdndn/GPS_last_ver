@@ -1,7 +1,6 @@
 package com.example.gps.ui
 
 import android.content.Context.MODE_PRIVATE
-
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
@@ -12,16 +11,22 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
-import com.example.gps.constants.MyLocationConstants
 import com.example.gps.R
+import com.example.gps.constants.MyLocationConstants
 import com.example.gps.constants.SettingConstants
-import com.example.gps.`object`.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.FragmentHomeBinding
 import com.example.gps.interfaces.HomeInterface
 import com.example.gps.model.Vehicle
+import com.example.gps.`object`.SharedData
 import com.example.gps.service.MyService
 import com.example.gps.utils.ColorUtils
+import com.example.gps.utils.TimeUtils
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
 
 
 class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
@@ -34,7 +39,8 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentHomeBinding.bind(view)
         myDataBase = MyDataBase.getInstance(requireContext())
-       sharedPreferencesSetting = requireContext().getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
+        sharedPreferencesSetting =
+            requireContext().getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         sharedPreferencesState = requireContext().getSharedPreferences("state", MODE_PRIVATE)
         val positionsColor = sharedPreferencesSetting.getInt(SettingConstants.COLOR_DISPLAY, 2)
         val isNightMode = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
@@ -44,7 +50,11 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
         binding.speed.speedTextColor = textColor
         binding.speed.textColor = textColor
         onColorChange(positionsColor)
+//        requireActivity().requestedOrientation =
+//            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
         with(binding) {
+
+            SharedData.time.observe(viewLifecycleOwner) { binding.time?.text = TimeUtils.formatTime(it) }
 
             if (requireContext().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
                 onVisibilityChanged(
@@ -53,8 +63,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
                         true
                     )
                 )
-
-
             } else {
                 sharedPreferencesSetting.getInt(SettingConstants.COLOR_DISPLAY, 2)
             }
@@ -78,20 +86,8 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
         }
     }
 
-
-    private fun stopRunning() {
-        val status = sharedPreferencesState.getString(MyLocationConstants.STATE, null)
-        if (status != MyLocationConstants.STOP && status != null) {
-            (childFragmentManager.findFragmentById(R.id.frag) as ParameterFragment).hideBtnStop()
-            val intent = Intent(requireContext(), MyService::class.java)
-            intent.action = MyLocationConstants.STOP
-            requireActivity().startService(intent)
-
-        }
-    }
-
     override fun onVisibilityChanged(boolean: Boolean) {
-     }
+    }
 
     override fun onMaxSpeedAnalogChange(speed: Int) {
         binding.speed.maxSpeed = speed.toFloat()
@@ -112,7 +108,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), HomeInterface {
     }
 
     override fun toggleButtonVisibility(boolean: Boolean) {
-     }
+    }
 
     override fun onColorChange(i: Int) {
         try {

@@ -10,9 +10,9 @@ import android.widget.TextView
 
 class FontUtils() {
     companion object {
-        fun setFont(context: Context, vararg textView: TextView) {
+        fun setFont(context: Context, vararg textView: TextView?) {
             textView.forEach {
-                it.typeface = Typeface.createFromAsset(context.assets, "font_lcd.ttf")
+                it!!.typeface = Typeface.createFromAsset(context.assets, "font_lcd.ttf")
                 val spannableString = SpannableString(it.text.toString())
                 var position = it.text.toString().indexOf("k")
                 if (position < 0) {

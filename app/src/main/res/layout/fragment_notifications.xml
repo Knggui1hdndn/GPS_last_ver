@@ -6,16 +6,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="10">
-    <fragment
-        android:name="com.example.gps.ui.FragmentSignal"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:id="@+id/signal"/>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="5">
+        android:layout_weight="5.3">
 
         <fragment
             android:id="@+id/map"
@@ -23,154 +18,84 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_margin="5dp"
+            android:layout_weight="0.8"
+            android:background="@drawable/background_button_verti"
+            android:text="00:00:00"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="25dp"
+            app:backgroundTint="@null"
+            app:cornerRadius="20dp"
+
+            />
+
+        <TextView
+            android:id="@+id/speed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_margin="5dp"
+            android:padding="15dp"
+            android:autoSizeMaxTextSize="20dp"
+            android:autoSizeMinTextSize="8dp"
+            android:background="@drawable/background_button_verti"
+            android:text="000 km/h"
+            android:textAllCaps="false"
+            android:maxLines="1"
+            android:textColor="@color/white"
+            android:textSize="20dp"
+            app:backgroundTint="@null"
+            app:cornerRadius="20dp" />
+
         <ImageView
-            android:id="@+id/imgChange"
-            android:layout_width="40dp"
+            android:id="@+id/imgCurrent"
+            android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_gravity="start|top"
-             android:layout_marginStart="20dp"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
-            android:background="#B0857777"
-            android:src="@drawable/baseline_map_24" />
+            android:src="@drawable/current_speed" />
+
+        <ImageView
+            android:id="@+id/imgTypeMap"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/change_typy_map" />
+
+        <ImageView
+            android:id="@+id/imgRotate"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="end|top"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/rotate_screen_from_map" />
     </FrameLayout>
 
-    <RelativeLayout
+    <com.google.android.gms.ads.AdView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="4"
-android:gravity="bottom"
+        android:layout_weight="4.7"
+        android:gravity="bottom"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-             android:orientation="horizontal"
-            android:id="@+id/mLayout"
-            android:layout_alignParentTop="true"
-            android:weightSum="3">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="5dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Kinh độ"
-                    android:textColor="#6C6969" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="bottom|center_horizontal"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/longitude"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:lines="1"
-                        android:text="0"
-
-                        android:textColor="@color/teal_200"
-                        android:textSize="20sp" />
-
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:layout_weight="1"
-                android:gravity="center"
-
-                android:orientation="vertical"
-                android:padding="5dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Tốc độ hiện tại"
-                    android:textColor="#6C6969" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="bottom|center_horizontal"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/txtSpeed"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:lines="1"
-                        android:text="0"
-
-                        app:autoSizeTextType="uniform"
-                        app:autoSizeMinTextSize="12sp"
-                        app:autoSizeMaxTextSize="100sp"
-                        app:autoSizeStepGranularity="2sp"
-                        android:textColor="@color/teal_200"
-                        android:textSize="25sp" />
-
-
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="5dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Vĩ độ"
-                    android:textColor="#6C6969" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="bottom|center_horizontal"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/latitude"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:lines="1"
-
-                        android:text="0"
-                        android:textColor="@color/teal_200"
-                        android:textSize="20sp" />
-
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
 
         <fragment
             android:id="@+id/frag"
-              android:name="com.example.gps.ui.ParameterFragment"
+            android:name="com.example.gps.ui.ParameterFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"/>
-
-
-    </RelativeLayout>
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 </LinearLayout>

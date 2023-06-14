@@ -8,7 +8,7 @@
 
         <item name="android:textViewStyle">@style/MyTheme</item>
         <item name="android:textColor">@color/white</item>
-        <item name="android:tint">@color/white</item>
+
 
         <!-- Customize your theme here. -->
         <item name="android:windowSplashScreenBackground" tools:targetApi="s">@color/black</item>

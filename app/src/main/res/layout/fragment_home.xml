@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
+    android:gravity="bottom"
     android:orientation="vertical"
     android:weightSum="10">
     <!--        app:sv_withTremble="false"-->
@@ -11,21 +11,20 @@
         android:id="@+id/signal"
         android:name="com.example.gps.ui.FragmentSignal"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="0sp"
+        android:layout_weight="0.5" />
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-
         android:layout_weight="4">
 
         <com.github.anastr.speedviewlib.AwesomeSpeedometer
             android:id="@+id/speed"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-             app:sv_indicatorColor="@color/color_3"
+            app:sv_indicatorColor="@color/color_3"
             app:sv_maxSpeed="280"
             app:sv_minSpeed="0"
             app:sv_speedTextPosition="CENTER"
@@ -34,12 +33,12 @@
     </FrameLayout>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnStartTrip"
+        android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
-         android:layout_weight="0.8"
         android:layout_margin="5dp"
+        android:layout_weight="0.8"
         android:background="@drawable/background_button_verti"
         android:text="00:00:00"
         android:textAllCaps="false"
@@ -49,17 +48,17 @@
         app:cornerRadius="20dp"
         app:strokeColor="@color/white"
         app:strokeWidth="2dp" />
-<TextView
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:textSize="30dp"
-    android:layout_weight="1.2"
-    android:background="@color/color_6"
-    android:text="ADS"/>
+
+    <com.google.android.gms.ads.AdView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ads"
+ />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"
+        android:layout_weight="4.7"
         android:gravity="bottom"
         android:orientation="vertical">
 

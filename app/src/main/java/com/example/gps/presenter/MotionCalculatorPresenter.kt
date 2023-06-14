@@ -52,13 +52,13 @@ class MotionCalculatorPresenter(
     override fun calculateDistance(lastLocation: Location): Double {
         if (this::previousLocation.isInitialized) {
             val distanceInMeters = lastLocation.distanceTo(previousLocation)
-            distance += distanceInMeters/1000
+            distance += distanceInMeters/1000.0
             sharedPreferences.edit().putInt(
                 MyLocationConstants.DISTANCE,
                 (sharedPreferences.getInt(
                     MyLocationConstants.DISTANCE,
                     0
-                ) + (distanceInMeters / 1000)).toInt()
+                ) + (distanceInMeters / 1000.0)).toInt()
             ).apply()
         }
         lastMovementDataId = myDataBase.movementDao().getLastMovementDataId()
@@ -160,11 +160,11 @@ class MotionCalculatorPresenter(
     override fun updateMovementDataWhenStop() {
         val movementData = myDataBase.movementDao().getLastMovementData()
         if (this::previousLocation.isInitialized) {
-            movementData.endLatitude = movementData.startLatitude
-            movementData.endLongitude = movementData.startLongitude
-        } else {
             movementData.endLatitude = previousLocation.latitude
             movementData.endLongitude = previousLocation.longitude
+        } else {
+            movementData.endLatitude = 0.0
+            movementData.endLongitude = 0.0
         }
         myDataBase.movementDao().updateMovementData(movementData)
         resetSharedData()

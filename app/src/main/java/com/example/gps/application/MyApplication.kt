@@ -38,9 +38,9 @@ class MyApplication :
         super.onCreate()
         val sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
 //        if (sharedPreferences.getBoolean(SettingConstants.THEME, true)) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+         //   AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 //        } else {
-//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+           AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 //        }
 
         registerActivityLifecycleCallbacks(this)
