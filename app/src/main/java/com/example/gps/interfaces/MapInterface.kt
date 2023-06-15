@@ -6,10 +6,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Polyline
 import java.util.function.BiPredicate
 
-interface MapInterface : DisplayInterface, MeasurementInterFace {
+interface MapInterface : MeasurementInterFace {
     interface View {
-        fun onVisibilityPolyLine(boolean: Boolean)
-
         fun setMap(googleMap: GoogleMap)
         fun clearMap()
         fun showCurrentSpeed(string: String)
@@ -21,8 +19,8 @@ interface MapInterface : DisplayInterface, MeasurementInterFace {
         fun updatePolyLine()
         fun getCurrentSpeed()
         fun getCurrentPosition()
-        fun isServiceRunning(serviceClass: Class<*>):Boolean
-        fun conVertToLatLng():List<LatLng>
+        fun isServiceRunning(serviceClass: Class<*>): Boolean
+        fun conVertToLatLng(): List<LatLng>
         fun setUpMap()
     }
 }

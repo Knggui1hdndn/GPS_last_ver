@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.gps.constants.MyLocationConstants
 import com.example.gps.dao.MyDataBase
 import com.example.gps.interfaces.MapInterface
+import com.example.gps.`object`.CheckPermission
 import com.example.gps.`object`.SharedData
 import com.example.gps.service.MyService
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -55,13 +56,14 @@ class NotificationPresenter(val view: MapInterface.View, val smf: SupportMapFrag
 
     @SuppressLint("MissingPermission")
     override fun getCurrentPosition() {
+        if(CheckPermission.hasLocationPermission(context))  map?.isMyLocationEnabled = true;
         val fusedLocationClient: FusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(smf.requireActivity())
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location ->
                 if (location != null) {
                     val latLng = LatLng(location.latitude, location.longitude)
-                    map?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+                    map?.moveCamera(CameraUpdateFactory .newLatLngZoom(latLng, 15f))
                     map?.isTrafficEnabled = true
                 }
             }
@@ -95,7 +97,7 @@ class NotificationPresenter(val view: MapInterface.View, val smf: SupportMapFrag
                 moveCamera(CameraUpdateFactory.newLatLng(LatLng(18.683500, 105.485750)))
                 uiSettings.isZoomControlsEnabled = true
                 uiSettings.isRotateGesturesEnabled = true
-                isMyLocationEnabled = true;
+                if(CheckPermission.hasLocationPermission(context))  isMyLocationEnabled = true;
                  getUiSettings().setMyLocationButtonEnabled(false);
 
                 mapType = GoogleMap.MAP_TYPE_HYBRID

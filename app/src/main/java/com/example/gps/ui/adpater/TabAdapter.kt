@@ -5,9 +5,9 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.example.gp.NotificationsFragment
 import com.example.gps.ui.DashboardFragment
 import com.example.gps.ui.HomeFragment
-import com.example.gps.ui.NotificationsFragment
 
 class TabAdapter(fm: FragmentManager, lifecycle: Lifecycle) : FragmentStateAdapter(fm, lifecycle) {
     override fun getItemCount(): Int {
