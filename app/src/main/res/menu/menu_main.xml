@@ -5,7 +5,8 @@
         android:id="@+id/subcribe"
         android:icon="@drawable/subcribe"
         android:title="Subcribe"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+       />
     <item
         android:id="@+id/tip"
         android:icon="@drawable/tip"

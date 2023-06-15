@@ -5,9 +5,13 @@ import com.example.gps.ui.MainActivity2
 
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
+import android.content.res.ColorStateList
+import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.gps.R
 import com.example.gps.databinding.FragmentNotificationsBinding
 import com.example.gps.interfaces.MapInterface
@@ -22,6 +26,7 @@ import com.example.gps.utils.TimeUtils
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.PolylineOptions
+import kotlin.properties.Delegates
 
 
 class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInterface.View,
@@ -30,24 +35,26 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
     private lateinit var presenter: NotificationPresenter
     private lateinit var googleMap: GoogleMap
     private var binding: FragmentNotificationsBinding? = null
+    private var check by Delegates.notNull<Boolean>()
 
     @SuppressLint("SuspiciousIndentation", "SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentNotificationsBinding.bind(view)
         mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        check=  requireActivity().resources.configuration.orientation!= Configuration.ORIENTATION_LANDSCAPE
         presenter = NotificationPresenter(this, mapFragment!!)
         presenter.setUpMap()
         val measurement = MeasurementPresenter(this, this)
         measurement.onColorChange()
         measurement.onTimeChange()
         measurement.onCurrentSpeedChange()
+        measurement.setVisibilityTime()
 
         with(binding) {
-
             this!!.imgCurrent.setOnClickListener {
                 presenter.getCurrentPosition()
             }
-
+          if (check)  FontUtils.setFont(requireContext(), binding?.time, binding?.speed)
             imgRotate.setOnClickListener {
                 requireActivity().requestedOrientation =
                     if (requireActivity().requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
@@ -57,7 +64,6 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
             imgTypeMap.setOnClickListener {
                 MapUtils.setStStyleMap(googleMap)
             }
-
         }
     }
 
@@ -66,8 +72,8 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
         this.googleMap = googleMap
     }
 
-    override fun clearMap() {
-        googleMap.clear()
+    override fun clearMap(boolean: Boolean) {
+        if(boolean) presenter.checkShowPolyLine() else googleMap.clear()
     }
 
     override fun showCurrentSpeed(string: String) {
@@ -82,21 +88,25 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
         (requireActivity() as MainActivity2).binding.viewPager2.isUserInputEnabled = true
     }
 
+    override fun onVisibilityTime(visibility: Int) {
+        binding?.time?.visibility=visibility
+    }
+
     override fun displayTimeChange(long: Long) {
         binding?.time?.text = TimeUtils.formatTime(long)
-        FontUtils.setFont(requireContext(), binding?.time, binding?.speed)
-
     }
 
     override fun displayColorChange(int: Int) {
-        binding!!.time?.setTextColor(ColorUtils.checkColor(int))
+        binding!!.time?.setTextColor(if (ColorUtils.isThemeDark()) Color.BLACK else Color.WHITE)
+        binding!!.time?.backgroundTintList = ColorStateList.valueOf(ColorUtils.checkColor(int))
         binding!!.speed?.setTextColor(ColorUtils.checkColor(int))
-        FontUtils.setFont(requireContext(), binding?.time, binding?.speed)
-    }
+     }
 
+    @SuppressLint("SetTextI18n")
     override fun displayCurrentSpeedChange(string: String, l: Long) {
         binding?.speed?.text = string + SharedData.toUnit
-        FontUtils.setFont(requireContext(), binding?.time, binding?.speed)
+        if (check) FontUtils.setFont(requireContext(),binding?.speed)
+
     }
 }
 

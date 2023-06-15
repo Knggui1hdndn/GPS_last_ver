@@ -2,14 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/BckGroundTip"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_weight="6"
-style="@style/BckGroundTip"
     android:orientation="vertical"
     android:padding="20dp">
 
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="ODOMETER" />
+
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn1"
         style="@style/ButtonTipNight"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -23,10 +29,12 @@ style="@style/BckGroundTip"
         app:cornerRadius="30dp" />
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn2"
         style="@style/ButtonTipDrak"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginEnd="40dp"
+
         android:layout_weight="1"
         android:autoLink="all"
         android:linksClickable="false"
@@ -35,10 +43,12 @@ style="@style/BckGroundTip"
         app:cornerRadius="30dp" />
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn3"
         style="@style/ButtonTipNight"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="40dp"
+
         android:layout_marginEnd="5dp"
         android:layout_weight="1"
         android:autoLink="all"
@@ -53,6 +63,7 @@ style="@style/BckGroundTip"
         android:text="ADS" />
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn4"
         style="@style/ButtonTipDrak"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -80,7 +91,7 @@ style="@style/BckGroundTip"
             android:layout_gravity="center_vertical"
             android:layout_marginRight="15dp"
             android:layout_weight="5"
-            android:background="@drawable/background_button"
+            android:background="@drawable/background_button_light"
             android:text="Start Trip"
             android:textAllCaps="false"
             android:textColor="@color/white"
@@ -97,7 +108,7 @@ style="@style/BckGroundTip"
             android:layout_gravity="center_vertical"
             android:layout_weight="5"
             android:background="@drawable/background_button1"
-            android:text="Start Trip"
+            android:text="More Tips"
             android:textAllCaps="false"
             android:textColor="@color/black"
             app:backgroundTint="@null"

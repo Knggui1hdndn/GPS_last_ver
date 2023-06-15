@@ -12,5 +12,6 @@ class SettingConstants {
         const val CLOCK_DISPLAY = "CLOCK_DISPLAY"
         const val UNIT="UNIT"
         const val THEME="THEME"
+        const val ViEW_MODE="ViEW_MODE" //1.2.3->analog,digital.map
     }
 }

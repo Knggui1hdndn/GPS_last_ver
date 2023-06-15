@@ -55,11 +55,10 @@
         android:layout_gravity="center_horizontal"
         android:layout_weight="0.8"
         android:layout_margin="5dp"
-        android:background="@drawable/background_button_verti"
+        style="@style/BackGroundButton"                 android:backgroundTint="@null"
         android:text="00:00:00"
         android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="25dp"
+         android:textSize="25dp"
         app:backgroundTint="@null"
         app:cornerRadius="20dp"
         />

@@ -10,16 +10,34 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.gps.MyApplication
 import com.example.gps.R
+import com.example.gps.constants.SettingConstants
+import com.example.gps.`object`.SharedData
 
 
 class SplashActivity : AppCompatActivity() {
+    private fun setUnitSpeedAndDistance() {
+        try {
+            SharedData.toUnit =
+                getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE).getString(
+                    SettingConstants.UNIT,
+                    ""
+                ).toString()
+            when (SharedData.toUnit) {
+                "km/h" -> SharedData.toUnitDistance = "km"
+                "mph" -> SharedData.toUnitDistance = "mi"
+                "knot" -> SharedData.toUnitDistance = "nm"
+            }
+        } catch (_: Exception) {
+        }
+    }
 
     @SuppressLint("MissingInflatedId")
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-       createTimer(3L)
+        setUnitSpeedAndDistance()
+        createTimer(3L)
 
     }
 
@@ -34,7 +52,6 @@ class SplashActivity : AppCompatActivity() {
                 startMainActivity()
                 finish()
                 val application = application as? MyApplication
-
                 // If the application is not an instance of MyApplication, log an error message and
                 // start the MainActivity without showing the app open ad.
                 if (application == null) {
@@ -42,7 +59,6 @@ class SplashActivity : AppCompatActivity() {
                     startMainActivity()
                     return
                 }
-
                 // Show the app open ad.
                 application.showAdIfAvailable(
                     this@SplashActivity,
@@ -58,7 +74,13 @@ class SplashActivity : AppCompatActivity() {
 
     /** Start the MainActivity. */
     fun startMainActivity() {
-        val intent = Intent(this, MainActivity2::class.java)
-        startActivity(intent)
+        val sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
+        if (!sharedPreferences.getBoolean(SettingConstants.CHECK_OPEN, false)) {
+            val intent = Intent(this, SettingOptionsActivitys::class.java)
+            startActivity(intent)
+        } else {
+            val intent = Intent(this, MainActivity2::class.java)
+            startActivity(intent)
+        }
     }
 }

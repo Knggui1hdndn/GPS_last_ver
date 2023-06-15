@@ -71,7 +71,6 @@ class MotionCalculatorPresenter(
     override fun calculateSpeed(lastLocation: Location): Double {
         if (!lastLocation.hasSpeed()) return 0.0
         val speed =  if (lastLocation.hasSpeedAccuracy() && lastLocation.hasSpeed()) (lastLocation.speed * 3.6) else 0.0
-
         if (sharedPreferencesSetting.getBoolean(SettingConstants.SPEED_ALARM, false)) {
             when {
                 SharedData.convertSpeed(speed) > SharedData.convertSpeed(getWarningLimit().toDouble()) -> {
@@ -145,6 +144,7 @@ class MotionCalculatorPresenter(
             this.averageSpeed = speed
             this.maxSpeed = maxSpeed
             this.distance = distance
+            this.time = timer
         }
         myDataBase.movementDao().updateMovementData(movementData)
     }
@@ -160,7 +160,7 @@ class MotionCalculatorPresenter(
 
     override fun updateMovementDataWhenStop() {
         val movementData = myDataBase.movementDao().getLastMovementData()
-        if (this::previousLocation.isInitialized) {
+         if (this::previousLocation.isInitialized) {
             movementData.endLatitude = previousLocation.latitude
             movementData.endLongitude = previousLocation.longitude
         } else {
@@ -196,7 +196,7 @@ class MotionCalculatorPresenter(
     // Phương thức phát cảnh báo
     override fun broadcastWarning() {
         if (!isWarningPlaying) {
-            mediaPlayer.start()
+         //   mediaPlayer.start()
             isWarningPlaying = true
         }
         val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager

@@ -26,11 +26,11 @@
             android:layout_gravity="bottom|start"
             android:layout_margin="5dp"
             android:layout_weight="0.8"
-            android:background="@drawable/background_button_verti"
+            style="@style/BackGroundButton"
+            android:backgroundTint="@null"
             android:text="00:00:00"
             android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="25dp"
+             android:textSize="25dp"
             app:backgroundTint="@null"
             app:cornerRadius="20dp"
 
@@ -42,15 +42,15 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|right"
             android:layout_margin="5dp"
-            android:padding="15dp"
             android:autoSizeMaxTextSize="20dp"
             android:autoSizeMinTextSize="8dp"
-            android:background="@drawable/background_button_verti"
+            style="@style/BackGroundButton"
+            android:backgroundTint="@null"
+            android:maxLines="1"
+            android:padding="15dp"
             android:text="000 km/h"
             android:textAllCaps="false"
-            android:maxLines="1"
-            android:textColor="@color/white"
-            android:textSize="20dp"
+             android:textSize="20dp"
             app:backgroundTint="@null"
             app:cornerRadius="20dp" />
 
@@ -61,7 +61,7 @@
             android:layout_gravity="start|top"
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
-            android:src="@drawable/current_position" />
+            android:background="@drawable/current_position" />
 
         <ImageView
             android:id="@+id/imgTypeMap"
@@ -69,7 +69,7 @@
             android:layout_height="40dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
-            android:src="@drawable/change_typy_map" />
+            android:background="@drawable/change_typy_map" />
 
         <ImageView
             android:id="@+id/imgRotate"
@@ -78,7 +78,7 @@
             android:layout_gravity="end|top"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
-            android:src="@drawable/rotate_screen_from_map" />
+            android:background="@drawable/rotate_screen_from_map" />
     </FrameLayout>
 
     <com.google.android.gms.ads.AdView
@@ -86,10 +86,10 @@
         android:layout_height="wrap_content" />
 
     <LinearLayout
+        android:id="@+id/mLinear"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="4.7"
-        android:id="@+id/mLinear"
         android:gravity="bottom"
         android:orientation="vertical">
 

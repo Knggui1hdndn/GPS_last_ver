@@ -3,8 +3,10 @@ package com.example.gps.ui
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
@@ -41,7 +43,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), MeasurementInterFace.View
         measurement.onColorChange()
         measurement.onTimeChange()
         measurement.onCurrentSpeedChange()
-
+        measurement.setVisibilityTime()
         with(binding) {
             imgRotate?.setOnClickListener {
                 requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
@@ -50,8 +52,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), MeasurementInterFace.View
             SharedData.speedAnalog.observe(viewLifecycleOwner) {
                 binding.speed.maxSpeed = it.toFloat()
             }
-
-
         }
 
     }
@@ -60,6 +60,10 @@ class HomeFragment : Fragment(R.layout.fragment_home), MeasurementInterFace.View
     override fun onResume() {
         super.onResume()
         binding.speed.unit = SharedData.toUnit
+    }
+
+    override fun onVisibilityTime(visibility: Int) {
+         binding.time?.visibility=visibility
     }
 
     override fun displayTimeChange(long: Long) {
@@ -71,12 +75,15 @@ class HomeFragment : Fragment(R.layout.fragment_home), MeasurementInterFace.View
         binding.speed.textColor = textColor
         binding.speed.trianglesColor = ColorUtils.checkColor(int)
         binding.speed.unitTextColor = ColorUtils.checkColor(int)
-        binding.time?.setTextColor(ColorUtils.checkColor(int))
-        binding.speed.setSpeedometerColor(ColorUtils.checkColor(int))
+        binding.time?.setTextColor(if (ColorUtils.isThemeDark()) Color.BLACK else Color.WHITE)
+        binding.time?.backgroundTintList = ColorStateList.valueOf(ColorUtils.checkColor(int))
+     try {
+         binding.speed.setSpeedometerColor(ColorUtils.checkColor(int))
+     }catch (e:Exception){}
     }
 
     override fun displayCurrentSpeedChange(string: String, l: Long) {
-        binding.speed.speedTo(string.toFloat(), l * 1000)
+         binding.speed.speedTo(string.toFloat(), l)
     }
 
 }

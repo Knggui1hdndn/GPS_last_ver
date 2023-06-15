@@ -37,14 +37,12 @@ class MyApplication :
     override fun onCreate() {
         super.onCreate()
         val sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
-//        if (sharedPreferences.getBoolean(SettingConstants.THEME, true)) {
-         //   AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-//        } else {
+        if (!sharedPreferences.getBoolean(SettingConstants.THEME, true)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-//        }
-
+        }
         registerActivityLifecycleCallbacks(this)
-
         createChannelId()
         // Log the Mobile Ads SDK version.
         MobileAds.initialize(this) {}
@@ -64,7 +62,7 @@ class MyApplication :
             val notificationChannel =
                 NotificationChannel("1", "Noti", NotificationManager.IMPORTANCE_HIGH)
             val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            //hoặc             NotificationManager notificationManager=getSystemService(NotificationManager.class);
+            //hoặcNotificationManager notificationManager=getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(notificationChannel)
         }
     }

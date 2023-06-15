@@ -61,7 +61,11 @@ class HistoryActivity : AppCompatActivity() {
                 2
             )
         )
-        adapter.notifyDataSetChanged(mutableListMovementData)
+
+        val hashMap=mutableListMovementData.map {
+            it to false
+        }.toMap()
+        adapter.notifyDataSetChanged(hashMap)
         val direction = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
         rcy.addItemDecoration(direction)
         rcy.layoutManager = mng

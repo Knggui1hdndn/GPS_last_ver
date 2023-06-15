@@ -1,5 +1,6 @@
 package com.example.gps.ui
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.location.Geocoder
@@ -18,16 +19,13 @@ import java.util.Locale
 
 class HistoryAdapter(private val i: Int) :
     RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder>() {
-    private var list: MutableList<MovementData> = mutableListOf()
+    private var list: HashMap<MovementData,Boolean> = hashMapOf()
 
     inner class HistoryViewHolder(private val binding: ItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
+        @SuppressLint("SetTextI18n")
         fun bind(movementData: MovementData) {
             with(binding) {
-
-
-
                 binding.mLinear.setOnClickListener {
                     val intent = Intent(it.context, ShowActivity::class.java)
                     intent.putExtra("movementData", movementData)
@@ -36,11 +34,12 @@ class HistoryAdapter(private val i: Int) :
 
                 val calendar = Calendar.getInstance()
                 txtDate.text =
-                    "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(
-                        Calendar.YEAR
-                    )}"
+                    "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${
+                        calendar.get(
+                            Calendar.YEAR
+                        )
+                    }"
                 txtMaxSpeed.text = movementData.maxSpeed.toString()
-
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     Geocoder(binding.root.context, Locale.getDefault()).getFromLocation(
@@ -48,15 +47,19 @@ class HistoryAdapter(private val i: Int) :
                         movementData.startLongitude,
                         1
                     ) { addresses ->
-                        val addressLine = if (addresses.size > 0 && addresses[0].getAddressLine(0).trim().isNotEmpty()) {
-                            addresses[0].getAddressLine(0)
-                        } else {
-                            "__"
-                        }
+                        val addressLine =
+                            if (addresses.size > 0 && addresses[0].getAddressLine(0).trim()
+                                    .isNotEmpty()
+                            ) {
+                                addresses[0].getAddressLine(0)
+                            } else {
+                                "__"
+                            }
                         txtStart.text = addressLine
                     }
                 } else {
-                    val address = getAddressLine(movementData.startLatitude, movementData.startLongitude)
+                    val address =
+                        getAddressLine(movementData.startLatitude, movementData.startLongitude)
                     val addressLine = if (address != null && address.trim().isNotEmpty()) {
                         address
                     } else {
@@ -75,7 +78,8 @@ class HistoryAdapter(private val i: Int) :
                     Locale.getDefault()
                 ).getFromLocation(endLatitude, endLongitude, 1)
                 if (geocoder != null) {
-                    return if (geocoder.size > 0) geocoder[0]?.getAddressLine(0)?.toString() else null
+                    return if (geocoder.size > 0) geocoder[0]?.getAddressLine(0)
+                        ?.toString() else null
                 }
                 null
             } catch (e: Exception) {
@@ -85,9 +89,9 @@ class HistoryAdapter(private val i: Int) :
         }
     }
 
-    fun notifyDataSetChanged(mutableList: MutableList<MovementData>) {
+    fun notifyDataSetChanged(map:HashMap<MovementData,Boolean>) {
         list.clear()
-        list.addAll(mutableList)
+        list.putAll(map)
         notifyDataSetChanged()
     }
 
@@ -100,6 +104,6 @@ class HistoryAdapter(private val i: Int) :
     }
 
     override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) {
-        holder.bind(list[position])
+        holder.bind(list[p] )
     }
 }

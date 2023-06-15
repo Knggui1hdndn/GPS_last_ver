@@ -6,213 +6,222 @@
     android:layout_height="match_parent"
     android:background="@color/black"
     android:orientation="vertical"
+
     tools:context=".ui.SettingOptionsActivitys">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:background="#181818"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingTop="25dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="Type of Vehicle"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
-
+        android:id="@+id/mLinear"
+android:visibility="invisible"
+        >
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="10dp"
-            android:weightSum="9">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnBicycle"
-
-                style="@style/BUTTONSETTINGOPSTION"
-                android:layout_weight="3"
-                android:baselineAligned="false"
-                android:text="Bicycle" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnMotorbike"
-                style="@style/BUTTONSETTINGOPSTION"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:layout_weight="3"
-                android:text="Motorbike"
-                android:textColor="@color/white"
-                app:strokeWidth="2dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCar"
-                style="@style/BUTTONSETTINGOPSTION"
-                android:layout_weight="3"
-                android:text="Car" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:background="#181818"
-
-        android:orientation="vertical"
-        android:paddingTop="25dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="Viewing mode"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="10dp"
-            android:weightSum="9">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnAnalog"
-                style="@style/BUTTONSETTINGOPSTION"
-                android:layout_weight="3"
-                android:baselineAligned="false"
-                android:text="Analog" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnDigital"
-                style="@style/BUTTONSETTINGOPSTION"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:layout_weight="3"
-                android:text="Digital"
-                android:textColor="@color/white"
-
-                app:strokeWidth="2dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnMap"
-                style="@style/BUTTONSETTINGOPSTION"
-                android:layout_weight="3"
-                android:text="Map"
-
-                />
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:background="#181818"
-        android:orientation="vertical"
-
-        android:paddingTop="25dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="Unit of Speed"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="10dp"
-            android:weightSum="9">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnMph"
-                style="@style/BUTTONSETTINGOPSTION"
-                android:layout_weight="3"
-                android:baselineAligned="false"
-                android:text="Mph" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnKm"
-                style="@style/BUTTONSETTINGOPSTION"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:layout_weight="3"
-                android:text="Km/h"
-                android:textColor="@color/white"
-                app:strokeWidth="2dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnKnot"
-                style="@style/BUTTONSETTINGOPSTION"
-                android:layout_weight="3"
-                android:text="Knot" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:background="#181818"
-        android:orientation="vertical"
-
-        android:paddingTop="25dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="Speed ​​Limit"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="15dp">
-
-            <EditText
-                android:id="@+id/edtSpeedLimit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@+id/a"
-                android:inputType="number"
-                android:textColor="@color/white" />
+            android:layout_margin="10dp"
+            android:background="#181818"
+            android:orientation="vertical"
+            android:paddingTop="25dp">
 
             <TextView
-                android:id="@+id/a"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/edtSpeedLimit"
-                android:layout_alignParentRight="true"
-                android:text="Km/h"
+                android:layout_gravity="center_horizontal"
+                android:text="Type of Vehicle"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
 
-                android:textColor="@color/white" />
-        </RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="10dp"
+                android:weightSum="9">
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBicycle"
+
+                    style="@style/BUTTONSETTINGOPSTION"
+                    android:layout_weight="3"
+                    android:baselineAligned="false"
+                    android:text="Bicycle" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMotorbike"
+                    style="@style/BUTTONSETTINGOPSTION"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="3"
+                    android:text="Motorbike"
+                    android:textColor="@color/white"
+                    app:strokeWidth="2dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCar"
+                    style="@style/BUTTONSETTINGOPSTION"
+                    android:layout_weight="3"
+                    android:text="Car" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="#181818"
+
+            android:orientation="vertical"
+            android:paddingTop="25dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Viewing mode"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="10dp"
+                android:weightSum="9">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAnalog"
+                    style="@style/BUTTONSETTINGOPSTION"
+                    android:layout_weight="3"
+                    android:baselineAligned="false"
+                    android:text="Analog" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDigital"
+                    style="@style/BUTTONSETTINGOPSTION"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="3"
+                    android:text="Digital"
+                    android:textColor="@color/white"
+
+                    app:strokeWidth="2dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMap"
+                    style="@style/BUTTONSETTINGOPSTION"
+                    android:layout_weight="3"
+                    android:text="Map"
+
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="#181818"
+            android:orientation="vertical"
+
+            android:paddingTop="25dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Unit of Speed"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="10dp"
+                android:weightSum="9">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMph"
+                    style="@style/BUTTONSETTINGOPSTION"
+                    android:layout_weight="3"
+                    android:baselineAligned="false"
+                    android:text="Mph" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnKm"
+                    style="@style/BUTTONSETTINGOPSTION"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="3"
+                    android:text="Km/h"
+                    android:textColor="@color/white"
+                    app:strokeWidth="2dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnKnot"
+                    style="@style/BUTTONSETTINGOPSTION"
+                    android:layout_weight="3"
+                    android:text="Knot" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="#181818"
+            android:orientation="vertical"
+
+            android:paddingTop="25dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Speed ​​Limit"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="15dp">
+
+                <EditText
+                    android:id="@+id/edtSpeedLimit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/a"
+                    android:inputType="number"
+                    android:textColor="@color/white" />
+
+                <TextView
+                    android:id="@+id/a"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/edtSpeedLimit"
+                    android:layout_alignParentRight="true"
+                    android:text="Km/h"
+
+                    android:textColor="@color/white" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnOK"
+            android:layout_width="151dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:text="OK"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/white"
+            app:cornerRadius="20dp"
+            android:backgroundTint="@color/backgroundbuttonsettingopstions"
+            app:strokeColor="@color/white"
+            app:strokeWidth="2dp" />
     </LinearLayout>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnOK"
-        android:layout_width="151dp"
-        android:layout_height="60dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"
-        android:text="OK"
-        android:layout_marginTop="20dp"
-        android:textColor="@color/white"
-        app:cornerRadius="20dp"
-        android:backgroundTint="@color/backgroundbuttonsettingopstions"
-        app:strokeColor="@color/white"
-        app:strokeWidth="2dp" />
 </LinearLayout>

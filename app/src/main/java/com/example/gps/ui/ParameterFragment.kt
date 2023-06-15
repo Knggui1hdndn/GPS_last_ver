@@ -20,7 +20,9 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.NavHostFragment
+import com.example.gp.NotificationsFragment
 import com.example.gps.constants.MyLocationConstants
 import com.example.gps.R
 import com.example.gps.constants.SettingConstants
@@ -114,6 +116,9 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) ,
         binding.btnStop?.setOnClickListener {
             presenter.stopService()
             (requireActivity() as MainActivity2).sendDataToSecondFragment()
+            val notificationsFragment=(requireActivity() as MainActivity2).supportFragmentManager.findFragmentByTag("f2")
+            if(notificationsFragment!=null) (notificationsFragment as NotificationsFragment).clearMap(false)
+
         }
         binding.imgPause?.setOnClickListener {
             presenter.pauseService()
@@ -124,7 +129,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) ,
         binding.imgReset?.setOnClickListener {
             presenter.stopService()
         }
-    }
+     }
 
     override fun onResume() {
         presenter.updateUIState()

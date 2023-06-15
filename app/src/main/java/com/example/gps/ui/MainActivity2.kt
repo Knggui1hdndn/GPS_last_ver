@@ -9,6 +9,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
+import android.graphics.Color
 import android.location.GnssStatus
 import android.location.LocationManager
 import android.os.Build
@@ -31,6 +32,7 @@ import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.ActivityMain2Binding
 import com.example.gps.interfaces.SignalInterface
 import com.example.gps.ui.adpater.TabAdapter
+import com.example.gps.utils.ColorUtils
 import com.google.android.material.tabs.TabLayoutMediator
 
 interface onRecever {
@@ -44,27 +46,14 @@ class MainActivity2 : AppCompatActivity(), onRecever {
     lateinit var tabAdapter: TabAdapter
     lateinit var viewPager: ViewPager2
     private lateinit var sharedPreferences: SharedPreferences
-    private fun setUnitSpeedAndDistance() {
-        try {
-            SharedData.toUnit = sharedPreferences.getString(SettingConstants.UNIT, "").toString()
-            when (SharedData.toUnit) {
-                "km/h" -> SharedData.toUnitDistance = "km"
-                "mph" -> SharedData.toUnitDistance = "mi"
-                "knot" -> SharedData.toUnitDistance = "nm"
-            }
+    var color = if (ColorUtils.isThemeDark()) Color.WHITE else Color.BLACK
 
-        } catch (e: Exception) {
-
-
-        }
-    }
 
     @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setUpActivity()
-        //  SharedData.time.observe(this) { binding.times.text = TimeUtils.formatTime(it) }
 
     }
 
@@ -74,13 +63,10 @@ class MainActivity2 : AppCompatActivity(), onRecever {
         SharedData.activity = this
         setContentView(binding.root)
         binding.toolbar.title = "ODOMETER"
+        binding.toolbar.setTitleTextColor(color)
         setSupportActionBar(binding.toolbar)
-        setUnitSpeedAndDistance()
-        supportActionBar?.title = "ODOMETER"
-        sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
-//        binding.times.typeface = Typeface.createFromAsset(assets, "font_lcd.ttf")
-        checkOpenFirst()
-        tabAdapter = TabAdapter(supportFragmentManager, lifecycle)
+         sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
+         tabAdapter = TabAdapter(supportFragmentManager, lifecycle)
         viewPager = binding.viewPager2
         viewPager.setPageTransformer { page, position ->
             if (position == 2F) {
@@ -97,62 +83,17 @@ class MainActivity2 : AppCompatActivity(), onRecever {
                 }
             }
         }.attach()
-
-        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-        }
-
-
+        val viewMode = sharedPreferences.getInt(SettingConstants.ViEW_MODE, 0)
+        binding.viewPager2.setCurrentItem(viewMode - 1)
     }
 
-
-    private fun checkOpenFirst() {
-        if (!sharedPreferences.getBoolean(SettingConstants.CHECK_OPEN, false)) {
-            val myDataBase = MyDataBase.getInstance(this)
-            val builder = AlertDialog.Builder(this)
-            val list = arrayOf("mph", "km/h", "knot")
-            builder.setCancelable(false)
-            builder.setTitle("Chọn đơn vị đo").setItems(list) { dialog, which ->
-                saveInShared(list[which])
-                insert(myDataBase, which)
-                setUnitSpeedAndDistance()
-                dialog.cancel()
-            }
-            builder.create().show()
-        } else {
-            setUnitSpeedAndDistance()
-        }
-    }
-
-
-    private fun saveInShared(which: String) {
-        SharedData.toUnit = which
-        sharedPreferences.edit().apply {
-            putBoolean(SettingConstants.CHECK_OPEN, true)
-            putInt(SettingConstants.COLOR_DISPLAY, 2)
-            putBoolean(SettingConstants.DISPLAY_SPEED, true)
-            putString(SettingConstants.UNIT, which)
-            putBoolean(SettingConstants.TRACK_ON_MAP, true)
-            putBoolean(SettingConstants.SHOW_RESET_BUTTON, true)
-            putBoolean(SettingConstants.SPEED_ALARM, true)
-        }.apply()
-    }
-
-    private fun insert(myDataBase: MyDataBase, which: Int) {
-        myDataBase.vehicleDao().insertVehicle(240, 100, 1, if (which + 1 == 1) 1 else 0)
-        myDataBase.vehicleDao().insertVehicle(240, 20, 2, if (which + 1 == 2) 1 else 0)
-        myDataBase.vehicleDao().insertVehicle(320, 100, 3, if (which + 1 == 3) 1 else 0)
-    }
 
     override fun onResume() {
         super.onResume()
-
-
     }
 
     override fun onPause() {
         super.onPause()
-        Log.d("okokko", "sodkf1")
-
     }
 
     private fun getColorRes(): ColorStateList {
@@ -161,8 +102,8 @@ class MainActivity2 : AppCompatActivity(), onRecever {
             Service.MODE_PRIVATE
         ).getInt(SettingConstants.COLOR_DISPLAY, 2)
         when (intColor) {
-            1 -> return getColorStateList(R.color.color1)
-            3 -> return getColorStateList(R.color.color2)
+            3 -> return getColorStateList(R.color.color1)
+            1 -> return getColorStateList(R.color.color2)
             2 -> return getColorStateList(R.color.color3)
             4 -> return getColorStateList(R.color.color4)
             5 -> return getColorStateList(R.color.color5)
@@ -175,33 +116,31 @@ class MainActivity2 : AppCompatActivity(), onRecever {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
+        for (i in 1 until menu!!.size()) {
+            menu.getItem(i).iconTintList = ColorStateList.valueOf(color)
+        }
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.settings ->startActivity(Intent(this,Setting::class.java))
-                R.id.history ->startActivity(Intent(this,HistoryActivity::class.java))
-                R.id.tip ->startActivity(Intent(this,TipActivity::class.java))
-                R.id.subcribe ->startActivity(Intent(this,Setting::class.java))
+            R.id.settings -> startActivity(Intent(this, Setting::class.java))
+            R.id.history -> startActivity(Intent(this, HistoryActivity::class.java))
+            R.id.tip -> startActivity(Intent(this, TipActivity::class.java))
+            R.id.subcribe -> startActivity(Intent(this, Setting::class.java))
         }
         return true
     }
 
     override fun sendDataToSecondFragment() {
-
         try {
-            val frag = getSupportFragmentManager().findFragmentByTag("f" + 0);
-            val frag1 = getSupportFragmentManager().findFragmentByTag("f" + 1);
-            (frag!!.childFragmentManager.findFragmentById(R.id.signal) as FragmentSignal).onStrengthGPSDataReceived(
-                0,
-                0
-            )
-            (frag1!!.childFragmentManager.findFragmentById(R.id.signal) as FragmentSignal).onStrengthGPSDataReceived(
-                0,
-                0
-            )
-        } catch (_: java.lang.Exception) {
+            val frag = supportFragmentManager.findFragmentByTag("f0") as? FragmentSignal
+            val frag1 = supportFragmentManager.findFragmentByTag("f1") as? FragmentSignal
+
+            frag?.onStrengthGPSDataReceived(0, 0)
+            frag1?.onStrengthGPSDataReceived(0, 0)
+        } catch (_: Exception) {
         }
+
     }
 }

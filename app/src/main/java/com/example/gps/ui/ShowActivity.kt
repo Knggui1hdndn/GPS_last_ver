@@ -232,7 +232,6 @@ class ShowActivity : AppCompatActivity() {
 
     private fun openScreenshot(imageFile: File) {
         val contentUri: Uri = FileProvider.getUriForFile(this, "com.example.gps", imageFile)
-
         val sharingIntent = Intent(Intent.ACTION_SEND)
         sharingIntent.type = "image/*"
         sharingIntent.putExtra(Intent.EXTRA_STREAM, contentUri)

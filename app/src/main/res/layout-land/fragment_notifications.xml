@@ -25,8 +25,7 @@
             android:layout_gravity="start|bottom"
             android:layout_marginStart="20dp"
             android:layout_marginBottom="10dp"
-            android:src="@drawable/current_speed"
-            />
+            android:background ="@drawable/current_position" />
 
         <ImageView
             android:id="@+id/imgTypeMap"
@@ -34,7 +33,7 @@
             android:layout_height="40dp"
             android:layout_gravity="center_horizontal|bottom"
             android:layout_marginBottom="10dp"
-            android:src="@drawable/change_typy_map" />
+            android:background ="@drawable/change_typy_map" />
 
         <ImageView
             android:id="@+id/imgRotate"
@@ -43,7 +42,7 @@
             android:layout_gravity="end|bottom"
             android:layout_marginBottom="10dp"
             android:layout_marginEnd="20dp"
-            android:src="@drawable/rotate_screen_from_map" />
+            android:background ="@drawable/rotate_screen_from_map" />
     </FrameLayout>
 
     <RelativeLayout

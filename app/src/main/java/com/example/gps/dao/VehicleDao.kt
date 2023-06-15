@@ -1,6 +1,7 @@
 package com.example.gps.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Update
 import com.example.gps.model.Vehicle
@@ -27,6 +28,9 @@ interface VehicleDao {
 
     @Query("SELECT * FROM Vehicle  ")
     fun getAllVehicle(): MutableList<Vehicle>
+
+    @Query("DELETE FROM Vehicle")
+    fun deleteAll()
 
     @Query("INSERT INTO Vehicle (clockSpeed, limitWarning,type,isChecked ) VALUES (:clockSpeed, :limitWarning,  :type,:isChecked)")
     fun insertVehicle(

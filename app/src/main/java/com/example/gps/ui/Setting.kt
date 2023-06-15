@@ -8,6 +8,7 @@ import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
@@ -20,6 +21,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import com.example.gp.NotificationsFragment
 import com.example.gps.R
 import com.example.gps.constants.MyLocationConstants
 import com.example.gps.constants.SettingConstants
@@ -62,8 +64,12 @@ class Setting : AppCompatActivity() {
     private var colorPosition = 1
     private var checkUnitClick = 0
     private var checkVehicleClick = 0
-    private lateinit var mainActivity2: MainActivity2
     private lateinit var myDataBase: MyDataBase
+
+    val fragmentManager = (SharedData.activity as MainActivity2).supportFragmentManager
+    private lateinit var notificationsFragment: NotificationsFragment
+    private lateinit var homeFragment: HomeFragment
+    private lateinit var dashboardFragment: DashboardFragment
 
 
     var color = Color.BLACK
@@ -75,9 +81,16 @@ class Setting : AppCompatActivity() {
         binding = ActivitySettingBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initView()
-        if (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES) {
+        try {
+            homeFragment = fragmentManager.findFragmentByTag("f0") as HomeFragment
+            dashboardFragment = fragmentManager.findFragmentByTag("f1") as DashboardFragment
+            notificationsFragment = fragmentManager.findFragmentByTag("f2") as NotificationsFragment
+        } catch (e: java.lang.Exception) {
+        }
+        if (!ColorUtils.isThemeDark()) {
             btnResetDistance.iconTint = ColorStateList.valueOf(Color.BLACK)
             color = Color.WHITE
+            binding.mToolBar.setTitleTextColor(Color.BLACK)
         } else {
             binding.mToolBar.setTitleTextColor(Color.WHITE)
         }
@@ -88,9 +101,8 @@ class Setting : AppCompatActivity() {
         myDataBase = MyDataBase.getInstance(this)
         vehicleDao = myDataBase.vehicleDao()
         colorPosition = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, 0)
-        mainActivity2 = getActivity(SharedData.activity) as MainActivity2
 
-        edtWarningLimit.setOnKeyListener(object : DialogInterface.OnKeyListener,
+         edtWarningLimit.setOnKeyListener(object : DialogInterface.OnKeyListener,
             View.OnKeyListener {
             override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
                 if (event != null) {
@@ -117,9 +129,7 @@ class Setting : AppCompatActivity() {
             override fun onKey(dialog: DialogInterface?, keyCode: Int, event: KeyEvent?): Boolean {
                 return false
             }
-
-        }
-        )
+        })
 
         distance = getSharedPreferences("state", Service.MODE_PRIVATE).getInt(
             MyLocationConstants.DISTANCE,
@@ -127,7 +137,7 @@ class Setting : AppCompatActivity() {
         )
         setBackgroundALL()
         swtAlarm.setOnCheckedChangeListener { _, isChecked ->
-            saveSettingBoolean(SettingConstants.SPEED_ALARM, isChecked)
+            saveSettingBoolean(SettingConstants.SPEED_ALARM, isChecked, swtAlarm)
         }
 
         swtShowReset.setOnCheckedChangeListener { _, isChecked ->
@@ -139,12 +149,12 @@ class Setting : AppCompatActivity() {
         }
 
         swtTrackOnMap.setOnCheckedChangeListener { _, isChecked ->
-            saveSettingBoolean(SettingConstants.TRACK_ON_MAP, isChecked)
+            saveSettingBoolean(SettingConstants.TRACK_ON_MAP, isChecked, swtTrackOnMap)
             toggleTrackOnMap()
         }
 
         swtShowSpeedInNoti.setOnCheckedChangeListener { _, isChecked ->
-            saveSettingBoolean(SettingConstants.DISPLAY_SPEED, isChecked)
+            saveSettingBoolean(SettingConstants.DISPLAY_SPEED, isChecked, swtShowSpeedInNoti)
         }
 
 
@@ -186,29 +196,48 @@ class Setting : AppCompatActivity() {
         btnKnot.setOnClickListener {
             updateSpeedUnit("knot", "nm")
         }
+        when(sharedPreferences.getBoolean(SettingConstants.THEME,true)){
+            true->binding.night.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+            false->binding.dark.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+
+        }
+
         with(binding) {
             dark.setOnClickListener {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                sharedPreferences.edit().putBoolean(SettingConstants.THEME,false).apply()
+                dark.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+                night.setBackgroundColor(color)
+
             }
             night.setOnClickListener {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                sharedPreferences.edit().putBoolean(SettingConstants.THEME,true).apply()
+                night.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+                dark.setBackgroundColor(color)
+
             }
             btnAnalog.setOnClickListener {
                 removeBackGroundViewMode()
                 btnAnalog.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+                sharedPreferences.edit().putInt(SettingConstants.ViEW_MODE,1).apply()
+
             }
             btnMap.setOnClickListener {
                 removeBackGroundViewMode()
                 btnMap.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+                sharedPreferences.edit().putInt(SettingConstants.ViEW_MODE,3).apply()
+
             }
             btnDigital.setOnClickListener {
                 removeBackGroundViewMode()
                 btnDigital.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+                sharedPreferences.edit().putInt(SettingConstants.ViEW_MODE,2).apply()
+
             }
         }
         onClickBtnColor(btnColor2, btnColor3, btnColor4, btnColor5, btnColor6, btnColor7)
-        removeBackGroundViewMode()
-    }
+     }
 
     private fun removeBackGroundViewMode() {
         with(binding) {
@@ -219,18 +248,23 @@ class Setting : AppCompatActivity() {
     }
 
     private fun toggleShowReset() {
-        saveSettingBoolean(SettingConstants.SHOW_RESET_BUTTON, swtShowReset.isChecked)
+        saveSettingBoolean(SettingConstants.SHOW_RESET_BUTTON, swtShowReset.isChecked, swtShowReset)
 
     }
 
     private fun toggleClockVisibilityLandscape() {
-        saveSettingBoolean(SettingConstants.CLOCK_DISPLAY, swtClockDisplay.isChecked)
-//        parameterFragment.toggleClockVisibilityLandscape(swtClockDisplay.isChecked)
-
-
+        saveSettingBoolean(
+            SettingConstants.CLOCK_DISPLAY,
+            swtClockDisplay.isChecked,
+            swtClockDisplay
+        )
     }
 
-    private fun saveSettingBoolean(key: String, value: Boolean) {
+    private fun saveSettingBoolean(key: String, value: Boolean, sw: Switch) {
+        sw.trackTintList =
+            if (sw.isChecked) ColorStateList.valueOf(ColorUtils.checkColor(colorPosition)) else ColorStateList.valueOf(
+                Color.GRAY
+            )
         sharedPreferences.edit().putBoolean(key, value).apply()
     }
 
@@ -253,6 +287,7 @@ class Setting : AppCompatActivity() {
         registerReceiverUnitFromFragmentM2()
         removeBackgroundButtonUnit()
         setBackGroundButtonUnitClick()
+        setBackGroundButtonViewMode()
     }
 
     private fun setBackGroundButtonUnitClick() {
@@ -266,6 +301,23 @@ class Setting : AppCompatActivity() {
 
             "knot" -> {
                 btnKnot.setBackgroundColor(ColorUtils.checkColor(colorPosition));
+            }
+        }
+    }
+
+    private fun setBackGroundButtonViewMode() {
+        val i = sharedPreferences.getInt(SettingConstants.ViEW_MODE, 0)
+         when (i) {
+            1 -> {
+                binding.btnAnalog.setBackgroundColor(ColorUtils.checkColor(colorPosition));
+            }
+
+            2 -> {
+                binding.btnDigital.setBackgroundColor(ColorUtils.checkColor(colorPosition));
+            }
+
+            3 -> {
+                binding.btnMap.setBackgroundColor(ColorUtils.checkColor(colorPosition));
             }
         }
     }
@@ -298,57 +350,9 @@ class Setting : AppCompatActivity() {
 
     }
 
-    private fun registerReceiverColorFromFragmentM2() {
-//        when (childFragment) {
-//            is HomeFragment -> {
-//                if (homeFragment == null) homeFragment = childFragment as HomeFragment
-//                homeFragment!!.onColorChange(colorPosition)
-//            }
-//
-//            is DashboardFragment -> {
-//                if (dashboardFragment == null) dashboardFragment =
-//                    childFragment as DashboardFragment
-////                dashboardFragment!!.onColorChange(colorPosition)
-//            }
-//
-//            is NotificationsFragment -> {
-//                if (notificationsFragment == null) notificationsFragment =
-//                    childFragment as NotificationsFragment
-//
-//            }
-//        }
-    }
 
     private fun toggleTrackOnMap() {
-
-    }
-
-    private fun getDialogWarningLimit(): Dialog {
-        val txtUrl = EditText(this)
-        txtUrl.inputType = EditorInfo.TYPE_CLASS_NUMBER
-        return AlertDialog.Builder(this).setView(txtUrl)
-            .setPositiveButton(
-                "Đông ý"
-            ) { dialog, whichButton ->
-                try {
-                    val url = txtUrl.text.toString()
-                    if (url.toInt() >= 0 && url.isNotEmpty()) {
-                        myDataBase.vehicleDao().updateWarning(url.toInt())
-                        edtWarningLimit.setText(url)
-                    }
-                } catch (e: Exception) {
-                    Toast.makeText(this, "Tốc độ không để trống", Toast.LENGTH_SHORT).show()
-                }
-
-                dialog.cancel()
-            }
-            .setNegativeButton(
-                "Hủy bỏ"
-            ) { dialog, whichButton ->
-                dialog.cancel()
-            }.setMessage("Nhập giới hạn tốc độ")
-            .create()
-
+        if (this::notificationsFragment.isInitialized) notificationsFragment.clearMap(swtTrackOnMap.isChecked)
     }
 
     private fun getDialogSpeedAnalog(): AlertDialog.Builder {
@@ -408,7 +412,7 @@ class Setting : AppCompatActivity() {
         setSpecifications()
         setBackGroundButtonUnitClick()
         setBackGroundButtonVehicleClick()
-
+        setBackGroundButtonViewMode()
 
     }
 
@@ -463,10 +467,10 @@ class Setting : AppCompatActivity() {
 
                 }
                 SharedData.color.value = colorPosition
-                registerReceiverColorFromFragmentM2()
                 saveColorChecked()
                 removeBackgroundButtonUnit()
                 removeBackgroundButtonVehicle()
+                removeBackGroundViewMode()
                 setBackgroundALL()
 
             }
@@ -486,7 +490,10 @@ class Setting : AppCompatActivity() {
         constants: String
     ) {
         sw.isChecked = sharedPreferences.getBoolean(constants, false)
-        sw.trackTintList = ColorStateList.valueOf(ColorUtils.checkColor(colorPosition))
+        sw.trackTintList =
+            if (sw.isChecked) ColorStateList.valueOf(ColorUtils.checkColor(colorPosition)) else ColorStateList.valueOf(
+                Color.GRAY
+            )
     }
 
     private fun initView() {

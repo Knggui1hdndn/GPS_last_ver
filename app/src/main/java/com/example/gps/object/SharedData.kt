@@ -11,7 +11,7 @@ object SharedData {
     val averageSpeedLiveData = MutableLiveData(0.0)
     val maxSpeedLiveData = MutableLiveData(0.0)
     val currentSpeedLiveData = MutableLiveData(hashMapOf(0.0 to 0L))
-    val distanceLiveData = MutableLiveData (0.0)
+    val distanceLiveData = MutableLiveData(0.0)
     val locationLiveData = MutableLiveData<Location>()
     val speedAnalog = MutableLiveData<Int>()
     val color = MutableLiveData<Int>()
@@ -34,7 +34,7 @@ object SharedData {
             "knot" to 0.868976, "km/h" to 1.60934, "mph" to 1.0
         )
 
-        )
+    )
     private val conversionRatesDistance = mapOf(
         "mi" to mapOf(
             "mi" to 1.0,
@@ -55,28 +55,17 @@ object SharedData {
 
 
     // Hàm chuyển đổi vận tốc
-    fun convertSpeed(speed: Double ): Double {
-        try {
-            var sp = speed * conversionRates[fromUnit]!![toUnit]!!
-             return sp
-        } catch (e: Exception) {
-            Log.d("convertSpeed","$fromUnit $toUnit  ")
+    fun convertSpeed(speed: Double): Double {
+        var sp = speed * conversionRates[fromUnit]!![toUnit]!!
+        return sp
 
-        }
-
-        return 0.0
     }
-    fun convertDistance(distance:Double ): Double {
-        try {
-            val sp :Double= distance * conversionRatesDistance[fromUnitDistance]!![toUnitDistance]!!
-            Log.d("convertDistance","$fromUnitDistance $toUnitDistance $distance ${conversionRatesDistance["km"]!![toUnitDistance]!!}   $sp")
-            return sp
-        } catch (e: Exception) {
-            Log.d("convertDistance","${e.message.toString()}")
 
-        }
-        return 0.0
+    fun convertDistance(distance: Double): Double {
+        val sp: Double = distance * conversionRatesDistance[fromUnitDistance]!![toUnitDistance]!!
+        return sp
     }
+
     var activity: Activity? = null
 
 }

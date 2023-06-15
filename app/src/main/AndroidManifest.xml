@@ -31,19 +31,23 @@
         android:appCategory="audio"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
+        android:hardwareAccelerated="true"
         android:icon="@drawable/logo"
         android:label="GPS Speedometer"
         android:requestLegacyExternalStorage="true"
-        android:hardwareAccelerated="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GPS"
         tools:targetApi="31">
         <activity
+            android:name=".ui.MoreTipActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.ShowWebActitvity"
+            android:exported="false" />
+        <activity
             android:name=".ui.TipActivity"
-            android:exported="true" >
-
-        </activity>
+            android:exported="true" />
 
         <meta-data
             android:name="com.google.android.gms.car.application"
@@ -71,9 +75,7 @@
         <activity
             android:name=".ui.SettingOptionsActivitys"
             android:exported="true"
-            tools:ignore="DuplicateActivity">
-
-        </activity>
+            tools:ignore="DuplicateActivity" />
         <activity
             android:name=".ui.Setting"
             android:exported="false" />
@@ -81,13 +83,7 @@
             android:name=".ui.MainActivity2"
             android:exported="true"
             android:label="ODOMETER"
-            android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:launchMode="singleTop" />
         <activity
             android:name=".ui.ShowActivity"
             android:exported="false" />
@@ -104,12 +100,19 @@
             android:enabled="true"
             android:exported="false" />
 
-        <activity android:name=".ui.HistoryActivity" />
+        <activity android:name=".ui.HistoryActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.SplashActivity"
-            android:exported="true" />
+            android:exported="true">
 
-
+        </activity>
     </application>
 
 </manifest>
