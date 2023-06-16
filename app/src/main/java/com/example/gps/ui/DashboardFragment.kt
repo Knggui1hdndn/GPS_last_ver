@@ -33,18 +33,21 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), MeasurementInte
     @SuppressLint("SetTextI18n", "SuspiciousIndentation")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentDashboardBinding.bind(view)
-        check =  requireActivity().resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
-        sharedPreferencesStates = requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
-        sharedPreferences = requireActivity().getSharedPreferences(SettingConstants.SETTING, Service.MODE_PRIVATE)
-         val measurement = MeasurementPresenter(this, this)
-        measurement.onColorChange()
-        measurement.onTimeChange()
-        measurement.onCurrentSpeedChange()
+        check =
+            requireActivity().resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
+        sharedPreferencesStates =
+            requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
+        sharedPreferences =
+            requireActivity().getSharedPreferences(SettingConstants.SETTING, Service.MODE_PRIVATE)
+        val measurement = MeasurementPresenter(this, this)
+        measurement.colorChange()
+        measurement.timeChange()
+        measurement.currentSpeedChange()
         measurement.setVisibilityTime()
         binding.imgRotate?.setOnClickListener {
             requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
-         if (check) FontUtils.setFont(requireContext(), binding.time)
+        if (check) FontUtils.setFont(requireContext(), binding.time)
         FontUtils.setFont(requireContext(), binding.txtSpeed, binding.txtUnit)
     }
 
@@ -68,7 +71,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), MeasurementInte
             if (check) {
                 time?.setTextColor(if (ColorUtils.isThemeDark()) Color.BLACK else Color.WHITE)
                 time?.backgroundTintList = ColorStateList.valueOf(ColorUtils.checkColor(int))
-             }
+            }
             txtSpeed.setTextColor(ColorUtils.checkColor(int))
             txtUnit?.setTextColor(ColorUtils.checkColor(int))
 

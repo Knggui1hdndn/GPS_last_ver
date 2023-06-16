@@ -45,9 +45,9 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
         presenter = NotificationPresenter(this, mapFragment!!)
         presenter.setUpMap()
         val measurement = MeasurementPresenter(this, this)
-        measurement.onColorChange()
-        measurement.onTimeChange()
-        measurement.onCurrentSpeedChange()
+        measurement.colorChange()
+        measurement.timeChange()
+        measurement.currentSpeedChange()
         measurement.setVisibilityTime()
 
         with(binding) {

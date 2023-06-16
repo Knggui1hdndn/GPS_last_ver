@@ -40,9 +40,9 @@ class HomeFragment : Fragment(R.layout.fragment_home), MeasurementInterFace.View
         binding.speed.backgroundCircleColor = backgroundColor
         textColor = if (!isNightMode) Color.BLACK else Color.WHITE
         val measurement = MeasurementPresenter(this, this)
-        measurement.onColorChange()
-        measurement.onTimeChange()
-        measurement.onCurrentSpeedChange()
+        measurement.colorChange()
+        measurement.timeChange()
+        measurement.currentSpeedChange()
         measurement.setVisibilityTime()
         with(binding) {
             imgRotate?.setOnClickListener {

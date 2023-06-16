@@ -12,7 +12,52 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         app:title="Lịch sử di chuyển"
-        app:titleTextColor="@color/white" />
+        app:titleTextColor="@color/white">
+
+        <RelativeLayout
+            android:layout_width="200dp"
+            android:layout_gravity="end"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:id="@+id/mLinear"
+                android:visibility="gone"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:gravity="center">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAll"
+                    android:layout_width="60dp"
+                    android:gravity="center"
+                    android:layout_height="35dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/background_button_light"
+                    android:text="All"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    app:backgroundTint="@null"
+                    app:cornerRadius="20dp"
+
+                   />
+
+                <TextView
+                    android:id="@+id/delete"
+                    style="@style/BackgroundTintImg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/baseline_delete_outline_24" />
+            </LinearLayout>
+
+            <CheckBox
+                android:layout_alignParentRight="true"
+                android:id="@+id/checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+
+    </androidx.appcompat.widget.Toolbar>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcy"

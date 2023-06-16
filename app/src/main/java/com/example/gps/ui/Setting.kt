@@ -197,10 +197,10 @@ class Setting : AppCompatActivity(),SettingInterface.View {
         btnKnot.setOnClickListener {
             updateSpeedUnit("knot", "nm")
         }
+
         when(sharedPreferences.getBoolean(SettingConstants.THEME,true)){
             true->binding.night.setBackgroundColor(ColorUtils.checkColor(colorPosition))
             false->binding.dark.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-
         }
 
         with(binding) {
@@ -219,19 +219,19 @@ class Setting : AppCompatActivity(),SettingInterface.View {
 
             }
             btnAnalog.setOnClickListener {
-                removeBackGroundViewMode()
+
                 btnAnalog.setBackgroundColor(ColorUtils.checkColor(colorPosition))
                 sharedPreferences.edit().putInt(SettingConstants.ViEW_MODE,1).apply()
 
             }
             btnMap.setOnClickListener {
-                removeBackGroundViewMode()
+
                 btnMap.setBackgroundColor(ColorUtils.checkColor(colorPosition))
                 sharedPreferences.edit().putInt(SettingConstants.ViEW_MODE,3).apply()
 
             }
             btnDigital.setOnClickListener {
-                removeBackGroundViewMode()
+
                 btnDigital.setBackgroundColor(ColorUtils.checkColor(colorPosition))
                 sharedPreferences.edit().putInt(SettingConstants.ViEW_MODE,2).apply()
 
@@ -267,7 +267,7 @@ class Setting : AppCompatActivity(),SettingInterface.View {
         myDataBase.vehicleDao().updateVehicle(checkVehicleClick)
         this.checkVehicleClick = checkVehicleClick
         setSpecifications()
-        removeBackgroundButtonVehicle()
+
         setBackGroundButtonVehicleClick()
         registerReceiverUnitFromFragmentM2()
     }
@@ -279,7 +279,7 @@ class Setting : AppCompatActivity(),SettingInterface.View {
         SharedData.toUnitDistance = distanceUnit
         SharedData.toUnit = speedUnit
         registerReceiverUnitFromFragmentM2()
-        removeBackgroundButtonUnit()
+
         setBackGroundButtonUnitClick()
         setBackGroundButtonViewMode()
     }

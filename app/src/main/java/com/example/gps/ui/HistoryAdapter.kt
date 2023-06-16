@@ -2,34 +2,46 @@ package com.example.gps.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.location.Geocoder
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gps.databinding.ItemBinding
 import com.example.gps.model.MovementData
-import com.example.gps.utils.ColorUtils
-import com.example.gps.utils.TimeUtils
 import java.lang.Exception
 import java.util.Calendar
 import java.util.Locale
 
-class HistoryAdapter(private val i: Int) :
+interface sendHashMapChecked {
+    fun sendHashMapChecked(movementData: MovementData, isChecked: Boolean)
+}
+
+class HistoryAdapter(private val sendHashMapChecked: sendHashMapChecked) :
     RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder>() {
-    private var list: HashMap<MovementData,Boolean> = hashMapOf()
+    private var list: HashMap<MovementData, Boolean> = hashMapOf()
+    private var isShowCheck = false
 
     inner class HistoryViewHolder(private val binding: ItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
-        fun bind(movementData: MovementData) {
+        fun bind(movementData: MovementData, isChecked: Boolean) {
+
             with(binding) {
+                checkbox.setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean ->
+                    sendHashMapChecked.sendHashMapChecked(movementData, b)
+                    Log.d("òksdofkj",b.toString()+movementData.id.toString())
+                }
+                checkbox.isChecked = isChecked;
+                checkbox.visibility = if (isShowCheck) View.VISIBLE else View.GONE
+
                 binding.mLinear.setOnClickListener {
-                    val intent = Intent(it.context, ShowActivity::class.java)
-                    intent.putExtra("movementData", movementData)
-                    binding.root.context.startActivity(intent)
+//                    val intent = Intent(it.context, ShowActivity::class.java)
+//                    intent.putExtra("movementData", movementData)
+//                    binding.root.context.startActivity(intent)
                 }
 
                 val calendar = Calendar.getInstance()
@@ -39,35 +51,35 @@ class HistoryAdapter(private val i: Int) :
                             Calendar.YEAR
                         )
                     }"
-                txtMaxSpeed.text = movementData.maxSpeed.toString()
+                txtMaxSpeed.text = movementData.id.toString()
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    Geocoder(binding.root.context, Locale.getDefault()).getFromLocation(
-                        movementData.startLatitude,
-                        movementData.startLongitude,
-                        1
-                    ) { addresses ->
-                        val addressLine =
-                            if (addresses.size > 0 && addresses[0].getAddressLine(0).trim()
-                                    .isNotEmpty()
-                            ) {
-                                addresses[0].getAddressLine(0)
-                            } else {
-                                "__"
-                            }
-                        txtStart.text = addressLine
-                    }
-                } else {
-                    val address =
-                        getAddressLine(movementData.startLatitude, movementData.startLongitude)
-                    val addressLine = if (address != null && address.trim().isNotEmpty()) {
-                        address
-                    } else {
-                        "_ _"
-                    }
-
-                    txtStart.text = addressLine
-                }
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//                    Geocoder(binding.root.context, Locale.getDefault()).getFromLocation(
+//                        movementData.startLatitude,
+//                        movementData.startLongitude,
+//                        1
+//                    ) { addresses ->
+//                        val addressLine =
+//                            if (addresses.size > 0 && addresses[0].getAddressLine(0).trim()
+//                                    .isNotEmpty()
+//                            ) {
+//                                addresses[0].getAddressLine(0)
+//                            } else {
+//                                "__"
+//                            }
+//                        txtStart.text = addressLine
+//                    }
+//                } else {
+//                    val address =
+//                        getAddressLine(movementData.startLatitude, movementData.startLongitude)
+//                    val addressLine = if (address != null && address.trim().isNotEmpty()) {
+//                        address
+//                    } else {
+//                        "_ _"
+//                    }
+//
+//                    txtStart.text = addressLine
+//                }
             }
         }
 
@@ -89,7 +101,7 @@ class HistoryAdapter(private val i: Int) :
         }
     }
 
-    fun notifyDataSetChanged(map:HashMap<MovementData,Boolean>) {
+    fun notifyDataSetChanged(map: MutableMap<MovementData, Boolean>) {
         list.clear()
         list.putAll(map)
         notifyDataSetChanged()
@@ -103,7 +115,14 @@ class HistoryAdapter(private val i: Int) :
         return list.size
     }
 
+    fun setShowCheck() {
+        isShowCheck = !isShowCheck
+        notifyDataSetChanged()
+    }
+
+
     override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) {
-        holder.bind(list[p] )
+
+        holder.bind(list.keys.elementAt(position), list.values.elementAt(position))
     }
 }

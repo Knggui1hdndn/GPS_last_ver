@@ -120,7 +120,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
             (requireActivity() as MainActivity2).sendDataToSecondFragment()
             val notificationsFragment =
                 (requireActivity() as MainActivity2).supportFragmentManager.findFragmentByTag("f2")
-            if (notificationsFragment != null) (notificationsFragment as NotificationsFragment).clearMap(
+            if (notificationsFragment != null) (notificationsFragment as NotificationsFragment).onClearMap(
                 false
             )
 
