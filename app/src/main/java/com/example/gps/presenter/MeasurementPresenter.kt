@@ -16,19 +16,19 @@ class MeasurementPresenter(val view: MeasurementInterFace.View, val fragment: Fr
         view.onVisibilityTime(visibility)
     }
 
-    override fun onTimeChange() {
+    override fun timeChange() {
         SharedData.time.observe(fragment) {
             view.displayTimeChange(it)
         }
     }
 
-    override fun onColorChange() {
+    override fun colorChange() {
         SharedData.color.observe(fragment) {
             view.displayColorChange(it)
         }
     }
 
-    override fun onCurrentSpeedChange() {
+    override fun currentSpeedChange() {
         SharedData.currentSpeedLiveData.observe(fragment) {
             it[it.keys.first()]?.let { it1 ->
                 view.displayCurrentSpeedChange(

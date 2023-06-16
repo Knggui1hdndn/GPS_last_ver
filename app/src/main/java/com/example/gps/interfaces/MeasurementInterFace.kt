@@ -10,9 +10,9 @@ interface MeasurementInterFace {
 
     interface Presenter {
         fun setVisibilityTime()
-        fun onTimeChange()
-        fun onColorChange()
-        fun onCurrentSpeedChange()
+        fun timeChange()
+        fun colorChange()
+        fun currentSpeedChange()
 
     }
 }

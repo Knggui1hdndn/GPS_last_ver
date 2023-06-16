@@ -9,8 +9,8 @@ import java.util.function.BiPredicate
 interface MapInterface : MeasurementInterFace {
     interface View {
         fun setMap(googleMap: GoogleMap)
-        fun clearMap(boolean: Boolean)
-        fun showCurrentSpeed(string: String)
+        fun onClearMap(boolean: Boolean)
+        fun onShowCurrentSpeed(string: String)
         fun onMoveCamera()
         fun onCameraIdle()
     }

@@ -65,8 +65,8 @@ class MainActivity2 : AppCompatActivity(), onRecever {
         binding.toolbar.title = "ODOMETER"
         binding.toolbar.setTitleTextColor(color)
         setSupportActionBar(binding.toolbar)
-         sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
-         tabAdapter = TabAdapter(supportFragmentManager, lifecycle)
+        sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
+        tabAdapter = TabAdapter(supportFragmentManager, lifecycle)
         viewPager = binding.viewPager2
         viewPager.setPageTransformer { page, position ->
             if (position == 2F) {

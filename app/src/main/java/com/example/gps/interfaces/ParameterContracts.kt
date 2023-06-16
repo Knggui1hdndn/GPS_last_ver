@@ -2,19 +2,19 @@ package com.example.gps.interfaces
 
 interface ParameterContracts {
     interface View {
-        fun showMaxSpeed(string:String)
-        fun showDistance(string:String)
-        fun showAverageSpeed(string:String)
-        fun hideStart()
-        fun hideStop()
-        fun hideReset()
-        fun hideResume()
-        fun hidePause()
-        fun showStart()
-        fun showStop()
-        fun showReset()
-        fun showResume()
-        fun showPause()
+        fun onShowMaxSpeed(string:String)
+        fun onShowDistance(string:String)
+        fun onShowAverageSpeed(string:String)
+        fun onHideStart()
+        fun onHideStop()
+        fun onHideReset()
+        fun onHideResume()
+        fun onHidePause()
+        fun onShowStart()
+        fun onShowStop()
+        fun onShowReset()
+        fun onShowResume()
+        fun onShowPause()
     }
 
     interface Presenter {

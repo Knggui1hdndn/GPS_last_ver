@@ -52,7 +52,7 @@ class NotificationPresenter(val view: MapInterface.View, val smf: SupportMapFrag
     override fun getCurrentSpeed() {
         SharedData.currentSpeedLiveData.observe(smf) {
             val speed = it.keys.first()
-            view.showCurrentSpeed(
+            view.onShowCurrentSpeed(
                 if (speed <= 0) "0" + SharedData.toUnit else String.format(
                     "%.0f", SharedData.convertSpeed(speed)
                 ) + SharedData.toUnit

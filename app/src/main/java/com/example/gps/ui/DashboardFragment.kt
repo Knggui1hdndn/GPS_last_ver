@@ -28,20 +28,15 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), MeasurementInte
     private lateinit var binding: FragmentDashboardBinding
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var sharedPreferencesStates: SharedPreferences
-    private var allDistance: Int = 0
     private var check by Delegates.notNull<Boolean>()
 
     @SuppressLint("SetTextI18n", "SuspiciousIndentation")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentDashboardBinding.bind(view)
-        check =
-            requireActivity().resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
-        sharedPreferencesStates =
-            requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
-        sharedPreferences =
-            requireActivity().getSharedPreferences(SettingConstants.SETTING, Service.MODE_PRIVATE)
-        allDistance = sharedPreferencesStates.getInt(MyLocationConstants.DISTANCE, 0)
-        val measurement = MeasurementPresenter(this, this)
+        check =  requireActivity().resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
+        sharedPreferencesStates = requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
+        sharedPreferences = requireActivity().getSharedPreferences(SettingConstants.SETTING, Service.MODE_PRIVATE)
+         val measurement = MeasurementPresenter(this, this)
         measurement.onColorChange()
         measurement.onTimeChange()
         measurement.onCurrentSpeedChange()

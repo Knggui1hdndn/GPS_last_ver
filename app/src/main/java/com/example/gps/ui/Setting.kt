@@ -28,13 +28,14 @@ import com.example.gps.constants.SettingConstants
 import com.example.gps.dao.MyDataBase
 import com.example.gps.dao.VehicleDao
 import com.example.gps.databinding.ActivitySettingBinding
+import com.example.gps.interfaces.SettingInterface
 import com.example.gps.`object`.SharedData
 import com.example.gps.utils.ColorUtils
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.internal.ContextUtils.getActivity
 
 
-class Setting : AppCompatActivity() {
+class Setting : AppCompatActivity(),SettingInterface.View {
     private lateinit var binding: ActivitySettingBinding
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var btnMph: MaterialButton
@@ -239,13 +240,6 @@ class Setting : AppCompatActivity() {
         onClickBtnColor(btnColor2, btnColor3, btnColor4, btnColor5, btnColor6, btnColor7)
      }
 
-    private fun removeBackGroundViewMode() {
-        with(binding) {
-            btnAnalog.setBackgroundColor(color)
-            btnMap.setBackgroundColor(color)
-            btnDigital.setBackgroundColor(color)
-        }
-    }
 
     private fun toggleShowReset() {
         saveSettingBoolean(SettingConstants.SHOW_RESET_BUTTON, swtShowReset.isChecked, swtShowReset)
@@ -352,7 +346,7 @@ class Setting : AppCompatActivity() {
 
 
     private fun toggleTrackOnMap() {
-        if (this::notificationsFragment.isInitialized) notificationsFragment.clearMap(swtTrackOnMap.isChecked)
+        if (this::notificationsFragment.isInitialized) notificationsFragment.onClearMap(swtTrackOnMap.isChecked)
     }
 
     private fun getDialogSpeedAnalog(): AlertDialog.Builder {
@@ -397,12 +391,7 @@ class Setting : AppCompatActivity() {
     }
 
 
-    private fun removeBackgroundButtonVehicle() {
-        btnBicycle.setBackgroundColor(color)
-        btnOto.setBackgroundColor(color)
-        btnTrain.setBackgroundColor(color)
 
-    }
 
 
     private fun setBackgroundALL() {
@@ -416,12 +405,6 @@ class Setting : AppCompatActivity() {
 
     }
 
-    private fun removeBackgroundButtonUnit() {
-        btnKm.setBackgroundColor(color)
-        btnMph.setBackgroundColor(color)
-        btnKnot.setBackgroundColor(color)
-
-    }
 
 
     private fun setColorSwt() {
@@ -437,8 +420,6 @@ class Setting : AppCompatActivity() {
         btnColor.forEach {
             it.setOnClickListener {
                 when (it.id) {
-
-
                     R.id.btnColor2 -> {
                         colorPosition = 2
                     }
@@ -468,9 +449,8 @@ class Setting : AppCompatActivity() {
                 }
                 SharedData.color.value = colorPosition
                 saveColorChecked()
-                removeBackgroundButtonUnit()
-                removeBackgroundButtonVehicle()
-                removeBackGroundViewMode()
+
+
                 setBackgroundALL()
 
             }
@@ -522,5 +502,41 @@ class Setting : AppCompatActivity() {
             this@Setting.btnResetDistance = this.btnResetDistance
             this@Setting.btnMaxSpeepAnalog = this.btnMaxSpeepAnalog
         }
+    }
+
+    override fun onRemoveBackGroundVehicle() {
+        btnBicycle.setBackgroundColor(color)
+        btnOto.setBackgroundColor(color)
+        btnTrain.setBackgroundColor(color)
+    }
+
+    override fun onRemoveBackGroundUnit() {
+        btnKm.setBackgroundColor(color)
+        btnMph.setBackgroundColor(color)
+        btnKnot.setBackgroundColor(color)
+    }
+
+    override fun onRemoveBackGroundViewMode() {
+        with(binding) {
+            btnAnalog.setBackgroundColor(color)
+            btnMap.setBackgroundColor(color)
+            btnDigital.setBackgroundColor(color)
+        }
+    }
+
+    override fun onClickVehicle() {
+        
+    }
+
+    override fun onClickUnit() {
+        
+    }
+
+    override fun onClickViewMode() {
+        
+    }
+
+    override fun onColorChange() {
+        
     }
 }

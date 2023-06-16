@@ -40,13 +40,13 @@ import com.example.gps.utils.FontUtils
 import com.example.gps.utils.StringUtils
 import com.example.gps.utils.TimeUtils
 
-class ParameterFragment : Fragment(R.layout.fragment_parameter) ,
+class ParameterFragment : Fragment(R.layout.fragment_parameter),
     ParameterContracts.View {
     private lateinit var binding: FragmentParameterBinding
     private lateinit var presenter: ParameterPresenter
-    private var intColor: Int = 0
     private var check = false
     private var sharedPreferences: SharedPreferences? = null
+    @RequiresApi(Build.VERSION_CODES.Q)
     private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
             if (granted.entries.all { it.value }) {
@@ -60,6 +60,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) ,
             }
         }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     fun check() {
         resultLauncher.launch(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
     }
@@ -75,16 +76,16 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) ,
         presenter.getAverageSpeed()
         presenter.getMaxSpeed()
         SharedData.color.observe(viewLifecycleOwner) {
-            with(binding){
+            with(binding) {
                 txtDistance.setTextColor(ColorUtils.checkColor(it))
                 txtAvgSpeed.setTextColor(ColorUtils.checkColor(it))
                 txtMaxSpeed.setTextColor(ColorUtils.checkColor(it))
                 txtStartTime.setTextColor(ColorUtils.checkColor(it))
-                btnStart.backgroundTintList= ColorStateList.valueOf(ColorUtils.checkColor(it))
-                btnStop.backgroundTintList= ColorStateList.valueOf(ColorUtils.checkColor(it))
-                imgPause.imageTintList= ColorStateList.valueOf(ColorUtils.checkColor(it))
-                imgReset.imageTintList= ColorStateList.valueOf(ColorUtils.checkColor(it))
-                imgResume.imageTintList= ColorStateList.valueOf(ColorUtils.checkColor(it))
+                btnStart.backgroundTintList = ColorStateList.valueOf(ColorUtils.checkColor(it))
+                btnStop.backgroundTintList = ColorStateList.valueOf(ColorUtils.checkColor(it))
+                imgPause.imageTintList = ColorStateList.valueOf(ColorUtils.checkColor(it))
+                imgReset.imageTintList = ColorStateList.valueOf(ColorUtils.checkColor(it))
+                imgResume.imageTintList = ColorStateList.valueOf(ColorUtils.checkColor(it))
             }
         }
 
@@ -99,8 +100,9 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) ,
         SharedData.toUnitDistance = "km"
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun handleOrientationClickAll() {
-        binding.btnStart?.setOnClickListener {
+        binding.btnStart.setOnClickListener {
             if (!CheckPermission.hasLocationPermission(requireContext())) {
                 resultLauncher.launch(
                     arrayOf(
@@ -113,23 +115,26 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) ,
             }
 
         }
-        binding.btnStop?.setOnClickListener {
+        binding.btnStop.setOnClickListener {
             presenter.stopService()
             (requireActivity() as MainActivity2).sendDataToSecondFragment()
-            val notificationsFragment=(requireActivity() as MainActivity2).supportFragmentManager.findFragmentByTag("f2")
-            if(notificationsFragment!=null) (notificationsFragment as NotificationsFragment).clearMap(false)
+            val notificationsFragment =
+                (requireActivity() as MainActivity2).supportFragmentManager.findFragmentByTag("f2")
+            if (notificationsFragment != null) (notificationsFragment as NotificationsFragment).clearMap(
+                false
+            )
 
         }
-        binding.imgPause?.setOnClickListener {
+        binding.imgPause.setOnClickListener {
             presenter.pauseService()
         }
-        binding.imgResume?.setOnClickListener {
+        binding.imgResume.setOnClickListener {
             presenter.resumeService()
         }
-        binding.imgReset?.setOnClickListener {
+        binding.imgReset.setOnClickListener {
             presenter.stopService()
         }
-     }
+    }
 
     override fun onResume() {
         presenter.updateUIState()
@@ -139,11 +144,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) ,
 
     override fun onPause() {
         super.onPause()
-
         check = false
-        if (SharedData.checkService) {
-
-        }
     }
 
     private fun setFont() {
@@ -155,74 +156,68 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter) ,
     }
 
 
-
-
-
-
-    override fun showMaxSpeed(string: String) {
-        binding.txtMaxSpeed?.text = string
+    override fun onShowMaxSpeed(string: String) {
+        binding.txtMaxSpeed.text = string
         setFont()
     }
 
-    override fun showDistance(string: String) {
+    override fun onShowDistance(string: String) {
 
-        binding.txtDistance?.text = string
+        binding.txtDistance.text = string
         setFont()
     }
 
-    override fun showAverageSpeed(string: String) {
-        binding.txtAvgSpeed?.text = string
+    override fun onShowAverageSpeed(string: String) {
+        binding.txtAvgSpeed.text = string
         setFont()
     }
 
-    override fun hideStart() {
+    override fun onHideStart() {
         binding.btnStart.visibility = View.INVISIBLE
     }
 
-    override fun hideStop() {
+    override fun onHideStop() {
         binding.btnStop.visibility = View.INVISIBLE
 
     }
 
-    override fun hideReset() {
+    override fun onHideReset() {
         binding.imgReset.visibility = View.INVISIBLE
 
     }
 
-    override fun hideResume() {
+    override fun onHideResume() {
         binding.imgResume.visibility = View.INVISIBLE
 
     }
 
-    override fun hidePause() {
+    override fun onHidePause() {
         binding.imgPause.visibility = View.INVISIBLE
 
     }
 
-    override fun showStart() {
+    override fun onShowStart() {
         binding.btnStart.visibility = View.VISIBLE
 
     }
 
-    override fun showStop() {
+    override fun onShowStop() {
         binding.btnStop.visibility = View.VISIBLE
 
     }
 
-    override fun showReset() {
+    override fun onShowReset() {
         binding.imgReset.visibility = View.VISIBLE
 
     }
 
-    override fun showResume() {
+    override fun onShowResume() {
         binding.imgResume.visibility = View.VISIBLE
 
     }
 
-    override fun showPause() {
+    override fun onShowPause() {
         binding.imgPause.visibility = View.VISIBLE
 
     }
-
-
 }

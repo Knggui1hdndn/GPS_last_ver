@@ -62,22 +62,23 @@ class HistoryActivity : AppCompatActivity() {
             )
         )
 
-        val hashMap=mutableListMovementData.map {
+        val hashMap = mutableListMovementData.map {
             it to false
         }.toMap()
-        adapter.notifyDataSetChanged(hashMap)
+        adapter.notifyDataSetChanged(HashMap<MovementData, Boolean>(hashMap))
         val direction = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
         rcy.addItemDecoration(direction)
         rcy.layoutManager = mng
         rcy.adapter = adapter
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun getDialog(): Dialog {
         val mutableList = myDataBase.movementDao().getAllMovementData()
         return AlertDialog.Builder(this@HistoryActivity)
             .setPositiveButton(if (mutableList.size > 0) "Xóa" else "OK") { dialogInterface: DialogInterface, i: Int ->
                 myDataBase.movementDao().deleteAll()
-                adapter.notifyDataSetChanged(mutableListOf())
+                adapter.notifyDataSetChanged(HashMap<MovementData, Boolean>())
                 dialogInterface.dismiss()
             }
             .setNegativeButton("Đóng") { dialogInterface: DialogInterface, i: Int -> dialogInterface.dismiss() }
@@ -87,14 +88,11 @@ class HistoryActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        Log.d(
-            "NotifyDataSetChanged",
-            "onResume${mutableListMovementData.size}   ${
-                myDataBase.movementDao().getAllMovementData().size
-            }"
-        )
         if (mutableListMovementData.size != myDataBase.movementDao().getAllMovementData().size) {
-            adapter.notifyDataSetChanged(myDataBase.movementDao().getAllMovementData())
+            val hashMap = mutableListMovementData.map {
+                it to false
+            }.toMap()
+            adapter.notifyDataSetChanged(HashMap(hashMap))
             adapter.notifyDataSetChanged()
         }
     }
@@ -102,10 +100,8 @@ class HistoryActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.history_delete_all, menu)
-        menu!!.getItem(0).iconTintList =color
-
-
-            return true
+        menu!!.getItem(0).iconTintList = color
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -72,11 +72,11 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
         this.googleMap = googleMap
     }
 
-    override fun clearMap(boolean: Boolean) {
+    override fun onClearMap(boolean: Boolean) {
         if(boolean) presenter.checkShowPolyLine() else googleMap.clear()
     }
 
-    override fun showCurrentSpeed(string: String) {
+    override fun onShowCurrentSpeed(string: String) {
         binding!!.speed!!.text = string
     }
 

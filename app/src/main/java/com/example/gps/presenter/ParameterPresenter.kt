@@ -25,7 +25,7 @@ class ParameterPresenter(
 
     override fun getMaxSpeed() {
         SharedData.maxSpeedLiveData.observe(context.viewLifecycleOwner) {
-            view.showMaxSpeed(
+            view.onShowMaxSpeed(
                 if (it <= 0) "0" + SharedData.toUnit else String.format(
                     "%.0f",
                     SharedData.convertSpeed(it)
@@ -36,7 +36,7 @@ class ParameterPresenter(
 
     override fun getDistance() {
         SharedData.distanceLiveData.observe(context.viewLifecycleOwner) {
-            view.showDistance(
+            view.onShowDistance(
                 String.format(
                     "%.2f",
                     SharedData.convertDistance(it)
@@ -47,7 +47,7 @@ class ParameterPresenter(
 
     override fun getAverageSpeed() {
         SharedData.averageSpeedLiveData.observe(context.viewLifecycleOwner) {
-            view.showAverageSpeed(
+            view.onShowAverageSpeed(
                 if (it <= 0) "0" + SharedData.toUnit else String.format(
                     "%.0f",
                     SharedData.convertSpeed(it)
@@ -129,29 +129,29 @@ class ParameterPresenter(
     }
 
     private fun hidePause() {
-        view.hidePause()
-        view.showResume()
-        view.showReset()
+        view.onHidePause()
+        view.onShowResume()
+        view.onShowReset()
     }
 
     private fun hideResume() {
-        view.hideResume()
-        view.showPause()
+        view.onHideResume()
+        view.onShowPause()
     }
 
     private fun showStart() {
-        view.showStart()
-        view.hideStop()
-        view.hidePause()
-        view.hideResume()
-        view.hideReset()
+        view.onShowStart()
+        view.onHideStop()
+        view.onHidePause()
+        view.onHideResume()
+        view.onHideReset()
     }
 
     private fun hideStart() {
-        view.hideStart()
-        view.showStop()
-        view.showReset()
-        view.showPause()
+        view.onHideStart()
+        view.onShowStop()
+        view.onShowReset()
+        view.onShowPause()
     }
 
     override fun setState(state: String) {
