@@ -28,7 +28,7 @@
             app:sv_maxSpeed="280"
             app:sv_minSpeed="0"
             app:sv_speedTextPosition="CENTER"
-            app:sv_speedometerColor="@color/black"
+            app:sv_speedometerColor="@color/white"
             app:sv_speedometerMode="NORMAL"
             app:sv_trianglesColor="@color/black" />
     </FrameLayout>

@@ -64,8 +64,7 @@ class SettingOptionsActivitys : AppCompatActivity() {
                         sharedPreferences.edit().apply {
                             putString(SettingConstants.UNIT, unitClick)
                             putInt(SettingConstants.ViEW_MODE, viewModeClick)
-
-                            putInt(SettingConstants.COLOR_DISPLAY, 2)
+                            putInt(SettingConstants.COLOR_DISPLAY, 0)
                             putBoolean(SettingConstants.DISPLAY_SPEED, true)
                             putBoolean(SettingConstants.TRACK_ON_MAP, true)
                             putBoolean(SettingConstants.SHOW_RESET_BUTTON, true)
@@ -133,83 +132,51 @@ class SettingOptionsActivitys : AppCompatActivity() {
     }
 
     fun clickVehicle(vararg btn: MaterialButton) {
-        btn.forEach {
-            it.setOnClickListener {
+        btn.forEach { button ->
+            button.setOnClickListener {
                 setDefaultVehicle()
-                when (it.id) {
-                    R.id.btnBicycle -> {
-                        vehicleClick = 1
-                        setBackGroundBtnClick(binding.btnBicycle)
-                    }
-
-                    R.id.btnCar -> {
-                        vehicleClick = 3
-                        setBackGroundBtnClick(binding.btnCar)
-
-                    }
-
-                    R.id.btnMotorbike -> {
-                        vehicleClick = 2
-                        setBackGroundBtnClick(binding.btnMotorbike)
-
-                    }
+                vehicleClick = when (button.id) {
+                    R.id.btnBicycle -> 1
+                    R.id.btnMotorbike -> 2
+                    R.id.btnCar -> 3
+                    else -> 0
                 }
+                setBackGroundBtnClick(button)
             }
         }
     }
 
     fun clickUnit(vararg btn: MaterialButton) {
-
-        btn.forEach {
-            it.setOnClickListener {
+        btn.forEach { button ->
+            button.setOnClickListener {
                 setDefaultUnit()
-                when (it.id) {
-                    R.id.btnKm -> {
-                        unitClick = "km/h"
-                        setBackGroundBtnClick(binding.btnKm)
-                    }
-
-                    R.id.btnKnot -> {
-                        unitClick = "knot"
-                        setBackGroundBtnClick(binding.btnKnot)
-                    }
-
-                    R.id.btnMph -> {
-                        unitClick = "mph"
-                        setBackGroundBtnClick(binding.btnMph)
-                    }
+                unitClick = when (button.id) {
+                    R.id.btnKm -> "km/h"
+                    R.id.btnKnot -> "knot"
+                    R.id.btnMph -> "mph"
+                    else -> ""
                 }
-                binding.a.text=unitClick
+                setBackGroundBtnClick(button)
+                binding.a.text = unitClick
             }
         }
     }
 
     fun clickViewMode(vararg btn: MaterialButton) {
-        btn.forEach {
-            it.setOnClickListener {
+        btn.forEach { button ->
+            button.setOnClickListener {
                 setDefaultViewMode()
-                when (it.id) {
-                    R.id.btnAnalog -> {
-                        viewModeClick = 1
-                        setBackGroundBtnClick(binding.btnAnalog)
-
-                    }
-
-                    R.id.btnMap -> {
-                        viewModeClick = 3
-                        setBackGroundBtnClick(binding.btnMap)
-
-                    }
-
-                    R.id.btnDigital -> {
-                        viewModeClick = 2
-                        setBackGroundBtnClick(binding.btnDigital)
-
-                    }
+                viewModeClick = when (button.id) {
+                    R.id.btnAnalog -> 1
+                    R.id.btnDigital -> 2
+                    R.id.btnMap -> 3
+                    else -> 0
                 }
+                setBackGroundBtnClick(button)
             }
         }
     }
+
 
 
     fun setTextAndStrokeWidthColor(vararg btn: MaterialButton) {

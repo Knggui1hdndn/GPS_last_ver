@@ -17,7 +17,7 @@ import com.example.gps.R
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.ActivityMainBinding
 import com.example.gps.model.MovementData
-import java.util.Collections
+import java.util.stream.Stream
 
 class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
     private lateinit var adapter: HistoryAdapter
@@ -30,7 +30,7 @@ class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
     )
     private var isChecked = false
     private var itemChecked = mutableMapOf<MovementData, Boolean>()
-    val list = mutableMapOf<MovementData, Boolean>()
+    var list = mutableMapOf<MovementData, Boolean>()
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,31 +47,14 @@ class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
         myDataBase = MyDataBase.getInstance(this)
         val mng = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         mutableListMovementData = myDataBase.movementDao().getAllMovementData()
-        mutableListMovementData.reverse()
         adapter = HistoryAdapter(this)
-        for (i in 1..5) {
-            list.put(
-                MovementData(
-                    i,
-                    1231245,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0L
-                ), false
-            )
-        }
-
-        adapter.notifyDataSetChanged(list)
+        list=mutableListMovementData.map { it to false }.toMap().toMutableMap()
         val direction = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
         with(binding) {
             rcy.addItemDecoration(direction)
             rcy.layoutManager = mng
             rcy.adapter = adapter
+            adapter.notifyDataSetChanged(list)
             checkbox.setOnCheckedChangeListener { buttonView, isChecked ->
                 adapter.setShowCheck()
                 this@HistoryActivity.isChecked = isChecked
@@ -79,9 +62,7 @@ class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
                 mLinear.visibility = View.VISIBLE
             }
             delete.setOnClickListener {
-                if (itemChecked.size > 0) {
-                    getDialog().show()
-                }
+                getDialog().show()
             }
 
             var checkAll = true
@@ -102,6 +83,9 @@ class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
             .setPositiveButton(if (mutableList.size > 0) "Xóa" else "OK") { dialogInterface: DialogInterface, i: Int ->
                 list.keys.removeAll(itemChecked.keys)
                 adapter.notifyDataSetChanged(list)
+                itemChecked.keys.forEach{
+                    myDataBase.movementDao().delete(it)
+                }
                 dialogInterface.dismiss()
             }
             .setNegativeButton("Đóng") { dialogInterface: DialogInterface, i: Int -> dialogInterface.dismiss() }
@@ -127,8 +111,19 @@ class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
         return true
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onBackPressed() {
-        if (isChecked) adapter.setShowCheck() else finish()
+        if (isChecked) {
+            binding.checkbox.isChecked = false
+            isChecked = false;
+            binding.mLinear.visibility = View.GONE
+            binding.checkbox.visibility = View.VISIBLE
+            list.replaceAll { key, value ->
+                false
+            }
+            adapter.notifyDataSetChanged(list)
+
+        } else finish()
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -136,7 +131,6 @@ class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
         itemChecked.put(movementData, isChecked)
         list.put(movementData, isChecked)
         try {
-
             adapter.notifyDataSetChanged(list)
         } catch (e: Exception) {
         }

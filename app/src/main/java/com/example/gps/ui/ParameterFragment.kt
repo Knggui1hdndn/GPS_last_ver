@@ -46,11 +46,16 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
     private lateinit var presenter: ParameterPresenter
     private var check = false
     private var sharedPreferences: SharedPreferences? = null
+
     @RequiresApi(Build.VERSION_CODES.Q)
-    private var resultLauncher =
+    private val permissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
             if (granted.entries.all { it.value }) {
-                if (granted.get(Manifest.permission.ACCESS_BACKGROUND_LOCATION) == true) presenter.startService() else check()
+                if (granted[Manifest.permission.ACCESS_BACKGROUND_LOCATION] == true) {
+                    presenter.startService()
+                } else {
+                    checkBackgroundLocationPermission()
+                }
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -61,8 +66,8 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
         }
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun check() {
-        resultLauncher.launch(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+    private fun checkBackgroundLocationPermission() {
+        permissionsLauncher.launch(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -77,34 +82,33 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
         presenter.getMaxSpeed()
         SharedData.color.observe(viewLifecycleOwner) {
             with(binding) {
-                txtDistance.setTextColor(ColorUtils.checkColor(it))
-                txtAvgSpeed.setTextColor(ColorUtils.checkColor(it))
-                txtMaxSpeed.setTextColor(ColorUtils.checkColor(it))
-                txtStartTime.setTextColor(ColorUtils.checkColor(it))
-                btnStart.backgroundTintList = ColorStateList.valueOf(ColorUtils.checkColor(it))
-                btnStop.backgroundTintList = ColorStateList.valueOf(ColorUtils.checkColor(it))
-                imgPause.imageTintList = ColorStateList.valueOf(ColorUtils.checkColor(it))
-                imgReset.imageTintList = ColorStateList.valueOf(ColorUtils.checkColor(it))
-                imgResume.imageTintList = ColorStateList.valueOf(ColorUtils.checkColor(it))
+              if (it!=0){
+                  val colorStateList = ColorStateList.valueOf(ColorUtils.checkColor(it))
+                  txtDistance.setTextColor(colorStateList)
+                  txtAvgSpeed.setTextColor(colorStateList)
+                  txtMaxSpeed.setTextColor(colorStateList)
+                  txtStartTime.setTextColor(colorStateList)
+                  btnStart.backgroundTintList = colorStateList
+                  btnStop.backgroundTintList = colorStateList
+                  imgPause.imageTintList = colorStateList
+                  imgReset.imageTintList = colorStateList
+                  imgResume.imageTintList = colorStateList
+              }
+
             }
         }
-
-
-
         if (!presenter.isMyServiceRunning(MyService::class.java)) presenter.setState(
             MyLocationConstants.STOP
         );
-
         handleOrientationClickAll()
-        SharedData.toUnit = "km/h"
-        SharedData.toUnitDistance = "km"
+
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun handleOrientationClickAll() {
         binding.btnStart.setOnClickListener {
             if (!CheckPermission.hasLocationPermission(requireContext())) {
-                resultLauncher.launch(
+                permissionsLauncher.launch(
                     arrayOf(
                         Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -207,14 +211,20 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
     }
 
     override fun onShowReset() {
-        binding.imgReset.visibility = View.VISIBLE
+        binding.imgReset.visibility = SharedData.onShowResetButton.value!!
 
+    }
+
+    override fun onShowReset(int: Int) {
+        binding.imgReset.isEnabled = int == View.VISIBLE
+        binding.imgReset.visibility = int
     }
 
     override fun onShowResume() {
         binding.imgResume.visibility = View.VISIBLE
 
     }
+
 
     override fun onShowPause() {
         binding.imgPause.visibility = View.VISIBLE

@@ -23,7 +23,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.example.gps.R
 import com.example.gps.constants.SettingConstants
@@ -31,12 +33,14 @@ import com.example.gps.`object`.SharedData
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.ActivityMain2Binding
 import com.example.gps.interfaces.SignalInterface
+import com.example.gps.`object`.CheckPermission
 import com.example.gps.ui.adpater.TabAdapter
 import com.example.gps.utils.ColorUtils
 import com.google.android.material.tabs.TabLayoutMediator
 
 interface onRecever {
     fun sendDataToSecondFragment()
+
 }
 
 class MainActivity2 : AppCompatActivity(), onRecever {
@@ -57,7 +61,7 @@ class MainActivity2 : AppCompatActivity(), onRecever {
 
     }
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission", "ResourceType")
     private fun setUpActivity() {
         binding = ActivityMain2Binding.inflate(layoutInflater)
         SharedData.activity = this
@@ -72,6 +76,10 @@ class MainActivity2 : AppCompatActivity(), onRecever {
             if (position == 2F) {
                 binding.viewPager2.isUserInputEnabled = false
             }
+        }
+         SharedData.color.observe(this) {
+            binding.tabLayout.setTabTextColors(getColor(R.color.unchanged), getColor(getColorRes()))
+             binding.tabLayout.setSelectedTabIndicatorColor(getColor(getColorRes()))
         }
         binding.viewPager2.adapter = tabAdapter
         TabLayoutMediator(binding.tabLayout, viewPager) { tab, position ->
@@ -88,29 +96,24 @@ class MainActivity2 : AppCompatActivity(), onRecever {
     }
 
 
-    override fun onResume() {
-        super.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-    }
-
-    private fun getColorRes(): ColorStateList {
+    private fun getColorRes(): Int {
         val intColor = getSharedPreferences(
             SettingConstants.SETTING,
             Service.MODE_PRIVATE
-        ).getInt(SettingConstants.COLOR_DISPLAY, 2)
-        when (intColor) {
-            3 -> return getColorStateList(R.color.color1)
-            1 -> return getColorStateList(R.color.color2)
-            2 -> return getColorStateList(R.color.color3)
-            4 -> return getColorStateList(R.color.color4)
-            5 -> return getColorStateList(R.color.color5)
-            6 -> return getColorStateList(R.color.color6)
-            7 -> return getColorStateList(R.color.color7)
+        ).getInt(SettingConstants.COLOR_DISPLAY, 0)
+        Log.d("okoko", intColor.toString())
+        if (intColor==0){
+            val isNightMode=AppCompatDelegate.getDefaultNightMode()==AppCompatDelegate.MODE_NIGHT_YES
+            if (isNightMode) return R.color.white else return R.color.black
         }
-        return getColorStateList(R.color.color2)
+         when (intColor) {
+            2 -> return R.color.color_2
+            3 -> return R.color.color_3
+            4 -> return R.color.color_4
+            5 -> return R.color.color_5
+            6 -> return R.color.color_6
+        }
+        return R.color.color_2
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -136,11 +139,9 @@ class MainActivity2 : AppCompatActivity(), onRecever {
         try {
             val frag = supportFragmentManager.findFragmentByTag("f0") as? FragmentSignal
             val frag1 = supportFragmentManager.findFragmentByTag("f1") as? FragmentSignal
-
             frag?.onStrengthGPSDataReceived(0, 0)
             frag1?.onStrengthGPSDataReceived(0, 0)
         } catch (_: Exception) {
         }
-
     }
 }

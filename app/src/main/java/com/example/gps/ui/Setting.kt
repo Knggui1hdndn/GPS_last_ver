@@ -35,7 +35,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.internal.ContextUtils.getActivity
 
 
-class Setting : AppCompatActivity(),SettingInterface.View {
+class Setting : AppCompatActivity(), SettingInterface.View {
     private lateinit var binding: ActivitySettingBinding
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var btnMph: MaterialButton
@@ -103,7 +103,7 @@ class Setting : AppCompatActivity(),SettingInterface.View {
         vehicleDao = myDataBase.vehicleDao()
         colorPosition = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, 0)
 
-         edtWarningLimit.setOnKeyListener(object : DialogInterface.OnKeyListener,
+        edtWarningLimit.setOnKeyListener(object : DialogInterface.OnKeyListener,
             View.OnKeyListener {
             override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
                 if (event != null) {
@@ -147,6 +147,7 @@ class Setting : AppCompatActivity(),SettingInterface.View {
 
         swtClockDisplay.setOnCheckedChangeListener { _, isChecked ->
             toggleClockVisibilityLandscape()
+
         }
 
         swtTrackOnMap.setOnCheckedChangeListener { _, isChecked ->
@@ -177,68 +178,99 @@ class Setting : AppCompatActivity(),SettingInterface.View {
 
         btnOto.setOnClickListener {
             updateVehicle(1)
+            removeTextWhenColorPositionIs0(btnOto, "vehicle")
+
         }
 
         btnBicycle.setOnClickListener {
             updateVehicle(2)
+            removeTextWhenColorPositionIs0(btnBicycle, "vehicle")
+
         }
 
         btnTrain.setOnClickListener {
             updateVehicle(3)
+            removeTextWhenColorPositionIs0(btnTrain, "vehicle")
+
         }
 
         btnMph.setOnClickListener {
             updateSpeedUnit("mph", "mi")
+            removeTextWhenColorPositionIs0(btnMph, "unit")
+
         }
 
         btnKm.setOnClickListener {
             updateSpeedUnit("km/h", "km")
+            removeTextWhenColorPositionIs0(btnKm, "unit")
+
         }
         btnKnot.setOnClickListener {
             updateSpeedUnit("knot", "nm")
-        }
+            removeTextWhenColorPositionIs0(btnKnot, "unit")
 
-        when(sharedPreferences.getBoolean(SettingConstants.THEME,true)){
-            true->binding.night.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-            false->binding.dark.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+        }
+        when (sharedPreferences.getBoolean(SettingConstants.THEME, true)) {
+            true -> {
+                binding.light.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+                ;removeTextWhenColorPositionIs0(binding.light, "theme");
+            }
+
+            false -> {
+                binding.dark.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+                removeTextWhenColorPositionIs0(binding.dark, "theme");
+            }
+
         }
 
         with(binding) {
             dark.setOnClickListener {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                sharedPreferences.edit().putBoolean(SettingConstants.THEME,false).apply()
-                dark.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                night.setBackgroundColor(color)
-
+                setThemeClickListener(dark, false)
             }
-            night.setOnClickListener {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                sharedPreferences.edit().putBoolean(SettingConstants.THEME,true).apply()
-                night.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                dark.setBackgroundColor(color)
+            light.setOnClickListener {
+                setThemeClickListener(light, true)
 
             }
             btnAnalog.setOnClickListener {
-
-                btnAnalog.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                sharedPreferences.edit().putInt(SettingConstants.ViEW_MODE,1).apply()
+                setButtonViewModeClickListener(btnAnalog, 1)
 
             }
             btnMap.setOnClickListener {
-
-                btnMap.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                sharedPreferences.edit().putInt(SettingConstants.ViEW_MODE,3).apply()
+                setButtonViewModeClickListener(btnMap, 3)
 
             }
             btnDigital.setOnClickListener {
-
-                btnDigital.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                sharedPreferences.edit().putInt(SettingConstants.ViEW_MODE,2).apply()
+                setButtonViewModeClickListener(btnDigital, 2)
 
             }
         }
         onClickBtnColor(btnColor2, btnColor3, btnColor4, btnColor5, btnColor6, btnColor7)
-     }
+    }
+
+    fun setThemeClickListener(button: MaterialButton, theme: Boolean) {
+        //theme true là sáng
+
+            val nightMode = if ( theme) AppCompatDelegate.MODE_NIGHT_NO else AppCompatDelegate.MODE_NIGHT_YES
+            AppCompatDelegate.setDefaultNightMode(nightMode)
+            sharedPreferences.edit().putBoolean(SettingConstants.THEME, theme).apply()
+            button.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+            if (theme) {
+                binding.light.setBackgroundColor(color)
+            } else {
+                binding.dark.setBackgroundColor(color)
+            }
+            removeTextWhenColorPositionIs0(button, "theme")
+
+    }
+
+    fun setButtonViewModeClickListener(button: MaterialButton, viewMode: Int) {
+        button.setOnClickListener {
+            onRemoveBackGroundViewMode()
+            button.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+            sharedPreferences.edit().putInt(SettingConstants.ViEW_MODE, viewMode).apply()
+            removeTextWhenColorPositionIs0(button, "view_mode")
+        }
+    }
 
 
     private fun toggleShowReset() {
@@ -252,6 +284,7 @@ class Setting : AppCompatActivity(),SettingInterface.View {
             swtClockDisplay.isChecked,
             swtClockDisplay
         )
+        SharedData.onShowTime.value= if(!swtClockDisplay.isChecked) View.INVISIBLE else View.VISIBLE
     }
 
     private fun saveSettingBoolean(key: String, value: Boolean, sw: Switch) {
@@ -267,7 +300,7 @@ class Setting : AppCompatActivity(),SettingInterface.View {
         myDataBase.vehicleDao().updateVehicle(checkVehicleClick)
         this.checkVehicleClick = checkVehicleClick
         setSpecifications()
-
+        onRemoveBackGroundVehicle()
         setBackGroundButtonVehicleClick()
         registerReceiverUnitFromFragmentM2()
     }
@@ -279,58 +312,75 @@ class Setting : AppCompatActivity(),SettingInterface.View {
         SharedData.toUnitDistance = distanceUnit
         SharedData.toUnit = speedUnit
         registerReceiverUnitFromFragmentM2()
-
+        onRemoveBackGroundUnit()
         setBackGroundButtonUnitClick()
         setBackGroundButtonViewMode()
     }
+    private fun removeTextWhenColorPositionIs0(btnSetText: MaterialButton, type: String) {
+        val colorButtonClick = if (!ColorUtils.isThemeDark()) Color.WHITE else Color.BLACK
+        val colorButtonDefault = if (!ColorUtils.isThemeDark()) Color.BLACK else Color.WHITE
 
-    private fun setBackGroundButtonUnitClick() {
-        when (SharedData.toUnit) {
-            "km/h" -> {
-                btnKm.setBackgroundColor(ColorUtils.checkColor(colorPosition)); }
-
-            "mph" -> {
-                btnMph.setBackgroundColor(ColorUtils.checkColor(colorPosition));
+        if (colorPosition == 0) {
+            val buttons = when (type) {
+                "view_mode" -> listOf(binding.btnAnalog, binding.btnMap, binding.btnDigital)
+                "unit" -> listOf(binding.btnKm, binding.btnKnot, binding.btnMph)
+                "vehicle" -> listOf(binding.btnTrain, binding.btnBicycle, binding.btnOto)
+                else -> emptyList()
             }
 
-            "knot" -> {
-                btnKnot.setBackgroundColor(ColorUtils.checkColor(colorPosition));
-            }
+            buttons.forEach { it.setTextColor(colorButtonDefault) }
+            btnSetText.setTextColor(colorButtonClick)
         }
     }
 
+    private fun setBackGroundButtonUnitClick() {
+        val color = ColorUtils.checkColor(colorPosition)
+
+        btnKm.setBackgroundColor(
+            if (SharedData.toUnit == "km/h") {
+                removeTextWhenColorPositionIs0(binding.btnKm, "unit"); color
+            } else 0
+        )
+        btnMph.setBackgroundColor(
+            if (SharedData.toUnit == "mph") {
+                removeTextWhenColorPositionIs0(binding.btnMph, "unit"); color
+            } else 0
+        )
+        btnKnot.setBackgroundColor(
+            if (SharedData.toUnit == "knot") {
+                removeTextWhenColorPositionIs0(binding.btnKnot, "unit"); color
+            } else 0
+        )
+    }
+
     private fun setBackGroundButtonViewMode() {
-        val i = sharedPreferences.getInt(SettingConstants.ViEW_MODE, 0)
-         when (i) {
-            1 -> {
-                binding.btnAnalog.setBackgroundColor(ColorUtils.checkColor(colorPosition));
-            }
-
-            2 -> {
-                binding.btnDigital.setBackgroundColor(ColorUtils.checkColor(colorPosition));
-            }
-
-            3 -> {
-                binding.btnMap.setBackgroundColor(ColorUtils.checkColor(colorPosition));
-            }
+        val color = ColorUtils.checkColor(colorPosition)
+        val viewMode = sharedPreferences.getInt(SettingConstants.ViEW_MODE, 0)
+        with(binding) {
+            btnAnalog.setBackgroundColor(if (viewMode == 1) {
+                removeTextWhenColorPositionIs0(binding.btnAnalog, "view_mode"); color
+            } else 0)
+            btnDigital.setBackgroundColor(if (viewMode == 2) {
+                removeTextWhenColorPositionIs0(binding.btnDigital, "view_mode"); color
+            } else 0)
+            btnMap.setBackgroundColor(if (viewMode == 3)  {
+                removeTextWhenColorPositionIs0(binding.btnMap, "view_mode"); color
+            } else 0)
         }
     }
 
     private fun setBackGroundButtonVehicleClick() {
-
-        when (myDataBase.vehicleDao().getVehicleChecked().type) {
-            1 -> {
-                btnOto.setBackgroundColor(ColorUtils.checkColor(colorPosition));
-            }
-
-            2 -> {
-                btnBicycle.setBackgroundColor(ColorUtils.checkColor(colorPosition));
-            }
-
-            3 -> {
-                btnTrain.setBackgroundColor(ColorUtils.checkColor(colorPosition));
-            }
-        }
+        val color = ColorUtils.checkColor(colorPosition)
+        val vehicleType = myDataBase.vehicleDao().getVehicleChecked().type
+        btnOto.setBackgroundColor(if (vehicleType == 1) {
+            removeTextWhenColorPositionIs0(binding.btnOto, "vehicle"); color
+        }else 0)
+        btnBicycle.setBackgroundColor(if (vehicleType == 2) {
+            removeTextWhenColorPositionIs0(binding.btnBicycle, "vehicle"); color
+        } else 0)
+        btnTrain.setBackgroundColor(if (vehicleType == 3)  {
+            removeTextWhenColorPositionIs0(binding.btnTrain, "vehicle"); color
+        } else 0)
     }
 
 
@@ -346,7 +396,9 @@ class Setting : AppCompatActivity(),SettingInterface.View {
 
 
     private fun toggleTrackOnMap() {
-        if (this::notificationsFragment.isInitialized) notificationsFragment.onClearMap(swtTrackOnMap.isChecked)
+        if (this::notificationsFragment.isInitialized) notificationsFragment.onClearMap(
+            swtTrackOnMap.isChecked
+        )
     }
 
     private fun getDialogSpeedAnalog(): AlertDialog.Builder {
@@ -391,9 +443,6 @@ class Setting : AppCompatActivity(),SettingInterface.View {
     }
 
 
-
-
-
     private fun setBackgroundALL() {
         edtWarningLimit.setTextColor(ColorUtils.checkColor(colorPosition))
         btnMaxSpeepAnalog.setTextColor(ColorUtils.checkColor(colorPosition))
@@ -404,7 +453,6 @@ class Setting : AppCompatActivity(),SettingInterface.View {
         setBackGroundButtonViewMode()
 
     }
-
 
 
     private fun setColorSwt() {
@@ -419,43 +467,26 @@ class Setting : AppCompatActivity(),SettingInterface.View {
     private fun onClickBtnColor(vararg btnColor: MaterialButton) {
         btnColor.forEach {
             it.setOnClickListener {
-                when (it.id) {
-                    R.id.btnColor2 -> {
-                        colorPosition = 2
-                    }
-
-                    R.id.btnColor3 -> {
-                        colorPosition = 3
-                    }
-
-                    R.id.btnColor4 -> {
-                        colorPosition = 4
-                    }
-
-                    R.id.btnColor5 -> {
-                        colorPosition = 5
-                    }
-
-                    R.id.btnColor6 -> {
-                        colorPosition = 6
-
-                    }
-
-                    R.id.btnColor7 -> {
-                        colorPosition = 7
-
-                    }
-
-                }
+                colorPosition = getColorPosition(it.id)
                 SharedData.color.value = colorPosition
                 saveColorChecked()
-
-
                 setBackgroundALL()
-
             }
         }
     }
+
+    private fun getColorPosition(id: Int): Int {
+        return when (id) {
+            R.id.btnColor2 -> 2
+            R.id.btnColor3 -> 3
+            R.id.btnColor4 -> 4
+            R.id.btnColor5 -> 5
+            R.id.btnColor6 -> 6
+            R.id.btnColor7 -> 7
+            else -> 1
+        }
+    }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) finish()
@@ -525,18 +556,18 @@ class Setting : AppCompatActivity(),SettingInterface.View {
     }
 
     override fun onClickVehicle() {
-        
+
     }
 
     override fun onClickUnit() {
-        
+
     }
 
     override fun onClickViewMode() {
-        
+
     }
 
     override fun onColorChange() {
-        
+
     }
 }

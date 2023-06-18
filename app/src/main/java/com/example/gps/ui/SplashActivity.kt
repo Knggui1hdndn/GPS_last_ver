@@ -2,10 +2,12 @@ package com.example.gps.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
+import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.gps.MyApplication
@@ -31,6 +33,9 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
+
+    private lateinit var sharedPreferences:SharedPreferences
+
     @SuppressLint("MissingInflatedId")
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +43,22 @@ class SplashActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
         setUnitSpeedAndDistance()
         createTimer(3L)
+          sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
+        with(SharedData) {
+            onShowTime.value = if (sharedPreferences.getBoolean(
+                    SettingConstants.CLOCK_DISPLAY,
+                    true
+                )
+            ) View.VISIBLE else View.INVISIBLE
+            onShowResetButton.value = if (sharedPreferences.getBoolean(
+                    SettingConstants.SHOW_RESET_BUTTON,
+                    true
+                )
+            ) View.VISIBLE else View.INVISIBLE
+            color.value= sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY,0)
+            Log.d("okokodds",color.value.toString())
 
+        }
     }
 
 
@@ -74,7 +94,6 @@ class SplashActivity : AppCompatActivity() {
 
     /** Start the MainActivity. */
     fun startMainActivity() {
-        val sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         if (!sharedPreferences.getBoolean(SettingConstants.CHECK_OPEN, false)) {
             val intent = Intent(this, SettingOptionsActivitys::class.java)
             startActivity(intent)

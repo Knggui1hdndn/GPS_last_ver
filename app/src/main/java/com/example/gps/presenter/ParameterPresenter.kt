@@ -22,6 +22,11 @@ class ParameterPresenter(
     private var sharedPreferences: SharedPreferences =
         context.requireContext().getSharedPreferences("state", Service.MODE_PRIVATE)
     private var myDataBase: MyDataBase = MyDataBase.getInstance(context.requireContext())
+    override fun showReset() {
+         SharedData.onShowResetButton.observe(context.viewLifecycleOwner){
+             view.onShowReset(it)
+         }
+    }
 
     override fun getMaxSpeed() {
         SharedData.maxSpeedLiveData.observe(context.viewLifecycleOwner) {

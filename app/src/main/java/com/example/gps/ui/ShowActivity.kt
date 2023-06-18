@@ -16,6 +16,7 @@ import android.location.Geocoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
@@ -41,6 +42,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -66,8 +68,17 @@ class ShowActivity : AppCompatActivity() {
         val startLatLng = LatLng(mData2!!.startLatitude, mData2!!.startLongitude)
         val endLatLng = LatLng(mData2!!.endLatitude, mData2!!.endLongitude)
 
-        p0.moveCamera(CameraUpdateFactory.newLatLng(startLatLng))
-
+        val builder = LatLngBounds.Builder()
+        builder.include(startLatLng)
+        builder.include(endLatLng)
+        val bounds = builder.build()
+        val padding = 200
+        // Khoảng cách đệm giữa phạm vi hiển thị và biên của bản đồ (tùy chỉnh theo nhu cầu của bạn)
+        //  p0.moveCamera(CameraUpdateFactory.newLatLng(startLatLng))
+        p0.setOnMapLoadedCallback {
+            val cu = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+            p0.animateCamera(cu)
+        }
         p0.addMarker(
             MarkerOptions()
                 .position(startLatLng)
@@ -153,8 +164,8 @@ class ShowActivity : AppCompatActivity() {
         return ""
     }
 
-     @SuppressLint("NewApi")
-     private fun setupMyActivity() {
+    @SuppressLint("NewApi")
+    private fun setupMyActivity() {
         binding = ActivityShowBinding.inflate(layoutInflater)
         bottom = binding.bottom
         setContentView(binding.root)
@@ -194,7 +205,7 @@ class ShowActivity : AppCompatActivity() {
                 this@ShowActivity,
                 binding.mCoordinatorLayout
             )
-             snapShortMap {
+            snapShortMap {
                 bitmapScreen = drawImage(it, returnedBitmap!!)
                 img.setImageBitmap(bitmapScreen)
             }
@@ -328,7 +339,7 @@ class ShowActivity : AppCompatActivity() {
     }
 
     private fun getAddressLine(endLatitude: Double, endLongitude: Double): String? {
-        if (endLatitude==0.0 && endLongitude==0.0) return null
+        if (endLatitude == 0.0 && endLongitude == 0.0) return null
         return try {
             val geocoder = Geocoder(
                 this@ShowActivity,

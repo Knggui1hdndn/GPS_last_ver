@@ -16,6 +16,8 @@ object SharedData {
     val speedAnalog = MutableLiveData<Int>()
     val color = MutableLiveData<Int>()
     val time = MutableLiveData<Long>(0)
+    val onShowResetButton = MutableLiveData<Int>(0)
+    val onShowTime = MutableLiveData<Int>(0)
     var fromUnit = "km/h"
     var toUnit = ""
     var fromUnitDistance = "km"
