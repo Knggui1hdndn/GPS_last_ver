@@ -73,7 +73,9 @@ class HomeFragment : Fragment(R.layout.fragment_home), MeasurementInterFace.View
     override fun displayColorChange(int: Int) {
         binding.speed.speedTextColor = textColor
         binding.speed.textColor = textColor
-        binding.speed.trianglesColor = ColorUtils.checkColor(int)
+        if (int!=0){
+
+        }
         binding.speed.unitTextColor = ColorUtils.checkColor(int)
         binding.time?.setTextColor(if (ColorUtils.isThemeDark()) Color.BLACK else Color.WHITE)
         binding.time?.backgroundTintList = ColorStateList.valueOf(ColorUtils.checkColor(int))

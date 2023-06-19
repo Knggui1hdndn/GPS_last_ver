@@ -1,11 +1,15 @@
 package com.example.gps.ui
 
+import android.R.attr.button
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
-import com.example.gps.R
+import androidx.appcompat.app.AppCompatActivity
 import com.example.gps.constants.SettingConstants
 import com.example.gps.databinding.ActivityTipActvityBinding
+import com.example.gps.utils.ColorUtils
+
 
 class TipActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTipActvityBinding
@@ -14,28 +18,53 @@ class TipActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityTipActvityBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val sharedPreferences=getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
+        if (ColorUtils.isThemeDark()) binding.mToolBar.setTitleTextColor(Color.WHITE) else binding.mToolBar.setTitleTextColor(Color.BLACK)
         binding.btn1.setOnClickListener {
-            val intent=Intent(this,ShowWebActitvity::class.java)
-            intent.putExtra("link","https://www.youtube.com/watch?v=VOCuXMWyZyo&ab_channel=PiiMusic")
-            startActivity(intent)
-        }
-        binding.btn2.setOnClickListener {
+            startWebActivity("https://s1partscenter.com/blog/entries/on-the-road-why-are-odometers-so-important")
 
         }
-        binding.btn3.setOnClickListener {
+        binding.btn1.setPaintFlags( binding.btn1.paintFlags or Paint.UNDERLINE_TEXT_FLAG)
 
+        binding.btn2.apply {
+            setOnClickListener {
+                startWebActivity("https://mechanicbase.com/electric/odometer-reading/")
+            }
+            setPaintFlags(paintFlags or Paint.UNDERLINE_TEXT_FLAG)
         }
-        binding.btn4.setOnClickListener {
 
+        binding.btn3.apply {
+            setOnClickListener {
+                startWebActivity("https://www.nhtsa.gov/book/countermeasures/countermeasures/42-reduce-and-enforce-speed-limits")
+            }
+            setPaintFlags(paintFlags or Paint.UNDERLINE_TEXT_FLAG)
         }
+
+        binding.btn4.apply {
+            setOnClickListener {
+                startWebActivity("https://www.wikihow.com/Stop-Speeding")
+            }
+            setPaintFlags(paintFlags or Paint.UNDERLINE_TEXT_FLAG)
+        }
+
         binding.btnMoreTip.setOnClickListener {
-            sharedPreferences.edit().putBoolean(SettingConstants.CHECK_OPEN,true).apply()
-            startActivity(Intent(this,MainActivity2::class.java))
+            sharedPreferences.edit().putBoolean(SettingConstants.CHECK_OPEN, true).apply()
+            startActivity(Intent(this, MoreTipActivity::class.java))
+            finish()
         }
+
         binding.btnStartTrip.setOnClickListener {
-            sharedPreferences.edit().putBoolean(SettingConstants.CHECK_OPEN,true).apply()
-            startActivity(Intent(this,MainActivity2::class.java))
+            sharedPreferences.edit().putBoolean(SettingConstants.CHECK_OPEN, true).apply()
+            startActivity(Intent(this, MainActivity2::class.java))
+            finish()
+
         }
     }
+
+    private fun startWebActivity(link: String) {
+        val intent = Intent(this, ShowWebActitvity::class.java)
+        intent.putExtra("link", link)
+        startActivity(intent)
+    }
+
 }

@@ -17,7 +17,8 @@ import com.example.gps.R
 import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.ActivityMainBinding
 import com.example.gps.model.MovementData
-import java.util.stream.Stream
+import com.example.gps.ui.adpater.HistoryAdapter
+import com.example.gps.ui.adpater.sendHashMapChecked
 
 class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
     private lateinit var adapter: HistoryAdapter
@@ -79,8 +80,8 @@ class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
     @SuppressLint("NotifyDataSetChanged")
     private fun getDialog(): Dialog {
         val mutableList = myDataBase.movementDao().getAllMovementData()
-        return AlertDialog.Builder(this@HistoryActivity)
-            .setPositiveButton(if (mutableList.size > 0) "Xóa" else "OK") { dialogInterface: DialogInterface, i: Int ->
+        return AlertDialog.Builder(this@HistoryActivity,R.style.AlertDialogCustom)
+            .setPositiveButton( if (itemChecked.size>0)"Delete" else "Ok") { dialogInterface: DialogInterface, i: Int ->
                 list.keys.removeAll(itemChecked.keys)
                 adapter.notifyDataSetChanged(list)
                 itemChecked.keys.forEach{
@@ -88,21 +89,21 @@ class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
                 }
                 dialogInterface.dismiss()
             }
-            .setNegativeButton("Đóng") { dialogInterface: DialogInterface, i: Int -> dialogInterface.dismiss() }
-            .setTitle("Thông báo !")
-            .setMessage(if (mutableList.size > 0) "Xác nhận xóa tất cả?" else "Rỗng").create()
+            .setNegativeButton("Cancel") { dialogInterface: DialogInterface, i: Int -> dialogInterface.dismiss() }
+             .setMessage(if (itemChecked.size>0) "You want to delete the selected records" else "No history has been selected yet"
+             ).create()
     }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onResume() {
         super.onResume()
-//        if (mutableListMovementData.size != myDataBase.movementDao().getAllMovementData().size) {
-//            val hashMap = mutableListMovementData.map {
-//                it to false
-//            }.toMap()
-//            adapter.notifyDataSetChanged(HashMap(hashMap))
-//            adapter.notifyDataSetChanged()
-//        }
+        if (mutableListMovementData.size != myDataBase.movementDao().getAllMovementData().size) {
+            val hashMap = mutableListMovementData.map {
+                it to false
+            }.toMap()
+            adapter.notifyDataSetChanged(HashMap(hashMap))
+            adapter.notifyDataSetChanged()
+        }
     }
 
 

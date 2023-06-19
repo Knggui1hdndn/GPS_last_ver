@@ -17,6 +17,10 @@
         <item name="android:textColor">@color/black</item>
 
     </style>
+    <style name="AlertDialogCustom" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+        <item name="android:colorAccent">@color/black</item>
+    </style>
+
 
     <style name="BackgroundItem">
         <item name="android:background">#5D5D5D</item>

@@ -10,7 +10,10 @@
 
         <!-- Customize your theme here. -->
     </style>
+    <style name="AlertDialogCustom" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="android:colorAccent">@color/black</item>
 
+    </style>
     <style name="BackgroundItem">
         <item name="android:background">#C4C4C4</item>
     </style>
@@ -40,6 +43,7 @@
         <item name="android:iconTint" tools:targetApi="o">@color/black</item>
 
     </style>
+
 
     <style name="BUTTONSETTINGOPSTION">
         <item name="android:layout_width">0dp</item>

@@ -12,7 +12,9 @@
     <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:title="ODOMETER" />
+        app:title="ODOMETER"
+        android:id="@+id/mToolBar"
+       />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn1"
@@ -25,7 +27,7 @@
         android:autoLink="all"
         android:linksClickable="false"
         android:selectAllOnFocus="false"
-        android:text="How to use Xiaomi's Bicycle?"
+        android:text="Why are Odometers so Important?"
         app:cornerRadius="30dp" />
 
     <com.google.android.material.button.MaterialButton
@@ -39,7 +41,7 @@
         android:autoLink="all"
         android:linksClickable="false"
         android:selectAllOnFocus="false"
-        android:text="Travel Packing Checklist"
+        android:text="Odometer Reading – What is it &amp; How to check it?"
         app:cornerRadius="30dp" />
 
     <com.google.android.material.button.MaterialButton
@@ -53,14 +55,13 @@
         android:layout_weight="1"
         android:autoLink="all"
 
-        android:text="How to Pack for a Flight"
+        android:text="Reduce and Enforce Speed Limits"
         app:cornerRadius="30dp" />
 
-    <com.google.android.material.button.MaterialButton
+    <com.google.android.gms.ads.AdView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="ADS" />
+        android:layout_height="wrap_content"
+         android:text="ADS" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn4"
@@ -72,7 +73,7 @@
         android:autoLink="all"
         android:linksClickable="false"
         android:selectAllOnFocus="false"
-        android:text="Travel Tips the Guides Won’t Tell"
+        android:text="How to Stop Speeding"
         app:cornerRadius="30dp" />
 
     <LinearLayout
@@ -80,6 +81,7 @@
         android:layout_height="1dp"
         android:layout_weight="1"
         android:gravity="center"
+        android:layout_gravity="bottom"
         android:orientation="horizontal"
         android:padding="5dp"
         android:weightSum="10">

@@ -15,7 +15,7 @@
         app:titleTextColor="@color/white">
 
         <RelativeLayout
-            android:layout_width="200dp"
+            android:layout_width="150dp"
             android:layout_gravity="end"
             android:layout_height="wrap_content">
 

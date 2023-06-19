@@ -264,12 +264,11 @@ class Setting : AppCompatActivity(), SettingInterface.View {
     }
 
     fun setButtonViewModeClickListener(button: MaterialButton, viewMode: Int) {
-        button.setOnClickListener {
-            onRemoveBackGroundViewMode()
+             onRemoveBackGroundViewMode()
             button.setBackgroundColor(ColorUtils.checkColor(colorPosition))
             sharedPreferences.edit().putInt(SettingConstants.ViEW_MODE, viewMode).apply()
             removeTextWhenColorPositionIs0(button, "view_mode")
-        }
+       
     }
 
 
@@ -414,7 +413,7 @@ class Setting : AppCompatActivity(), SettingInterface.View {
             "640"
         )
         val position: Int = array.indexOf(btnMaxSpeepAnalog.text.toString())
-        return AlertDialog.Builder(this@Setting).apply {
+        return AlertDialog.Builder(this@Setting,R.style.AlertDialogCustom).apply {
             setTitle("Chọn Tốc độ Đông hồ Analog").setSingleChoiceItems(
                 array, position
             ) { _, which ->

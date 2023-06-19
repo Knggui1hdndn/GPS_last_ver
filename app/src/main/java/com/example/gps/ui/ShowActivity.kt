@@ -8,6 +8,7 @@ import android.app.Service
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -18,6 +19,8 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.Window
 import android.widget.ImageView
@@ -32,6 +35,7 @@ import com.example.gps.dao.MyDataBase
 import com.example.gps.databinding.ActivityShowBinding
 import com.example.gps.databinding.BottomSheetBinding
 import com.example.gps.model.MovementData
+import com.example.gps.utils.ColorUtils
 import com.example.gps.utils.FontUtils
 import com.example.gps.utils.MapUtils
 import com.example.gps.utils.StringUtils
@@ -57,7 +61,6 @@ import java.util.Locale
 class ShowActivity : AppCompatActivity() {
     private lateinit var bottomSheet: RelativeLayout
     private lateinit var binding: ActivityShowBinding
-    private lateinit var bottom: BottomSheetBinding
     private var mData2: MovementData? = null
     private val polylineOptions = PolylineOptions()
     private lateinit var myDataBase: MyDataBase
@@ -119,34 +122,15 @@ class ShowActivity : AppCompatActivity() {
         setupMyActivity()
         setBackgroundColor()
         setFont()
+        binding.mCoordinatorLayout.setBackgroundColor(Color.BLACK)
 
-        bottom.imgCap.setOnClickListener {
-            binding.imgBack.visibility = View.GONE
-            binding.imgChange.visibility = View.GONE
-            getDialogCapScreen().show()
-
-        }
-
-        bottom.imgDelete.setOnClickListener {
-            getDialog().show()
-
-        }
-
-        binding.imgBack.setOnClickListener {
-            finish()
-        }
-
-        binding.imgChange.setOnClickListener {
-            map.let { it1 -> MapUtils.setStStyleMap(it1) }
-        }
-
-        bottom.imgShare.setOnClickListener {
-            val shareIntent = Intent(Intent.ACTION_SEND)
-            shareIntent.type = "plain/text";
-            val text = formatTripInformation()
-            shareIntent.putExtra(Intent.EXTRA_TEXT, text)
-            startActivity(shareIntent)
-        }
+//        bottom.imgShare.setOnClickListener {
+//            val shareIntent = Intent(Intent.ACTION_SEND)
+//            shareIntent.type = "plain/text";
+//            val text = formatTripInformation()
+//            shareIntent.putExtra(Intent.EXTRA_TEXT, text)
+//            startActivity(shareIntent)
+//        }
 
     }
 
@@ -155,10 +139,10 @@ class ShowActivity : AppCompatActivity() {
         with(mData2) {
             val startLaLong = "${this!!.startLatitude},${startLongitude}"
             val endLaLong = "${this.startLatitude},${startLongitude}"
-            val startPoint = "Start point: ${bottom.txtAddressStart.text} $startLaLong"
-            val endPoint = "End point: ${bottom.txtAddressEnd.text} $endLaLong"
+            val startPoint = "Start point: $startLaLong"
+            val endPoint = "End point: $endLaLong"
             val time = "Time: ${TimeUtils.formatTime(time)}"
-            val date = "Date: ${bottom.timeStart.text.toString().replace("Trip_", "")}"
+            val date = "Date: ${SimpleDateFormat("dd/MM/YYYY").format(mData2?.date)}"
             return "$startPoint\n$endPoint\n$time,$date"
         }
         return ""
@@ -167,14 +151,13 @@ class ShowActivity : AppCompatActivity() {
     @SuppressLint("NewApi")
     private fun setupMyActivity() {
         binding = ActivityShowBinding.inflate(layoutInflater)
-        bottom = binding.bottom
         setContentView(binding.root)
         myDataBase = MyDataBase.getInstance(this)
-        bottomSheet = bottom.bottomSheet
-        bottom2 = BottomSheetBehavior.from(bottomSheet).apply {
-            state = BottomSheetBehavior.STATE_EXPANDED
-            peekHeight = 220
-        }
+        binding.mToolBar.setTitleTextColor(if (ColorUtils.isThemeDark()) Color.WHITE else Color.BLACK)
+
+        setSupportActionBar(binding.mToolBar)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setData(intent.extras?.getSerializable("movementData") as MovementData?)
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(callback)
@@ -183,12 +166,14 @@ class ShowActivity : AppCompatActivity() {
     private fun setFont() {
         FontUtils.setFont(
             this,
-            bottom.txtSpeed,
-            bottom.txtTime,
-            bottom.txtDistance,
-            bottom.txtAverageSpeed
+            binding.txtSpeed,
+            binding.txtTime,
+            binding.txtDistance,
+            binding.txtAverageSpeed
         )
+
     }
+
 
     private fun getDialogCapScreen(): Dialog {
         val dialog = Dialog(this)
@@ -197,8 +182,7 @@ class ShowActivity : AppCompatActivity() {
         val view = LayoutInflater.from(this).inflate(R.layout.layout_screen, null)
         dialog.setContentView(view)
         with(dialog) {
-            val imgClose = findViewById<ImageView>(R.id.imgClose)
-            val imgShare = findViewById<ImageView>(R.id.imgShare)
+
             val img = findViewById<ImageView>(R.id.img)
             var bitmapScreen: Bitmap? = null
             val returnedBitmap = loadBitmapFromView(
@@ -206,23 +190,13 @@ class ShowActivity : AppCompatActivity() {
                 binding.mCoordinatorLayout
             )
             snapShortMap {
-                bitmapScreen = drawImage(it, returnedBitmap!!)
+                bitmapScreen = drawImage(returnedBitmap!!, it)
                 img.setImageBitmap(bitmapScreen)
+                saveBitmapToAppDirectory(bitmapScreen!!, "share.png")
+                val imgFile = getFileFromAppDirectory("share.png")
+                openScreenshot(imgFile)
             }
-            imgClose.setOnClickListener {
-                dialog.cancel()
-            }
-            imgShare.setOnClickListener {
-                if (bitmapScreen != null) {
-                    saveBitmapToAppDirectory(bitmapScreen!!, "share.png")
-                    val imgFile = getFileFromAppDirectory("share.png")
-                    openScreenshot(imgFile)
-                }
-            }
-            setOnCancelListener {
-                binding.imgBack.visibility = View.VISIBLE
-                binding.imgChange.visibility = View.VISIBLE
-            }
+
         }
 
         return dialog
@@ -230,23 +204,26 @@ class ShowActivity : AppCompatActivity() {
 
     }
 
+
+    private fun openScreenshot(imageFile: File) {
+        val contentUri: Uri = FileProvider.getUriForFile(this, "com.example.gps", imageFile)
+        val sharingIntent = Intent(Intent.ACTION_SEND )
+        sharingIntent.setType("image/png");
+        sharingIntent.putExtra(Intent.EXTRA_STREAM,  contentUri );
+        sharingIntent.putExtra(Intent.EXTRA_TEXT, formatTripInformation())
+        startActivity(Intent.createChooser(sharingIntent, "Share image using"))
+    }
+
     private fun saveBitmapToAppDirectory(bitmap: Bitmap, fileName: String) {
         val file = File(filesDir, fileName)
         val outputStream = FileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        outputStream.flush()
         outputStream.close()
     }
 
     private fun getFileFromAppDirectory(fileName: String): File {
         return File(filesDir, fileName)
-    }
-
-    private fun openScreenshot(imageFile: File) {
-        val contentUri: Uri = FileProvider.getUriForFile(this, "com.example.gps", imageFile)
-        val sharingIntent = Intent(Intent.ACTION_SEND)
-        sharingIntent.type = "image/*"
-        sharingIntent.putExtra(Intent.EXTRA_STREAM, contentUri)
-        startActivity(Intent.createChooser(sharingIntent, "Share image using"))
     }
 
     private fun loadBitmapFromView(context: Context, v: View): Bitmap? {
@@ -265,11 +242,15 @@ class ShowActivity : AppCompatActivity() {
         return returnedBitmap
     }
 
-    private fun drawImage(mapBitmap: Bitmap, bottom: Bitmap): Bitmap {
-        val saveBitmap = Bitmap.createBitmap(mapBitmap)
-        val c = Canvas(saveBitmap)
-
-        c.drawBitmap(bottom, 0f, 0f, Paint())
+    private fun drawImage(bitmapAllScreen: Bitmap, mapBitmap: Bitmap): Bitmap {
+        val saveBitmap = Bitmap.createBitmap(bitmapAllScreen)
+        val canvas = Canvas(saveBitmap)
+        canvas.drawBitmap(
+            mapBitmap,
+            0f,
+            (bitmapAllScreen.height - mapBitmap.height).toFloat(),
+            Paint()
+        )
         return saveBitmap
     }
 
@@ -282,25 +263,13 @@ class ShowActivity : AppCompatActivity() {
         map.snapshot(snapshotReadyCallback)
     }
 
-    private fun getDialog(): AlertDialog {
-        return AlertDialog.Builder(this@ShowActivity)
-            .setPositiveButton("Xóa") { _: DialogInterface, _: Int ->
-                mData2?.let { it1 ->
-                    myDataBase.movementDao().delete(it1)
-                    finish()
-                }
-            }
-            .setNegativeButton("Hủy") { dialogInterface: DialogInterface, i: Int -> dialogInterface.dismiss() }
-            .setTitle("Thông báo!")
-            .setMessage("Xác nhận xóa item?").create()
-    }
 
     private fun setBackgroundColor() {
         val intColor = getSharedPreferences(
             SettingConstants.SETTING,
             Service.MODE_PRIVATE
         ).getInt(SettingConstants.COLOR_DISPLAY, 2)
-        with(bottom) {
+        with(binding) {
             FontUtils.setTextColor(intColor, txtSpeed, txtAverageSpeed, txtTime, txtDistance)
         }
     }
@@ -309,11 +278,11 @@ class ShowActivity : AppCompatActivity() {
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
     private fun setData(mData: MovementData?) {
         val df: DateFormat = SimpleDateFormat("dd/MM/yy_HH:mm:ss")
-        with(bottom)
+        with(binding)
         {
             if (mData != null) {
                 mData2 = mData
-                timeStart.text = "Trip${df.format(mData.date)}"
+                txtTimeStart.text = "Trip${df.format(mData.date)}"
                 txtAddressEnd.text = getAddressLine(mData.endLatitude, mData.endLongitude)
                     ?: "_ _"
                 txtAddressStart.text = getAddressLine(mData.startLatitude, mData.startLongitude)
@@ -349,5 +318,40 @@ class ShowActivity : AppCompatActivity() {
         } catch (e: Exception) {
             null
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_show, menu)
+        val color = if (ColorUtils.isThemeDark()) Color.WHITE else Color.BLACK
+        for (i in 0 until menu!!.size()) {
+            menu.getItem(i).iconTintList = ColorStateList.valueOf(color)
+        }
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> finish()
+            R.id.mnShare -> {
+                onClickMenuShare()
+            }
+
+            R.id.mnDelete -> {
+                onClickMenuDelete()
+            }
+        }
+        return true
+    }
+
+    private fun onClickMenuDelete() {
+        mData2?.let { it1 ->
+            myDataBase.movementDao().delete(it1)
+            finish()
+        }
+    }
+
+    private fun onClickMenuShare() {
+        getDialogCapScreen().show()
     }
 }

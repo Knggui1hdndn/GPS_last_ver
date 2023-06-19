@@ -28,7 +28,7 @@
             app:sv_maxSpeed="280"
             app:sv_minSpeed="0"
             app:sv_speedTextPosition="CENTER"
-            app:sv_speedometerColor="@color/white"
+            app:sv_speedometerColor="@color/black"
             app:sv_speedometerMode="NORMAL"
             app:sv_trianglesColor="@color/black" />
     </FrameLayout>
@@ -45,7 +45,7 @@
         android:textAllCaps="false"
         android:textSize="25dp"
         app:backgroundTint="@null"
-         app:cornerRadius="20dp"
+        app:cornerRadius="20dp"
         app:strokeColor="@color/white"
         app:strokeWidth="2dp" />
 

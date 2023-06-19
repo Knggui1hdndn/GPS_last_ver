@@ -1,4 +1,4 @@
-package com.example.gps.ui
+package com.example.gps.ui.adpater
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gps.databinding.ItemBinding
 import com.example.gps.model.MovementData
 import com.example.gps.`object`.SharedData
+import com.example.gps.ui.ShowActivity
 import java.lang.Exception
 import java.util.Calendar
 import java.util.Locale
@@ -38,7 +39,6 @@ class HistoryAdapter(private val sendHashMapChecked: sendHashMapChecked) :
                 }
                 checkbox.isChecked = isChecked;
                 checkbox.visibility = if (isShowCheck) {View.VISIBLE} else {
-
                     View.GONE
                 };
 
@@ -57,7 +57,7 @@ class HistoryAdapter(private val sendHashMapChecked: sendHashMapChecked) :
                             Calendar.YEAR
                         )
                     }"
-                txtMaxSpeed.text = SharedData.convertSpeed(movementData.maxSpeed).toInt().toString()
+                txtMaxSpeed.text = SharedData.convertSpeed(movementData.maxSpeed).toInt().toString()+SharedData.toUnit
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     Geocoder(binding.root.context, Locale.getDefault()).getFromLocation(
