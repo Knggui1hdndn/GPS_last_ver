@@ -22,6 +22,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -51,7 +52,7 @@ class MainActivity2 : AppCompatActivity(), onRecever {
 
 
     lateinit var binding: ActivityMain2Binding
-    lateinit var tabAdapter: TabAdapter
+    private lateinit var tabAdapter: TabAdapter
     lateinit var viewPager: ViewPager2
     private lateinit var sharedPreferences: SharedPreferences
     var color = if (ColorUtils.isThemeDark()) Color.WHITE else Color.BLACK
@@ -76,7 +77,7 @@ class MainActivity2 : AppCompatActivity(), onRecever {
         sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         tabAdapter = TabAdapter(supportFragmentManager, lifecycle)
         viewPager = binding.viewPager2
-        viewPager.setPageTransformer { page, position ->
+        viewPager.setPageTransformer { _, position ->
             if (position == 2F) {
                 binding.viewPager2.isUserInputEnabled = false
             }
@@ -96,7 +97,7 @@ class MainActivity2 : AppCompatActivity(), onRecever {
             }
         }.attach()
         val viewMode = sharedPreferences.getInt(SettingConstants.ViEW_MODE, 0)
-        binding.viewPager2.setCurrentItem(viewMode - 1)
+        binding.viewPager2.currentItem = viewMode - 1
     }
 
 
@@ -105,11 +106,8 @@ class MainActivity2 : AppCompatActivity(), onRecever {
             SettingConstants.SETTING,
             Service.MODE_PRIVATE
         ).getInt(SettingConstants.COLOR_DISPLAY, 0)
-        Log.d("okoko", intColor.toString())
-        if (intColor == 0) {
-            val isNightMode =
-                AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
-            if (isNightMode) return R.color.white else return R.color.black
+         if (intColor == 0) {
+             return if (ColorUtils.isThemeDark()) R.color.white else R.color.black
         }
         when (intColor) {
             2 -> return R.color.color_2
@@ -124,39 +122,37 @@ class MainActivity2 : AppCompatActivity(), onRecever {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
-        for (i in 1 until menu!!.size()) {
-            menu.getItem(i).iconTintList = ColorStateList.valueOf(color)
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            menu!!.getItem(1).isVisible = false
+            menu.getItem(0).isVisible = true
         }
+        menu!!.getItem(0).isEnabled=true
+        for (i in 1 until menu!!.size()) {
+            if (menu.getItem(i).itemId != R.id.subcribe) menu.getItem(i).iconTintList =
+                ColorStateList.valueOf(color)
+        }
+
         return true
     }
-
+private var checkRotation=false
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.settings -> startActivity(Intent(this, Setting::class.java))
             R.id.history -> startActivity(Intent(this, HistoryActivity::class.java))
-            R.id.tip -> startActivity(Intent(this, TipActivity::class.java))
-            R.id.subcribe -> getDialogRate().show()
+            R.id.tip -> {
+                val intent = Intent(this, TipActivity::class.java)
+                intent.putExtra("activityLaunchedFrom", "Main2")
+                startActivity(intent)
+            }
+
+            R.id.rotation -> {
+                val check=binding.container.rotationX
+                 binding.container.rotationX =  if(check==0F) 180F else 0F
+            }
         }
         return true
     }
 
-      fun getDialogRate(): Dialog {
-        val dialogBinding = DialogRateBinding.inflate(LayoutInflater.from(this))
-        val dialog = Dialog(this).apply {
-            window?.setBackgroundDrawableResource(android.R.color.transparent);
-            setContentView(dialogBinding.root)
-            window?.setLayout(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT
-            )
-            if (ColorUtils.isThemeDark()) {
-                dialogBinding.mRcy.setBackgroundColor(getColor(R.color.unchanged))
-                dialogBinding.txt1.setTextColor(Color.WHITE)
-                dialogBinding.txt2.setTextColor(Color.WHITE)
-            }
-        }
-        return dialog
-    }
 
     override fun sendDataToSecondFragment() {
         try {

@@ -47,15 +47,19 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
     private var check = false
     private var sharedPreferences: SharedPreferences? = null
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     private val permissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
             if (granted.entries.all { it.value }) {
-                if (granted[Manifest.permission.ACCESS_BACKGROUND_LOCATION] == true) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    if (granted[Manifest.permission.ACCESS_BACKGROUND_LOCATION] == true) {
+                        presenter.startService()
+                    } else {
+                        checkBackgroundLocationPermission()
+                    }
+                }else{
                     presenter.startService()
-                } else {
-                    checkBackgroundLocationPermission()
                 }
+
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -65,9 +69,10 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
             }
         }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
+
     private fun checkBackgroundLocationPermission() {
         permissionsLauncher.launch(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -80,26 +85,31 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
         presenter.getDistance()
         presenter.getAverageSpeed()
         presenter.getMaxSpeed()
+        presenter.timeStart()
         SharedData.color.observe(viewLifecycleOwner) {
             with(binding) {
-              if (it!=0){
-                  val colorStateList = ColorStateList.valueOf(ColorUtils.checkColor(it))
-                  txtDistance.setTextColor(colorStateList)
-                  txtAvgSpeed.setTextColor(colorStateList)
-                  txtMaxSpeed.setTextColor(colorStateList)
-                  txtStartTime.setTextColor(colorStateList)
-                  btnStart.backgroundTintList = colorStateList
-                  btnStop.backgroundTintList = colorStateList
-                  imgPause.imageTintList = colorStateList
-                  imgReset.imageTintList = colorStateList
-                  imgResume.imageTintList = colorStateList
-              }
-
+                if (it != 0) {
+                    val colorStateList = ColorStateList.valueOf(ColorUtils.checkColor(it))
+                    txtDistance.setTextColor(colorStateList)
+                    txtAvgSpeed.setTextColor(colorStateList)
+                    txtMaxSpeed.setTextColor(colorStateList)
+                    txtStartTime.setTextColor(colorStateList)
+                    btnStart.backgroundTintList = colorStateList
+                    btnStop.backgroundTintList = colorStateList
+                    imgPause.imageTintList = colorStateList
+                    imgReset.imageTintList = colorStateList
+                    imgResume.imageTintList = colorStateList
+                }
             }
         }
-        if (!presenter.isMyServiceRunning(MyService::class.java)) presenter.setState(
-            MyLocationConstants.STOP
-        );
+
+
+
+        if (!presenter.isMyServiceRunning(MyService::class.java)) {
+            presenter.setState(
+                MyLocationConstants.STOP
+            );
+        }
         handleOrientationClickAll()
 
     }
@@ -115,6 +125,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
                     )
                 )
             } else {
+
                 presenter.startService()
             }
 
@@ -214,10 +225,12 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
         binding.imgReset.visibility = SharedData.onShowResetButton.value!!
 
     }
-
     override fun onShowReset(int: Int) {
         binding.imgReset.isEnabled = int == View.VISIBLE
         binding.imgReset.visibility = int
+    }
+    override fun onTimeStart(s: String) {
+        binding.txtStartTime.text = s
     }
 
     override fun onShowResume() {

@@ -5,6 +5,7 @@ import android.app.Activity
 import android.location.Location
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import java.text.SimpleDateFormat
 
 @SuppressLint("StaticFieldLeak")
 object SharedData {
@@ -16,14 +17,13 @@ object SharedData {
     val speedAnalog = MutableLiveData<Int>()
     val color = MutableLiveData<Int>()
     val time = MutableLiveData<Long>(0)
-    val onShowResetButton = MutableLiveData<Int>(0)
-    val onShowTime = MutableLiveData<Int>(0)
+    val onShowResetButton = MutableLiveData(0)
+    val onShowTime = MutableLiveData(0)
+    val onTimeStart=MutableLiveData(SimpleDateFormat("dd/MM/yyyy\n00:00:00").format(System.currentTimeMillis()))
     var fromUnit = "km/h"
     var toUnit = ""
     var fromUnitDistance = "km"
     var toUnitDistance = ""
-    var checkService = false
-
     val conversionRates = mapOf(
         "knot" to mapOf(
             "km/h" to 1.852, "mph" to 1.15078, "knot" to 1.0

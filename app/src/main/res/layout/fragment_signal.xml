@@ -3,11 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_centerVertical="true"
-    android:paddingEnd="15dp"
     android:paddingLeft="15dp"
     android:paddingTop="5dp"
-    android:paddingBottom="5dp"
-  >
+    android:paddingEnd="15dp"
+    android:paddingBottom="5dp">
 
     <ImageView
         android:id="@+id/a"
@@ -43,12 +42,13 @@
         android:layout_toRightOf="@id/c"
         android:text="0%" />
     />
+
     <ImageView
         android:id="@+id/imgRotatesa"
         style="@style/BackgroundTintImg"
         android:layout_width="wrap_content"
-android:layout_alignParentEnd="true"
         android:layout_height="wrap_content"
-         android:src="@drawable/screen_rotation" />
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/screen_rotation" />
 
 </RelativeLayout>

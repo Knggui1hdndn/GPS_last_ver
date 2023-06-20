@@ -19,5 +19,7 @@ class MovementData(
     var time: Long,
 
     ) :Serializable{
-
+    override fun toString(): String {
+        return "MovementData(id=$id, date=$date, startLatitude=$startLatitude, startLongitude=$startLongitude, endLatitude=$endLatitude, endLongitude=$endLongitude, maxSpeed=$maxSpeed, averageSpeed=$averageSpeed, distance=$distance, time=$time)"
+    }
 }

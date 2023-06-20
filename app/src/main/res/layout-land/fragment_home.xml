@@ -20,38 +20,39 @@
             android:gravity="bottom"
             android:orientation="vertical">
 
-         <FrameLayout
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             >
-             <com.github.anastr.speedviewlib.AwesomeSpeedometer
-                 android:id="@+id/speed"
-                 android:layout_width="wrap_content"
-                 android:layout_height="match_parent"
-                 android:layout_gravity="center"
-                 app:sv_backgroundCircleColor="@color/black"
-                 app:sv_maxSpeed="280"
-                 app:sv_minSpeed="0"
-                 app:sv_speedTextPosition="CENTER"
-                 app:sv_speedometerMode="NORMAL"
-                 app:sv_trianglesColor="@color/white" />
-             <ImageView
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:layout_gravity="bottom"
-                 android:id="@+id/imgRotate"
-                 android:layout_margin ="20dp"
-                 android:src="@drawable/screen_rotation" />
-         </FrameLayout>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.github.anastr.speedviewlib.AwesomeSpeedometer
+                    android:id="@+id/speed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    app:sv_backgroundCircleColor="@color/black"
+                    app:sv_maxSpeed="280"
+                    app:sv_minSpeed="0"
+                    app:sv_speedTextPosition="CENTER"
+                    app:sv_speedometerMode="NORMAL"
+                    app:sv_trianglesColor="@color/white" />
+
+                <ImageView
+                    android:id="@+id/imgRotate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_margin="20dp"
+                    android:src="@drawable/screen_rotation" />
+            </FrameLayout>
         </LinearLayout>
 
         <fragment
             android:id="@+id/frag"
             android:name="com.example.gps.ui.ParameterFragment"
             android:layout_width="0dp"
-            android:layout_gravity="bottom"
             android:layout_height="match_parent"
-             android:layout_weight="5" />
+            android:layout_gravity="bottom"
+            android:layout_weight="5" />
 
     </LinearLayout>
 

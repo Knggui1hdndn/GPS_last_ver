@@ -11,7 +11,9 @@
 
         <!-- Customize your theme here. -->
     </style>
-
+    <style name="PREMIUM_VERSION">
+        <item name="android:background">@drawable/stroke_premium_night</item>
+    </style>
     <style name="BackGroundButton">//Parameter
         <item name="android:background">@drawable/backgroud_button_dark</item>
         <item name="android:textColor">@color/black</item>

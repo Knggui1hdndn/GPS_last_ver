@@ -12,12 +12,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-         app:title="Cài đặt" />
+        app:title="Setting" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-         android:layout_below="@+id/mToolBar">
+        android:layout_below="@+id/mToolBar">
 
         <LinearLayout
             style="@style/BackgroundTint1"
@@ -25,6 +25,41 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <LinearLayout
+                style="@style/PREMIUM_VERSION"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:shadowColor="@color/strokeColor"
+                    android:shadowDx="10"
+                    android:shadowDy="12"
+                    android:shadowRadius="12"
+                    android:text="PREMIUM VERSION"
+                    android:textColor="#EDC806"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDelete"
+                    style="@style/BackGroundButton"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="4"
+                    android:text="Subcribe"
+                    android:textAllCaps="false"
+                    android:textSize="20sp"
+                    app:backgroundTint="@null" />
+            </LinearLayout>
 
             <LinearLayout
                 style="@style/BackgroundTint1"
@@ -263,6 +298,7 @@
                             android:layout_alignParentRight="true"
                             android:text="Km/h" />
                     </RelativeLayout>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -281,19 +317,20 @@
                             />
 
                         <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnMaxSpeepAnalog"
                             style="@style/Button"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="3"
                             android:text="200"
-                            app:iconGravity="end"
-                            app:icon="@drawable/drop"
-                            android:id="@+id/btnMaxSpeepAnalog"
-                            app:iconTint="@color/black"
                             app:cornerRadius="25dp"
+                            app:icon="@drawable/drop"
+                            app:iconGravity="end"
+                            app:iconTint="@color/black"
                             app:strokeColor="@color/strokeColor"
                             app:strokeWidth="0.5dp" />
                     </LinearLayout>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -311,16 +348,16 @@
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/light"
-                             android:layout_width="0dp"
+                            style="@style/Button"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
                             android:layout_marginEnd="5dp"
                             android:layout_weight="3"
                             android:padding="11dp"
-                            style="@style/Button"
 
                             android:text="Light"
-                              app:cornerRadius="25dp"
+                            app:cornerRadius="25dp"
                             app:strokeColor="@color/strokeColor"
                             app:strokeWidth="0.5dp" />
 
@@ -351,7 +388,7 @@
 
                 >
 
-                 <RelativeLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -360,9 +397,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="3"
-                        android:textStyle="bold"
+                        android:text="Theme Color"
 
-                        android:text="Theme Color" />
+                        android:textStyle="bold" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -444,20 +481,19 @@
                     android:orientation="vertical">
 
 
-
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_marginTop="15dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
                         android:weightSum="10">
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:textStyle="bold"
-
                             android:layout_weight="7"
-                            android:text="Speed Warning" />
+
+                            android:text="Speed Warning"
+                            android:textStyle="bold" />
 
                         <Switch
                             android:id="@+id/swtAlarm"
@@ -481,9 +517,9 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="7"
-                            android:textStyle="bold"
+                            android:text="Display Speed in Notification"
 
-                            android:text="Display Speed in Notification" />
+                            android:textStyle="bold" />
 
                         <Switch
                             android:id="@+id/swtShowSpeedInNoti"
@@ -505,12 +541,12 @@
                         android:weightSum="10">
 
                         <TextView
-                            android:textStyle="bold"
-
                             android:layout_width="0dp"
+
                             android:layout_height="wrap_content"
                             android:layout_weight="7"
-                            android:text="Display the Clock" />
+                            android:text="Display the Clock"
+                            android:textStyle="bold" />
 
                         <Switch
                             android:id="@+id/swtClockDisplay"
@@ -532,12 +568,12 @@
                         android:weightSum="10">
 
                         <TextView
-                            android:textStyle="bold"
-
                             android:layout_width="0dp"
+
                             android:layout_height="wrap_content"
                             android:layout_weight="7"
-                            android:text="Tracking on the Map" />
+                            android:text="Tracking on the Map"
+                            android:textStyle="bold" />
 
                         <Switch
                             android:id="@+id/swtTrackOnMap"
@@ -559,12 +595,12 @@
                         android:weightSum="10">
 
                         <TextView
-                            android:textStyle="bold"
-
                             android:layout_width="0dp"
+
                             android:layout_height="wrap_content"
                             android:layout_weight="7"
-                            android:text="Display the Reset button" />
+                            android:text="Display the Reset button"
+                            android:textStyle="bold" />
 
                         <Switch
                             android:id="@+id/swtShowReset"
@@ -578,9 +614,6 @@
                             tools:ignore="UseSwitchCompatOrMaterialXml" />
                     </LinearLayout>
                 </LinearLayout>
-
-
-
 
 
                 <LinearLayout
@@ -597,11 +630,11 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:textStyle="bold"
-
                             android:layout_width="wrap_content"
+
                             android:layout_height="wrap_content"
-                            android:text="Reset the Odometer" />
+                            android:text="Reset the Odometer"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/txtDistance"
@@ -626,37 +659,40 @@
                 </LinearLayout>
 
             </LinearLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:layout_margin="10dp"
-                android:background ="@color/black" />
+                android:background="@color/black" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:text="ABOUT US"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
+
             <TextView
+                android:id="@+id/txtRating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/edtSpeedLimit"
                 android:layout_alignParentRight="true"
-                 android:text="Rating"
+                android:padding="10dp"
+                android:text="Rating"
                 android:textStyle="bold"
-android:padding="10dp"
 
                 />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/edtSpeedLimit"
                 android:layout_alignParentRight="true"
-                android:text="Privacy Policy &amp; TOS"
-                android:textStyle="bold"
                 android:padding="10dp"
-                />
+                android:text="Privacy Policy &amp; TOS"
+                android:textStyle="bold" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

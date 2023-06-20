@@ -14,6 +14,7 @@ interface ParameterContracts {
         fun onShowStop()
         fun onShowReset()
         fun onShowReset(int: Int)
+        fun onTimeStart(s:String)
         fun onShowResume()
         fun onShowPause()
 
@@ -21,6 +22,7 @@ interface ParameterContracts {
 
     interface Presenter {
         fun showReset()
+        fun timeStart()
         fun getMaxSpeed()
         fun getDistance()
         fun getAverageSpeed()

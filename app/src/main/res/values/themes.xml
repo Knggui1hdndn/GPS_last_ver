@@ -43,7 +43,9 @@
         <item name="android:iconTint" tools:targetApi="o">@color/black</item>
 
     </style>
-
+<style name="PREMIUM_VERSION">
+    <item name="android:background">@drawable/stroke_premium</item>
+ </style>
 
     <style name="BUTTONSETTINGOPSTION">
         <item name="android:layout_width">0dp</item>

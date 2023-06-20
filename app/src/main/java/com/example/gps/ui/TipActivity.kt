@@ -19,12 +19,14 @@ class TipActivity : AppCompatActivity() {
         binding = ActivityTipActvityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
-        if (ColorUtils.isThemeDark()) binding.mToolBar.setTitleTextColor(Color.WHITE) else binding.mToolBar.setTitleTextColor(Color.BLACK)
+        if (ColorUtils.isThemeDark()) binding.mToolBar.setTitleTextColor(Color.WHITE) else binding.mToolBar.setTitleTextColor(
+            Color.BLACK
+        )
         binding.btn1.setOnClickListener {
             startWebActivity("https://s1partscenter.com/blog/entries/on-the-road-why-are-odometers-so-important")
 
         }
-        binding.btn1.setPaintFlags( binding.btn1.paintFlags or Paint.UNDERLINE_TEXT_FLAG)
+        binding.btn1.setPaintFlags(binding.btn1.paintFlags or Paint.UNDERLINE_TEXT_FLAG)
 
         binding.btn2.apply {
             setOnClickListener {
@@ -49,15 +51,20 @@ class TipActivity : AppCompatActivity() {
 
         binding.btnMoreTip.setOnClickListener {
             sharedPreferences.edit().putBoolean(SettingConstants.CHECK_OPEN, true).apply()
-            startActivity(Intent(this, MoreTipActivity::class.java))
+            val intent1 = Intent(this, MoreTipActivity::class.java)
+            intent1.putExtra("activityLaunchedFrom", intent.getStringExtra("activityLaunchedFrom"))
+            startActivity(intent1)
             finish()
         }
 
         binding.btnStartTrip.setOnClickListener {
-            sharedPreferences.edit().putBoolean(SettingConstants.CHECK_OPEN, true).apply()
-            startActivity(Intent(this, MainActivity2::class.java))
-            finish()
-
+            if (intent.getStringExtra("activityLaunchedFrom") == "Main2") {
+                finish()
+            } else {
+                sharedPreferences.edit().putBoolean(SettingConstants.CHECK_OPEN, true).apply()
+                startActivity(Intent(this, MainActivity2::class.java))
+                finish()
+            }
         }
     }
 

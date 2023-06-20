@@ -1,13 +1,13 @@
 package com.example.gps.ui
 
-import android.content.Context.MODE_PRIVATE
+ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
-import android.view.View
+ import android.util.Log
+ import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import com.example.gps.R
@@ -19,6 +19,8 @@ import com.example.gps.`object`.SharedData
 import com.example.gps.presenter.MeasurementPresenter
 import com.example.gps.utils.ColorUtils
 import com.example.gps.utils.TimeUtils
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import kotlin.properties.Delegates
 
 
@@ -32,8 +34,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), MeasurementInterFace.View
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentHomeBinding.bind(view)
         myDataBase = MyDataBase.getInstance(requireContext())
-        sharedPreferencesSetting =
-            requireContext().getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
+        sharedPreferencesSetting = requireContext().getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         sharedPreferencesState = requireContext().getSharedPreferences("state", MODE_PRIVATE)
         val isNightMode = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
         val backgroundColor = if (isNightMode) Color.BLACK else Color.WHITE
@@ -54,7 +55,9 @@ class HomeFragment : Fragment(R.layout.fragment_home), MeasurementInterFace.View
             }
         }
 
-    }
+        val adRequest = AdRequest.Builder().build()
+//        binding.ads!!.loadAd(adRequest)
+     }
 
 
     override fun onResume() {
@@ -73,19 +76,17 @@ class HomeFragment : Fragment(R.layout.fragment_home), MeasurementInterFace.View
     override fun displayColorChange(int: Int) {
         binding.speed.speedTextColor = textColor
         binding.speed.textColor = textColor
-        if (int!=0){
-
-        }
         binding.speed.unitTextColor = ColorUtils.checkColor(int)
         binding.time?.setTextColor(if (ColorUtils.isThemeDark()) Color.BLACK else Color.WHITE)
         binding.time?.backgroundTintList = ColorStateList.valueOf(ColorUtils.checkColor(int))
      try {
          binding.speed.setSpeedometerColor(ColorUtils.checkColor(int))
-     }catch (e:Exception){}
+     }catch (_:Exception){}
     }
 
     override fun displayCurrentSpeedChange(string: String, l: Long) {
          binding.speed.speedTo(string.toFloat(), l)
+        Log.d("oksoks0sdasd", (l*1000).toString())
     }
 
 }

@@ -14,6 +14,7 @@ import com.example.gps.MyApplication
 import com.example.gps.R
 import com.example.gps.constants.SettingConstants
 import com.example.gps.`object`.SharedData
+import com.google.android.gms.ads.MobileAds
 
 
 class SplashActivity : AppCompatActivity() {
@@ -43,6 +44,7 @@ class SplashActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
         setUnitSpeedAndDistance()
         createTimer(3L)
+        MobileAds.initialize(this)
           sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         with(SharedData) {
             onShowTime.value = if (sharedPreferences.getBoolean(

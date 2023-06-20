@@ -89,12 +89,14 @@ class ShowActivity : AppCompatActivity() {
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
         )
 
-        p0.addMarker(
-            MarkerOptions()
-                .position(endLatLng)
-                .title("Kết thúc")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-        )
+        if (mData2!!.endLatitude != 0.0) {
+            p0.addMarker(
+                MarkerOptions()
+                    .position(endLatLng)
+                    .title("Kết thúc")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+            )
+        }
 
         p0.addPolyline(
             polylineOptions.addAll(convertToListLatLng())
@@ -122,15 +124,9 @@ class ShowActivity : AppCompatActivity() {
         setupMyActivity()
         setBackgroundColor()
         setFont()
-        binding.mCoordinatorLayout.setBackgroundColor(Color.BLACK)
-
-//        bottom.imgShare.setOnClickListener {
-//            val shareIntent = Intent(Intent.ACTION_SEND)
-//            shareIntent.type = "plain/text";
-//            val text = formatTripInformation()
-//            shareIntent.putExtra(Intent.EXTRA_TEXT, text)
-//            startActivity(shareIntent)
-//        }
+        if (ColorUtils.isThemeDark()) binding.mCoordinatorLayout.setBackgroundColor(Color.BLACK) else binding.mCoordinatorLayout.setBackgroundColor(
+            Color.WHITE
+        )
 
     }
 
@@ -207,9 +203,9 @@ class ShowActivity : AppCompatActivity() {
 
     private fun openScreenshot(imageFile: File) {
         val contentUri: Uri = FileProvider.getUriForFile(this, "com.example.gps", imageFile)
-        val sharingIntent = Intent(Intent.ACTION_SEND )
+        val sharingIntent = Intent(Intent.ACTION_SEND)
         sharingIntent.setType("image/png");
-        sharingIntent.putExtra(Intent.EXTRA_STREAM,  contentUri );
+        sharingIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
         sharingIntent.putExtra(Intent.EXTRA_TEXT, formatTripInformation())
         startActivity(Intent.createChooser(sharingIntent, "Share image using"))
     }
@@ -277,6 +273,7 @@ class ShowActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
     private fun setData(mData: MovementData?) {
+        Log.d("okskoos", mData.toString())
         val df: DateFormat = SimpleDateFormat("dd/MM/yy_HH:mm:ss")
         with(binding)
         {

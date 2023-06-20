@@ -3,6 +3,7 @@ package com.example.gps.ui
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.example.gps.R
@@ -20,11 +21,17 @@ class MoreTipActivity : AppCompatActivity() {
 
         with(binding) {
             imgHome.setOnClickListener {
-                startActivity(Intent(this@MoreTipActivity, MainActivity2::class.java))
-                finish()
+                Log.d("Sssssssssss",intent.getStringExtra("activityLaunchedFrom").toString())
+                if (intent.getStringExtra("activityLaunchedFrom") != "Main2") startActivity(
+                    Intent(
+                        this@MoreTipActivity,
+                        MainActivity2::class.java
+                    )
+                )
+                else finish()
             }
             imgRate.setOnClickListener {
-                MainActivity2().getDialogRate().show()
+            //    MainActivity2().getDialogRate().show()
             }
         }
 

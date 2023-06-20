@@ -2,6 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/rotation"
+        android:icon="@drawable/rotation"
+        android:title="Subcribe"
+        app:showAsAction="always"
+        android:visible="false"
+         />
+    <item
         android:id="@+id/subcribe"
         android:icon="@drawable/subcribe"
         android:title="Subcribe"

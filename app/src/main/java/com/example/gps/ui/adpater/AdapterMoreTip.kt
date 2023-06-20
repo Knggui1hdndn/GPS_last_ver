@@ -21,7 +21,7 @@ class AdapterMoreTip(val list: List<MoreTip>) :
         fun bind(moreTip: MoreTip) {
             with(binding) {
                 Glide.with(binding.root.context).load(moreTip.img).into(img)
-                    .onLoadFailed(binding.root.context.getDrawable(R.drawable.img_2))
+                    .onLoadFailed(binding.root.context.getDrawable(R.drawable.img_3))
                 txtTitle.text = moreTip.title
                 mRcy.setOnClickListener {
                     val intent = Intent(it.context, ShowWebActitvity::class.java)

@@ -14,6 +14,7 @@ import com.example.gps.interfaces.ParameterContracts
 import com.example.gps.model.MovementData
 import com.example.gps.`object`.SharedData
 import com.example.gps.service.MyService
+import java.text.SimpleDateFormat
 
 class ParameterPresenter(
     private val context: Fragment,
@@ -61,7 +62,11 @@ class ParameterPresenter(
         }
     }
 
-
+    override fun timeStart() {
+        SharedData.onTimeStart.observe(context.viewLifecycleOwner) {
+            view.onTimeStart(it)
+        }
+    }
     override fun callMyService(action: String) {
         val intent = Intent(context.requireContext(), MyService::class.java)
         intent.action = action
@@ -69,10 +74,11 @@ class ParameterPresenter(
     }
 
     override fun insertMovementDataWhenStart() {
+        val timeStart=System.currentTimeMillis()
         myDataBase.movementDao().insertMovementData(
             MovementData(
                 0,
-                System.currentTimeMillis(),
+                timeStart,
                 0.0,
                 0.0,
                 0.0,
@@ -83,6 +89,7 @@ class ParameterPresenter(
                 0
             )
         )
+        SharedData.onTimeStart.value =   SimpleDateFormat("dd/MM/yyyy\nHH:mm:ss").format(timeStart)
     }
 
     override fun startService() {
@@ -97,6 +104,7 @@ class ParameterPresenter(
         setState(MyLocationConstants.STOP)
         callMyService(MyLocationConstants.STOP)
         showStart()
+        SharedData.onTimeStart.value= SimpleDateFormat("dd/MM/yyyy\n00:00:00").format(System.currentTimeMillis())
     }
 
 

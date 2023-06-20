@@ -43,7 +43,8 @@ class MotionCalculatorPresenter(
         override fun run() {
             timer += 1000
             SharedData.time.value = timer
-            Log.d("okkokook",timer.toString())
+            SharedData.averageSpeedLiveData.value = getAverageSpeed()
+            Log.d("okkokook", timer.toString())
             handler.postDelayed(this, 1000)
         }
     }
@@ -53,7 +54,7 @@ class MotionCalculatorPresenter(
     override fun calculateDistance(lastLocation: Location): Double {
         if (this::previousLocation.isInitialized) {
             val distanceInMeters = lastLocation.distanceTo(previousLocation)
-            distance += distanceInMeters/1000.0
+            distance += distanceInMeters / 1000.0
             sharedPreferences.edit().putInt(
                 MyLocationConstants.DISTANCE,
                 (sharedPreferences.getInt(
@@ -69,17 +70,24 @@ class MotionCalculatorPresenter(
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun calculateSpeed(lastLocation: Location): Double {
-        if (!lastLocation.hasSpeed()) return 0.0
-        val speed =  if (lastLocation.hasSpeedAccuracy() && lastLocation.hasSpeed()) (lastLocation.speed * 3.6) else 0.0
-        if (sharedPreferencesSetting.getBoolean(SettingConstants.SPEED_ALARM, false)) {
+        Log.d("sssssaaaaaaac", lastLocation.speedAccuracyMetersPerSecond.toString())
+        if (!lastLocation.hasSpeedAccuracy()) return 0.0;
+        var speed = (lastLocation.speed * 3.6)
+        if (sharedPreferencesSetting.getBoolean(SettingConstants.SPEED_ALARM, true)) {
             when {
-                SharedData.convertSpeed(speed) > SharedData.convertSpeed(getWarningLimit().toDouble()) -> {
+                SharedData.convertSpeed(speed).toInt() >= getWarningLimit() -> {
                     broadcastWarning()
                 }
-                else -> stopWarning()
+
+                else -> {
+                    stopWarning()
+                }
             }
+        } else {
+            stopWarning()
         }
         return speed
+
 
     }
 
@@ -93,10 +101,8 @@ class MotionCalculatorPresenter(
 
     override fun getAverageSpeed(): Double {
         return if (timer > 0) {
-            Log.d("okkkkkkk", "$distance   ${timer / 1000}")
-            ((distance*1000)/ (timer / 1000.0)) * 3.6
-
-        }else {
+            ((distance * 1000) / (timer / 1000.0)) * 3.6
+        } else {
             0.0
         }
     }
@@ -160,7 +166,8 @@ class MotionCalculatorPresenter(
 
     override fun updateMovementDataWhenStop() {
         val movementData = myDataBase.movementDao().getLastMovementData()
-         if (this::previousLocation.isInitialized) {
+        movementData.time = timer
+        if (this::previousLocation.isInitialized) {
             movementData.endLatitude = previousLocation.latitude
             movementData.endLongitude = previousLocation.longitude
         } else {
@@ -195,19 +202,23 @@ class MotionCalculatorPresenter(
 
     // Phương thức phát cảnh báo
     override fun broadcastWarning() {
-        if (!isWarningPlaying) {
-         //   mediaPlayer.start()
-            isWarningPlaying = true
+        Log.d("sssssssssssssssssssssssa", "start" + mediaPlayer.isPlaying)
+
+        if (!mediaPlayer.isPlaying) {
+            mediaPlayer.start()
+            Log.d("sssssssssssssssssssssssa", "start1")
+//            val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+//            val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+//            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0)
         }
-        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0)
+
     }
 
     override fun stopWarning() {
-        if (isWarningPlaying) {
+        if (mediaPlayer.isPlaying) {
             mediaPlayer.stop()
-            isWarningPlaying = false
+            mediaPlayer.prepare()
+
         }
     }
 }
