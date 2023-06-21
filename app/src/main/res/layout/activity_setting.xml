@@ -37,12 +37,13 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:shadowColor="@color/strokeColor"
+                    android:fontFamily="serif"
+                    android:shadowColor="#92AAA3A3"
                     android:shadowDx="10"
                     android:shadowDy="12"
-                    android:shadowRadius="12"
+                    android:shadowRadius="13"
                     android:text="PREMIUM VERSION"
-                    android:textColor="#EDC806"
+                    android:textColor="#EFC300"
                     android:textSize="25sp"
                     android:textStyle="bold" />
 
@@ -343,7 +344,7 @@
                             android:layout_height="wrap_content"
 
                             android:layout_weight="3"
-                            android:text="Type of Unit"
+                            android:text="App theme"
                             android:textStyle="bold" />
 
                         <com.google.android.material.button.MaterialButton
@@ -400,7 +401,15 @@
                         android:text="Theme Color"
 
                         android:textStyle="bold" />
-
+<ImageView
+    android:layout_toRightOf="@+id/a1"
+    android:layout_width="wrap_content"
+    android:id="@+id/resetColor"
+    android:layout_marginStart="10dp"
+    android:layout_height="wrap_content"
+    style="@style/BackgroundTintImg"
+    android:background="@drawable/baseline_refresh_24"
+    />
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -502,7 +511,7 @@
                             android:layout_weight="3"
                             android:checked="true"
                             android:padding="11dp"
-                            android:trackTint="@color/teal_200"
+                            android:trackTint="@color/unchanged"
                             android:trackTintMode="add"
                             tools:ignore="UseSwitchCompatOrMaterialXml" />
                     </LinearLayout>
@@ -528,7 +537,8 @@
                             android:layout_weight="3"
                             android:checked="true"
                             android:padding="11dp"
-                            android:trackTint="@color/teal_200"
+                            android:trackTint="@color/unchanged"
+
                             android:trackTintMode="add"
                             tools:ignore="UseSwitchCompatOrMaterialXml" />
                     </LinearLayout>
@@ -555,7 +565,7 @@
                             android:layout_weight="3"
                             android:checked="true"
                             android:padding="11dp"
-                            android:trackTint="@color/teal_200"
+                            android:trackTint="@color/unchanged"
                             android:trackTintMode="add"
                             tools:ignore="UseSwitchCompatOrMaterialXml" />
                     </LinearLayout>
@@ -582,6 +592,7 @@
                             android:layout_weight="3"
                             android:checked="true"
                             android:padding="11dp"
+                            android:trackTint="@color/unchanged"
 
                             android:trackTintMode="add"
                             tools:ignore="UseSwitchCompatOrMaterialXml" />
@@ -608,8 +619,9 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="3"
                             android:checked="true"
-
                             android:padding="11dp"
+
+                            android:trackTint="@color/unchanged"
                             android:trackTintMode="add"
                             tools:ignore="UseSwitchCompatOrMaterialXml" />
                     </LinearLayout>
@@ -646,14 +658,14 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnResetDistance"
-                        style="@style/Button"
+                        style="@style/BTNHori"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="3"
-                        android:text="Mph"
+                        android:text="Reset"
+                        android:textSize="20sp"
+                        app:backgroundTint="@null"
                         app:cornerRadius="25dp"
-                        app:icon="@drawable/baseline_refresh_24"
-                        app:iconGravity="textStart"
                         app:strokeColor="#AAA3A3"
                         app:strokeWidth="0.5dp" />
                 </LinearLayout>

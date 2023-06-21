@@ -99,7 +99,8 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
     override fun displayColorChange(int: Int) {
         binding!!.time?.setTextColor(if (ColorUtils.isThemeDark()) Color.BLACK else Color.WHITE)
         binding!!.time?.backgroundTintList = ColorStateList.valueOf(ColorUtils.checkColor(int))
-        binding!!.speed?.setTextColor(ColorUtils.checkColor(int))
+        binding!!.speed?.backgroundTintList = ColorStateList.valueOf(ColorUtils.checkColor(int))
+        binding!!.speed?.setTextColor(if (ColorUtils.isThemeDark()) Color.BLACK else Color.WHITE)
      }
 
     @SuppressLint("SetTextI18n")

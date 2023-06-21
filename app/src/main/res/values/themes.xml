@@ -43,6 +43,9 @@
         <item name="android:iconTint" tools:targetApi="o">@color/black</item>
 
     </style>
+    <style name="BTNHori">
+        <item name="android:background">@drawable/background_button_hori</item>
+    </style>
 <style name="PREMIUM_VERSION">
     <item name="android:background">@drawable/stroke_premium</item>
  </style>

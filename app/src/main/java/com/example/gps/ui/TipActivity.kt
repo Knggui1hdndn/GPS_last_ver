@@ -52,19 +52,14 @@ class TipActivity : AppCompatActivity() {
         binding.btnMoreTip.setOnClickListener {
             sharedPreferences.edit().putBoolean(SettingConstants.CHECK_OPEN, true).apply()
             val intent1 = Intent(this, MoreTipActivity::class.java)
-            intent1.putExtra("activityLaunchedFrom", intent.getStringExtra("activityLaunchedFrom"))
             startActivity(intent1)
             finish()
         }
 
         binding.btnStartTrip.setOnClickListener {
-            if (intent.getStringExtra("activityLaunchedFrom") == "Main2") {
-                finish()
-            } else {
-                sharedPreferences.edit().putBoolean(SettingConstants.CHECK_OPEN, true).apply()
-                startActivity(Intent(this, MainActivity2::class.java))
-                finish()
-            }
+            sharedPreferences.edit().putBoolean(SettingConstants.CHECK_OPEN, true).apply()
+            startActivity(Intent(this, MainActivity2::class.java))
+            finish()
         }
     }
 

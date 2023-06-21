@@ -3,9 +3,12 @@ package com.example.gps.`object`
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 
 object CheckPermission {
+
     fun hasLocationPermission(context:Context): Boolean {
         val permission = Manifest.permission.ACCESS_FINE_LOCATION
         val permission1 = Manifest.permission.ACCESS_COARSE_LOCATION

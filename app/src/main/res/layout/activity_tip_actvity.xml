@@ -28,7 +28,7 @@
         android:linksClickable="false"
         android:selectAllOnFocus="false"
         android:text="Why are Odometers so Important?"
-        app:cornerRadius="30dp" />
+        app:cornerRadius="180dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn2"
@@ -42,7 +42,7 @@
         android:linksClickable="false"
         android:selectAllOnFocus="false"
         android:text="Odometer Reading – What is it &amp; How to check it?"
-        app:cornerRadius="30dp" />
+        app:cornerRadius="180dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn3"
@@ -54,9 +54,8 @@
         android:layout_marginEnd="5dp"
         android:layout_weight="1"
         android:autoLink="all"
-
         android:text="Reduce and Enforce Speed Limits"
-        app:cornerRadius="30dp" />
+        app:cornerRadius="180dp" />
 
     <com.google.android.gms.ads.AdView
         android:layout_width="match_parent"
@@ -67,14 +66,14 @@
         android:id="@+id/btn4"
         style="@style/ButtonTipDrak"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="40dp"
         android:layout_weight="1"
         android:autoLink="all"
         android:linksClickable="false"
         android:selectAllOnFocus="false"
         android:text="How to Stop Speeding"
-        app:cornerRadius="30dp" />
+        app:cornerRadius="180dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -93,7 +92,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginRight="15dp"
             android:layout_weight="5"
-            android:background="@drawable/background_button_light"
+            android:background="@drawable/background_button_hori"
             android:text="Start Trip"
             android:textAllCaps="false"
             android:textColor="@color/white"

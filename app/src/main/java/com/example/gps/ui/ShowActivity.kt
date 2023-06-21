@@ -274,12 +274,14 @@ class ShowActivity : AppCompatActivity() {
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
     private fun setData(mData: MovementData?) {
         Log.d("okskoos", mData.toString())
-        val df: DateFormat = SimpleDateFormat("dd/MM/yy_HH:mm:ss")
+        val df: DateFormat = SimpleDateFormat("dd/MM/yyyy_HH:mm:ss")
         with(binding)
         {
             if (mData != null) {
                 mData2 = mData
-                txtTimeStart.text = "Trip${df.format(mData.date)}"
+                val dateTime=df.format(mData.date).split("_")
+                txtTimeStart.text =  dateTime[0]
+                txtDateStart.text =   dateTime[1]
                 txtAddressEnd.text = getAddressLine(mData.endLatitude, mData.endLongitude)
                     ?: "_ _"
                 txtAddressStart.text = getAddressLine(mData.startLatitude, mData.startLongitude)

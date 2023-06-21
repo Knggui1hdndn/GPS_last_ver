@@ -80,6 +80,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), MeasurementInterFace.View
         binding.time?.setTextColor(if (ColorUtils.isThemeDark()) Color.BLACK else Color.WHITE)
         binding.time?.backgroundTintList = ColorStateList.valueOf(ColorUtils.checkColor(int))
      try {
+         binding.speed.trianglesColor=if (!ColorUtils.isThemeDark()) Color.BLACK else Color.WHITE
          binding.speed.setSpeedometerColor(ColorUtils.checkColor(int))
      }catch (_:Exception){}
     }

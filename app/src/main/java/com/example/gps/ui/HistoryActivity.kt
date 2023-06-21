@@ -49,13 +49,13 @@ class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
     }
 
     private fun setUpActivity() {
-        setSupportActionBar(binding.mToolBar)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setUpActionBar()
         myDataBase = MyDataBase.getInstance(this)
-        val mng = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         mutableListMovementData = myDataBase.movementDao().getAllMovementData()
-        if (SharedData.time.value!=0L) mutableListMovementData.removeAt(mutableListMovementData.size-1)
+        if (SharedData.time.value != 0L) mutableListMovementData.removeAt(mutableListMovementData.size - 1)
+
+
+        val mng = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         adapter = HistoryAdapter(this)
         list = mutableListMovementData.map { it to false }.toMap().toMutableMap()
         val direction = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
@@ -69,7 +69,7 @@ class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
                 this@HistoryActivity.isChecked = isChecked
                 checkbox.visibility = View.GONE
                 mLinear.visibility = View.VISIBLE
-                if (itemChecked.size == 0||list.size==0) binding.delete.isEnabled = false
+                if (itemChecked.size == 0 || list.size == 0) binding.delete.isEnabled = false
             }
             delete.setOnClickListener {
                 getDialog().show()
@@ -86,6 +86,12 @@ class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
         }
     }
 
+    private fun setUpActionBar() {
+        setSupportActionBar(binding.mToolBar)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     fun getDialog(): Dialog {
         val dialogBinding = DialogDeleteBinding.inflate(LayoutInflater.from(this))
@@ -98,8 +104,7 @@ class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
             )
             if (ColorUtils.isThemeDark()) {
 
-                dialogBinding.
-                btnCancel.setTextColor(Color.WHITE)
+                dialogBinding.btnCancel.setTextColor(Color.WHITE)
                 dialogBinding.btnCancel.backgroundTintList = ColorStateList.valueOf(Color.BLACK)
                 dialogBinding.btnDelete.setTextColor(Color.BLACK)
                 dialogBinding.btnDelete.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
@@ -113,7 +118,7 @@ class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
                 itemChecked.keys.forEach {
                     myDataBase.movementDao().delete(it)
                 }
-                if (itemChecked.size == 0||list.size==0) binding.delete.isEnabled = false
+                if (itemChecked.size == 0 || list.size == 0) binding.delete.isEnabled = false
                 dismiss()
             }
         }
@@ -134,12 +139,16 @@ class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) finish()
+        if (item.itemId == android.R.id.home) handleCheckedStateChanged()
         return true
     }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onBackPressed() {
+        handleCheckedStateChanged()
+    }
+
+    private fun handleCheckedStateChanged() {
         if (isChecked) {
             binding.checkbox.isChecked = false
             isChecked = false;
@@ -161,8 +170,9 @@ class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
             adapter.notifyDataSetChanged(list)
         } catch (e: Exception) {
         }
-        Log.d("ddddddđ",itemChecked.size.toString())
+        Log.d("ddddddđ", itemChecked.size.toString())
         itemChecked = itemChecked.filter { it.value }.toMutableMap()
-        if (itemChecked.size == 0||list.size==0) binding.delete.isEnabled = false else binding.delete.isEnabled=true
+        if (itemChecked.size == 0 || list.size == 0) binding.delete.isEnabled =
+            false else binding.delete.isEnabled = true
     }
 }

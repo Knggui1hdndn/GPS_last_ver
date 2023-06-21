@@ -70,9 +70,9 @@ class MotionCalculatorPresenter(
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun calculateSpeed(lastLocation: Location): Double {
-        Log.d("sssssaaaaaaac", lastLocation.speedAccuracyMetersPerSecond.toString())
-        if (!lastLocation.hasSpeedAccuracy()) return 0.0;
-        var speed = (lastLocation.speed * 3.6)
+        Log.d("sssssaaaaaaac",lastLocation.hasSpeedAccuracy().toString()+"      "+lastLocation.hasSpeed())
+        if (!lastLocation.hasSpeedAccuracy()||!lastLocation.hasSpeed()) return 0.0;
+        val speed = (lastLocation.speed * 3.6)
         if (sharedPreferencesSetting.getBoolean(SettingConstants.SPEED_ALARM, true)) {
             when {
                 SharedData.convertSpeed(speed).toInt() >= getWarningLimit() -> {
@@ -87,8 +87,6 @@ class MotionCalculatorPresenter(
             stopWarning()
         }
         return speed
-
-
     }
 
     override fun calculateTime(): Long {
@@ -202,11 +200,8 @@ class MotionCalculatorPresenter(
 
     // Phương thức phát cảnh báo
     override fun broadcastWarning() {
-        Log.d("sssssssssssssssssssssssa", "start" + mediaPlayer.isPlaying)
-
         if (!mediaPlayer.isPlaying) {
             mediaPlayer.start()
-            Log.d("sssssssssssssssssssssssa", "start1")
 //            val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 //            val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
 //            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0)

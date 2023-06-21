@@ -55,7 +55,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_weight="4"
                 android:layout_gravity="center"
-                android:background="@drawable/background_button_verti"
+                android:background="@drawable/background_button_hori"
                 android:text="Delete"
                 android:textAllCaps="false"
                 android:textSize="20sp"

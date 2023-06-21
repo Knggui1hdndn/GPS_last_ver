@@ -6,7 +6,7 @@
         android:icon="@drawable/rotation"
         android:title="Subcribe"
         app:showAsAction="always"
-        android:visible="false"
+         android:visible="false"
          />
     <item
         android:id="@+id/subcribe"

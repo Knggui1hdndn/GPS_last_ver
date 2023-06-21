@@ -5,10 +5,7 @@ interface SettingInterface {
         fun onRemoveBackGroundVehicle()
         fun onRemoveBackGroundUnit()
         fun onRemoveBackGroundViewMode()
-        fun onClickVehicle()
-        fun onClickUnit()
-        fun onClickViewMode()
-        fun onColorChange()
+
     }
     interface Presenter{
         fun updateVehicle()

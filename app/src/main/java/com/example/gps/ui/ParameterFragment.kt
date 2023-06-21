@@ -88,8 +88,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
         presenter.timeStart()
         SharedData.color.observe(viewLifecycleOwner) {
             with(binding) {
-                if (it != 0) {
-                    val colorStateList = ColorStateList.valueOf(ColorUtils.checkColor(it))
+                     val colorStateList = ColorStateList.valueOf(ColorUtils.checkColor(it))
                     txtDistance.setTextColor(colorStateList)
                     txtAvgSpeed.setTextColor(colorStateList)
                     txtMaxSpeed.setTextColor(colorStateList)
@@ -99,7 +98,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
                     imgPause.imageTintList = colorStateList
                     imgReset.imageTintList = colorStateList
                     imgResume.imageTintList = colorStateList
-                }
+
             }
         }
 

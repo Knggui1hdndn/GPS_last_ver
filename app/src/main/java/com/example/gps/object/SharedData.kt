@@ -19,6 +19,7 @@ object SharedData {
     val time = MutableLiveData<Long>(0)
     val onShowResetButton = MutableLiveData(0)
     val onShowTime = MutableLiveData(0)
+    @SuppressLint("SimpleDateFormat")
     val onTimeStart=MutableLiveData(SimpleDateFormat("dd/MM/yyyy\n00:00:00").format(System.currentTimeMillis()))
     var fromUnit = "km/h"
     var toUnit = ""

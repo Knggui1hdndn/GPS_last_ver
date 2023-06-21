@@ -101,11 +101,13 @@ class NotificationPresenter(val view: MapInterface.View, val smf: SupportMapFrag
             view.setMap(map!!)
             map?.apply {
                 moveCamera(CameraUpdateFactory.newLatLng(LatLng(18.683500, 105.485750)))
-                uiSettings.isZoomControlsEnabled = true
-                uiSettings.isRotateGesturesEnabled = true
+                 uiSettings.isRotateGesturesEnabled = true
                 if (CheckPermission.hasLocationPermission(context)) isMyLocationEnabled = true;
                 getUiSettings().setMyLocationButtonEnabled(false);
                 mapType = GoogleMap.MAP_TYPE_HYBRID
+                setOnMapLoadedCallback {
+                    getCurrentPosition()
+                }
                 setOnCameraMoveListener {
                     view.onMoveCamera()
                 }

@@ -9,6 +9,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -38,14 +39,13 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.internal.ContextUtils.getActivity
 
 
-class Setting : AppCompatActivity(), SettingInterface.View {
+class Setting : AppCompatActivity(), SettingInterface.View, View.OnKeyListener {
     private lateinit var binding: ActivitySettingBinding
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var btnMph: MaterialButton
     private lateinit var btnKm: MaterialButton
     private lateinit var btnKnot: MaterialButton
     private lateinit var btnOto: MaterialButton
-    private lateinit var btnLetGo: Button
     private lateinit var btnBicycle: MaterialButton
     private lateinit var btnTrain: MaterialButton
     private lateinit var btnMaxSpeepAnalog: MaterialButton
@@ -65,19 +65,15 @@ class Setting : AppCompatActivity(), SettingInterface.View {
     private lateinit var txtDistance: TextView
     private lateinit var edtWarningLimit: EditText
     private lateinit var vehicleDao: VehicleDao
-    private var colorPosition = 1
+    private var colorPosition = 0
     private var checkUnitClick = 0
     private var checkVehicleClick = 0
     private lateinit var myDataBase: MyDataBase
-private var checkThemeClick=false
     val fragmentManager = (SharedData.activity as MainActivity2).supportFragmentManager
-    private lateinit var notificationsFragment: NotificationsFragment
-    private lateinit var homeFragment: HomeFragment
-    private lateinit var dashboardFragment: DashboardFragment
-
-
+    private var notificationsFragment: NotificationsFragment? = null
     var color = Color.BLACK
     private var distance: Int = 0
+    private var checkTheme = true
 
     @SuppressLint("CommitPrefEdits", "SetTextI18n", "RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,60 +81,7 @@ private var checkThemeClick=false
         binding = ActivitySettingBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initView()
-        try {
-            homeFragment = fragmentManager.findFragmentByTag("f0") as HomeFragment
-            dashboardFragment = fragmentManager.findFragmentByTag("f1") as DashboardFragment
-            notificationsFragment = fragmentManager.findFragmentByTag("f2") as NotificationsFragment
-        } catch (e: java.lang.Exception) {
-        }
-        if (!ColorUtils.isThemeDark()) {
-            btnResetDistance.iconTint = ColorStateList.valueOf(Color.BLACK)
-            color = Color.WHITE
-            binding.mToolBar.setTitleTextColor(Color.BLACK)
-        } else {
-            binding.mToolBar.setTitleTextColor(Color.WHITE)
-        }
-        setSupportActionBar(binding.mToolBar)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
-        myDataBase = MyDataBase.getInstance(this)
-        vehicleDao = myDataBase.vehicleDao()
-        colorPosition = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, 0)
-
-        edtWarningLimit.setOnKeyListener(object : DialogInterface.OnKeyListener,
-            View.OnKeyListener {
-            override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
-                if (event != null) {
-                    if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-                        try {
-                            val url = edtWarningLimit.text.toString()
-                            if (url.toInt() >= 0 && url.isNotEmpty()) {
-                                myDataBase.vehicleDao().updateWarning(url.toInt())
-                                edtWarningLimit.setText(url)
-                            }
-                        } catch (e: Exception) {
-                            Toast.makeText(
-                                this@Setting,
-                                "Tốc độ không để trống",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                        return true
-                    }
-                }
-                return false
-            }
-
-            override fun onKey(dialog: DialogInterface?, keyCode: Int, event: KeyEvent?): Boolean {
-                return false
-            }
-        })
-
-        distance = getSharedPreferences("state", Service.MODE_PRIVATE).getInt(
-            MyLocationConstants.DISTANCE,
-            0
-        )
+        setUpActivity()
         setBackgroundALL()
         swtAlarm.setOnCheckedChangeListener { _, isChecked ->
             saveSettingBoolean(SettingConstants.SPEED_ALARM, isChecked, swtAlarm)
@@ -147,12 +90,13 @@ private var checkThemeClick=false
         swtShowReset.setOnCheckedChangeListener { _, isChecked ->
             toggleShowReset()
         }
+
         binding.txtRating.setOnClickListener {
             getDialogRate().show()
         }
+
         swtClockDisplay.setOnCheckedChangeListener { _, isChecked ->
             toggleClockVisibilityLandscape()
-
         }
 
         swtTrackOnMap.setOnCheckedChangeListener { _, isChecked ->
@@ -164,6 +108,11 @@ private var checkThemeClick=false
             saveSettingBoolean(SettingConstants.DISPLAY_SPEED, isChecked, swtShowSpeedInNoti)
         }
 
+        binding.resetColor.setOnClickListener {
+            sharedPreferences.edit().putInt(SettingConstants.COLOR_DISPLAY, 0).apply()
+            SharedData.color.value=0
+            recreate()
+        }
 
 
         btnMaxSpeepAnalog.setOnClickListener {
@@ -171,94 +120,121 @@ private var checkThemeClick=false
         }
 
         btnResetDistance.setOnClickListener {
-            when (checkUnitClick) {
-                1 -> txtDistance.text = "000000 Mph"
-                2 -> txtDistance.text = "000000 Km/h"
-                3 -> txtDistance.text = "000000 Knot"
+            txtDistance.text = when (checkUnitClick) {
+                1 -> "000000 Mph"
+                2 -> "000000 Km/h"
+                3 -> "000000 Knot"
+                else -> ""
             }
             getSharedPreferences("state", Service.MODE_PRIVATE).edit()
-                .putInt(MyLocationConstants.DISTANCE, 0).apply()
+                .putInt(MyLocationConstants.DISTANCE, 0)
+                .apply()
         }
 
 
-        btnOto.setOnClickListener {
-            updateVehicle(1)
-            removeTextWhenColorPositionIs0(btnOto, "vehicle")
+        val listVehicle = arrayOf(
+            btnTrain to 3,
+            btnBicycle to 2,
+            btnOto to 1
+        )
 
-        }
+        val listUnit = arrayOf(
+            Triple(btnMph, "mph", "mi"),
+            Triple(btnKm, "km/h", "km"),
+            Triple(btnKnot, "knot", "nm"),
+        )
 
-        btnBicycle.setOnClickListener {
-            updateVehicle(2)
-            removeTextWhenColorPositionIs0(btnBicycle, "vehicle")
+        val listViewMode = arrayOf(
+            binding.btnAnalog to 1,
+            binding.btnDigital to 2,
+            binding.btnMap to 3
+        )
 
-        }
-
-        btnTrain.setOnClickListener {
-            updateVehicle(3)
-            removeTextWhenColorPositionIs0(btnTrain, "vehicle")
-
-        }
-
-        btnMph.setOnClickListener {
-            updateSpeedUnit("mph", "mi")
-            removeTextWhenColorPositionIs0(btnMph, "unit")
-        }
-
-        btnKm.setOnClickListener {
-            updateSpeedUnit("km/h", "km")
-            removeTextWhenColorPositionIs0(btnKm, "unit")
-
-        }
-        btnKnot.setOnClickListener {
-            updateSpeedUnit("knot", "nm")
-            removeTextWhenColorPositionIs0(btnKnot, "unit")
-
-        }
-        when (sharedPreferences.getBoolean(SettingConstants.THEME, true)) {
-            true -> {
-                binding.light.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                ;removeTextWhenColorPositionIs0(binding.light, "theme");
-            }
-
-            false -> {
-                binding.dark.setBackgroundColor(ColorUtils.checkColor(colorPosition))
-                removeTextWhenColorPositionIs0(binding.dark, "theme");
-            }
-
-        }
-
-        with(binding) {
-            dark.setOnClickListener {
-                setThemeClickListener(dark, false)
-            }
-            light.setOnClickListener {
-                setThemeClickListener(light, true)
-
-            }
-            btnAnalog.setOnClickListener {
-                setButtonViewModeClickListener(btnAnalog, 1)
-
-            }
-            btnMap.setOnClickListener {
-                setButtonViewModeClickListener(btnMap, 3)
-
-            }
-            btnDigital.setOnClickListener {
-                setButtonViewModeClickListener(btnDigital, 2)
-
+        listVehicle.forEach { (btn, vehicle) ->
+            btn.setOnClickListener {
+                updateVehicle(vehicle)
+                removeTextWhenColorPositionIs0(btn, "vehicle")
             }
         }
+
+        listUnit.forEach { (btn, speedUnit, distanceUnit) ->
+            btn.setOnClickListener {
+                updateSpeedUnit(speedUnit, distanceUnit)
+                removeTextWhenColorPositionIs0(btn, "unit")
+            }
+        }
+
+        listViewMode.forEach { (btn, viewMode) ->
+            btn.setOnClickListener {
+                setButtonViewModeClickListener(btn, viewMode)
+            }
+        }
+
+
+        binding.dark.setOnClickListener { setThemeClickListener(binding.dark, false) }
+        binding.light.setOnClickListener { setThemeClickListener(binding.light, true) }
+
+
         onClickBtnColor(btnColor2, btnColor3, btnColor4, btnColor5, btnColor6, btnColor7)
+    }
+
+    fun setBackGroundButtonAppTheme() {
+
+        val isLightTheme = sharedPreferences.getBoolean(SettingConstants.THEME, true)
+        val themeButton = if (isLightTheme) binding.light else binding.dark
+        val themeColor = ColorUtils.checkColor(colorPosition)
+        themeButton.setBackgroundColor(themeColor)
+        removeTextWhenColorPositionIs0(themeButton, "theme")
+    }
+
+    private fun setUpActivity() {
+        notificationsFragment = try {
+            fragmentManager.findFragmentByTag("f2") as NotificationsFragment
+        } catch (e: java.lang.Exception) {
+            null
+        }
+        setTitleTextColors()
+        setupActionBar()
+        initializeData()
+        edtWarningLimit.setOnKeyListener(this)
+    }
+
+    private fun initializeData() {
+        sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
+        myDataBase = MyDataBase.getInstance(this)
+        vehicleDao = myDataBase.vehicleDao()
+        colorPosition = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, 0)
+        distance = getSharedPreferences("state", Service.MODE_PRIVATE)
+            .getInt(MyLocationConstants.DISTANCE, 0)
+    }
+
+    private fun setupActionBar() {
+        setSupportActionBar(binding.mToolBar)
+        supportActionBar?.apply {
+            setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
+            setDisplayHomeAsUpEnabled(true)
+        }
+    }
+
+    private fun setTitleTextColors() {
+        if (!ColorUtils.isThemeDark()) {
+            btnResetDistance.iconTint = ColorStateList.valueOf(Color.BLACK)
+            color = Color.WHITE
+            binding.mToolBar.setTitleTextColor(Color.BLACK)
+        } else {
+            binding.mToolBar.setTitleTextColor(Color.WHITE)
+        }
     }
 
     fun getDialogRate(): Dialog {
         val dialogBinding = DialogRateBinding.inflate(LayoutInflater.from(this))
         val dialog = Dialog(this).apply {
             window?.setBackgroundDrawableResource(android.R.color.transparent);
+            window?.setGravity(Gravity.TOP)
             setContentView(dialogBinding.root)
             window?.setLayout(
                 WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT
+                WindowManager.LayoutParams.WRAP_CONTENT
             )
             if (ColorUtils.isThemeDark()) {
                 dialogBinding.mRcy.setBackgroundColor(getColor(R.color.unchanged))
@@ -271,10 +247,13 @@ private var checkThemeClick=false
 
     fun setThemeClickListener(button: MaterialButton, theme: Boolean) {
         //theme true là sáng
-        val nightMode = if (theme) AppCompatDelegate.MODE_NIGHT_NO else AppCompatDelegate.MODE_NIGHT_YES
+
+        val nightMode =
+            if (theme) AppCompatDelegate.MODE_NIGHT_NO else AppCompatDelegate.MODE_NIGHT_YES
         AppCompatDelegate.setDefaultNightMode(nightMode)
         sharedPreferences.edit().putBoolean(SettingConstants.THEME, theme).apply()
         button.setBackgroundColor(ColorUtils.checkColor(colorPosition))
+        button.setTextColor(ColorUtils.checkColor(colorPosition))
 
         removeTextWhenColorPositionIs0(button, "theme")
 
@@ -304,7 +283,7 @@ private var checkThemeClick=false
     }
 
     private fun saveSettingBoolean(key: String, value: Boolean, sw: Switch) {
-        sw.trackTintList =
+        sw.thumbTintList =
             if (sw.isChecked) ColorStateList.valueOf(ColorUtils.checkColor(colorPosition)) else ColorStateList.valueOf(
                 Color.GRAY
             )
@@ -331,7 +310,7 @@ private var checkThemeClick=false
         onRemoveBackGroundUnit()
         setBackGroundButtonUnitClick()
         setBackGroundButtonViewMode()
-        binding.a.text=speedUnit
+        binding.a.text = speedUnit
 
     }
 
@@ -344,7 +323,7 @@ private var checkThemeClick=false
                 "view_mode" -> listOf(binding.btnAnalog, binding.btnMap, binding.btnDigital)
                 "unit" -> listOf(binding.btnKm, binding.btnKnot, binding.btnMph)
                 "vehicle" -> listOf(binding.btnTrain, binding.btnBicycle, binding.btnOto)
-                else -> emptyList()
+                else -> listOf(binding.dark, binding.light)
             }
 
             buttons.forEach { it.setTextColor(colorButtonDefault) }
@@ -419,7 +398,7 @@ private var checkThemeClick=false
 
 
     private fun toggleTrackOnMap() {
-        if (this::notificationsFragment.isInitialized) notificationsFragment.onClearMap(
+        if (notificationsFragment != null) notificationsFragment!!.onClearMap(
             swtTrackOnMap.isChecked
         )
     }
@@ -438,19 +417,18 @@ private var checkThemeClick=false
         )
         val position: Int = array.indexOf(btnMaxSpeepAnalog.text.toString())
         return AlertDialog.Builder(this@Setting, R.style.AlertDialogCustom).apply {
-            setTitle("Chọn Tốc độ Đông hồ Analog").setSingleChoiceItems(
+            setTitle("Max Speed of Analog Meter").setSingleChoiceItems(
                 array, position
             ) { _, which ->
                 item = array[which].toInt()
             }
-            setNegativeButton("Hủy Bỏ") { dialog: DialogInterface, _: Int ->
+            setNegativeButton("Cancel") { dialog: DialogInterface, _: Int ->
                 dialog.dismiss()
             }
-            setPositiveButton("Đồng Ý") { dialog: DialogInterface, _: Int ->
+            setPositiveButton("Ok") { dialog: DialogInterface, _: Int ->
                 SharedData.speedAnalog.value = item
                 myDataBase.vehicleDao().updateMaxSpeed(item)
                 btnMaxSpeepAnalog.text = item.toString()
-                registerReceiverUnitFromFragmentM2()
                 dialog.cancel()
                 registerReceiverUnitFromFragmentM2()
             }
@@ -474,7 +452,7 @@ private var checkThemeClick=false
         setBackGroundButtonUnitClick()
         setBackGroundButtonVehicleClick()
         setBackGroundButtonViewMode()
-
+        setBackGroundButtonAppTheme()
     }
 
 
@@ -524,7 +502,7 @@ private var checkThemeClick=false
         constants: String
     ) {
         sw.isChecked = sharedPreferences.getBoolean(constants, true)
-        sw.trackTintList =
+        sw.thumbTintList =
             if (sw.isChecked) ColorStateList.valueOf(ColorUtils.checkColor(colorPosition)) else ColorStateList.valueOf(
                 Color.GRAY
             )
@@ -578,19 +556,21 @@ private var checkThemeClick=false
         }
     }
 
-    override fun onClickVehicle() {
 
-    }
+    override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
+        if (event?.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+            try {
+                val url = edtWarningLimit.text.toString()
+                if (url.toInt() >= 0 && url.isNotEmpty()) {
+                    myDataBase.vehicleDao().updateWarning(url.toInt())
+                    edtWarningLimit.setText(url)
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@Setting, "Tốc độ không để trống", Toast.LENGTH_SHORT).show()
+            }
+            return true
+        }
 
-    override fun onClickUnit() {
-
-    }
-
-    override fun onClickViewMode() {
-
-    }
-
-    override fun onColorChange() {
-
+        return false
     }
 }

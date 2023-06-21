@@ -106,8 +106,8 @@ class MainActivity2 : AppCompatActivity(), onRecever {
             SettingConstants.SETTING,
             Service.MODE_PRIVATE
         ).getInt(SettingConstants.COLOR_DISPLAY, 0)
-         if (intColor == 0) {
-             return if (ColorUtils.isThemeDark()) R.color.white else R.color.black
+        if (intColor == 0) {
+            return if (ColorUtils.isThemeDark()) R.color.white else R.color.black
         }
         when (intColor) {
             2 -> return R.color.color_2
@@ -126,28 +126,28 @@ class MainActivity2 : AppCompatActivity(), onRecever {
             menu!!.getItem(1).isVisible = false
             menu.getItem(0).isVisible = true
         }
-        menu!!.getItem(0).isEnabled=true
-        for (i in 1 until menu!!.size()) {
+        for (i in 0 until menu!!.size()) {
             if (menu.getItem(i).itemId != R.id.subcribe) menu.getItem(i).iconTintList =
                 ColorStateList.valueOf(color)
         }
 
         return true
     }
-private var checkRotation=false
+
+    private var checkRotation = false
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.settings -> startActivity(Intent(this, Setting::class.java))
             R.id.history -> startActivity(Intent(this, HistoryActivity::class.java))
             R.id.tip -> {
-                val intent = Intent(this, TipActivity::class.java)
+                val intent = Intent(this, MoreTipActivity::class.java)
                 intent.putExtra("activityLaunchedFrom", "Main2")
                 startActivity(intent)
             }
 
             R.id.rotation -> {
-                val check=binding.container.rotationX
-                 binding.container.rotationX =  if(check==0F) 180F else 0F
+                val check = binding.container.rotationX
+                binding.container.rotationX = if (check == 0F) 180F else 0F
             }
         }
         return true
