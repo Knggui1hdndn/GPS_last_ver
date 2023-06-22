@@ -55,7 +55,7 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="20dp"
                     android:layout_weight="4"
-                    android:text="Subcribe"
+                    android:text="Subscribe"
                     android:textAllCaps="false"
                     android:textSize="20sp"
                     app:backgroundTint="@null" />
@@ -238,7 +238,7 @@
                                 android:layout_marginEnd="5dp"
                                 android:layout_weight="3"
                                 android:padding="11dp"
-                                android:text="Km"
+                                android:text="Km/h"
                                 app:cornerRadius="20dp"
                                 app:strokeColor="@color/strokeColor"
                                 app:strokeWidth="0.5dp" />

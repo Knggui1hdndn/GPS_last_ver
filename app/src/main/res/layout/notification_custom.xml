@@ -5,7 +5,6 @@
     android:background="@color/unchanged"
     android:gravity="center"
     android:orientation="horizontal"
-    android:padding="5dp"
 
     android:weightSum="10">
 
@@ -24,6 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="5dp"
+
             android:gravity="center"
             android:text="Current Speed"
             android:textColor="@color/black"
@@ -77,6 +77,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical|bottom"
             android:orientation="horizontal">
 
             <TextView
@@ -84,11 +85,6 @@
                 android:layout_height="wrap_content"
                 android:text="Distance:     "
                 android:textColor="@color/black" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center">
 
                 <TextView
                     android:id="@+id/txtDistance"
@@ -115,13 +111,12 @@
                     android:text="km/h"
                     android:textColor="@color/white"
                     android:textStyle="bold" />
-            </RelativeLayout>
-        </LinearLayout>
+         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
+android:gravity="center_vertical|bottom"
             >
 
             <TextView
@@ -132,10 +127,7 @@
 
                 />
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center">
+
 
                 <TextView
                     android:id="@+id/txtMaxSpeed"
@@ -153,15 +145,13 @@
                     android:id="@+id/unit3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignBottom="@id/txtMaxSpeed"
-                    android:layout_toRightOf="@id/txtMaxSpeed"
+                     android:layout_toRightOf="@id/txtMaxSpeed"
                     android:gravity="center"
                     android:text="km/h"
                     android:textColor="@color/white"
                     android:textSize="15sp"
                     android:textStyle="bold" />
-            </RelativeLayout>
-        </LinearLayout>
+         </LinearLayout>
 
     </LinearLayout>
 </LinearLayout>
