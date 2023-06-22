@@ -40,12 +40,14 @@ class ParameterPresenter(
 
     override fun getDistance() {
         SharedData.distanceLiveData.observe(context.viewLifecycleOwner) {
-            view.onShowDistance(
-                String.format(
-                    "%.2f",
-                    SharedData.convertDistance(it)
-                ) + SharedData.toUnitDistance
-            )
+           if(it!=null){
+               view.onShowDistance(
+                   String.format(
+                       "%.2f",
+                       SharedData.convertDistance(it)
+                   ) + SharedData.toUnitDistance
+               )
+           }
         }
     }
 
@@ -102,6 +104,7 @@ class ParameterPresenter(
     override fun stopService() {
         setState(MyLocationConstants.STOP)
         callMyService(MyLocationConstants.STOP)
+
         showStart()
         SharedData.onTimeStart.value= SimpleDateFormat("dd/MM/yyyy\n00:00:00").format(System.currentTimeMillis())
     }

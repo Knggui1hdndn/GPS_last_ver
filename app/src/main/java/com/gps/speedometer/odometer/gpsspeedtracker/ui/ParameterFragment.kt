@@ -14,6 +14,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.MyLocationConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.R
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
@@ -31,6 +32,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
     private lateinit var presenter: ParameterPresenter
     private var check = false
     private var sharedPreferences: SharedPreferences? = null
+    private var shareShow: SharedPreferences? = null
 
     private val permissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
@@ -57,6 +59,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentParameterBinding.bind(view)
         sharedPreferences = requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
+        shareShow = requireActivity().getSharedPreferences("show", AppCompatActivity.MODE_PRIVATE)
         presenter = ParameterPresenter(this, this)
         presenter.updateUIState()
         presenter.getDistance()
@@ -96,7 +99,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
             if (!CheckPermission.hasLocationPermission(requireContext())) {
                 permissionsLauncher.launch(
                     arrayOf(
-                         Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.ACCESS_COARSE_LOCATION,
                     )
                 )

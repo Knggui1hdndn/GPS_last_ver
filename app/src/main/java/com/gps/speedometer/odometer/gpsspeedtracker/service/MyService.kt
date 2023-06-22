@@ -51,15 +51,7 @@ class MyService : Service(), LocationChangeListener {
     private fun handle(action: String?) {
         when (action) {
             MyLocationConstants.START -> {
-                map = Map(
-                    applicationContext,
-                    MotionCalculatorPresenter(
-                        this,
-                        mutableListOf(),
-                        MyDataBase.getInstance(applicationContext)
-                    ),
-                    this
-                )
+
                 updateNotification("0", "0", "0")
                 map.setStart()
                 map.startCallBack()

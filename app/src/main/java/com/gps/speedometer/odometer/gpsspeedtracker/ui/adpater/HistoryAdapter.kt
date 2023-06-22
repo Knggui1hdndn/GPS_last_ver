@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.gps.speedometer.odometer.gpsspeedtracker.model.MovementData
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
@@ -24,6 +25,7 @@ interface sendHashMapChecked {
 
 class HistoryAdapter(private val sendHashMapChecked: sendHashMapChecked) :
     RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder>() {
+
     private var list: MutableMap<MovementData, Boolean> = hashMapOf()
     private var isShowCheck = false
 
@@ -47,7 +49,8 @@ class HistoryAdapter(private val sendHashMapChecked: sendHashMapChecked) :
                 binding.mLinear.setOnClickListener {
                     if (!isShowCheck) {
                         val intent = Intent(it.context, ShowActivity::class.java)
-                        intent.putExtra("movementData", movementData)
+                        it.context.getSharedPreferences("show", AppCompatActivity.MODE_PRIVATE)
+                            .edit().putInt("id", movementData.id).apply()
                         binding.root.context.startActivity(intent)
                     }
                 }

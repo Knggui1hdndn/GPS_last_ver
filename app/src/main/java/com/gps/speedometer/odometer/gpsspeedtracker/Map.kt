@@ -19,6 +19,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.MyLocationConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.service.MyService
+import com.gps.speedometer.odometer.gpsspeedtracker.ui.adpater.HistoryAdapter
 
 
 interface LocationChangeListener {
@@ -37,9 +38,8 @@ class Map(
 
     private val locationCallback = object : LocationCallback() {
         @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-         override fun onLocationResult(locationResult: LocationResult) {
+        override fun onLocationResult(locationResult: LocationResult) {
             val lastLocation = locationResult.lastLocation
-            Log.d("lollllllllllllll",lastLocation.toString())
             motion.updateLocation(lastLocation!!) { averageSpeed, currentSpeed, distance, maxSpeed, time ->
                 if (checkStart) {
                     motion.updateMovementDataWhenStart()
@@ -77,6 +77,7 @@ class Map(
         motion.stopTimer()
         if (checkStop) {
             motion.updateMovementDataWhenStop()
+
             checkStop = false
             checkStart = false
         }
@@ -92,8 +93,12 @@ class Map(
     }
 
 
-    private val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10)
-        .setWaitForAccurateLocation(true).setMinUpdateIntervalMillis(10)
-        .setGranularity(Granularity.GRANULARITY_FINE).setMaxUpdateDelayMillis(10).build()
+    private val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 100)
+        .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+        .setGranularity(Granularity.GRANULARITY_FINE)
+        .setMinUpdateDistanceMeters(0f)
+        .setWaitForAccurateLocation(true)
+        .setMinUpdateIntervalMillis(100)
+        .setMaxUpdateDelayMillis(100).build()
 
 }

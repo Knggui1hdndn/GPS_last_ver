@@ -2,6 +2,7 @@ package com.gps.speedometer.odometer.gpsspeedtracker.presenter
 
 import android.app.Service
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.content.SharedPreferences
 import android.location.Location
@@ -9,10 +10,12 @@ import android.media.MediaPlayer
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import com.gps.speedometer.odometer.gpsspeedtracker.R
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.MyLocationConstants
- import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
+import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
 import com.gps.speedometer.odometer.gpsspeedtracker.dao.MyDataBase
 import com.gps.speedometer.odometer.gpsspeedtracker.interfaces.MotionCalculatorInterface
@@ -24,7 +27,7 @@ class MotionCalculatorPresenter(
     private val listSpeed: MutableList<Double>,
     private val myDataBase: MyDataBase
 ) : MotionCalculatorInterface {
-
+    private val shareShow: SharedPreferences=context.getSharedPreferences("show",  MODE_PRIVATE)
     private var distance = 0.0
     private var timer: Long = 0
     private lateinit var previousLocation: Location
@@ -42,7 +45,7 @@ class MotionCalculatorPresenter(
             timer += 1000
             SharedData.time.value = timer
             SharedData.averageSpeedLiveData.value = getAverageSpeed()
-             handler.postDelayed(this, 1000)
+            handler.postDelayed(this, 1000)
         }
     }
 
@@ -67,7 +70,8 @@ class MotionCalculatorPresenter(
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun calculateSpeed(lastLocation: Location): Double {
-         if (!lastLocation.hasSpeedAccuracy()||!lastLocation.hasSpeed()) return 0.0;
+
+        if (!lastLocation.hasSpeed()) return 0.0
         val speed = (lastLocation.speed * 3.6)
         if (sharedPreferencesSetting.getBoolean(SettingConstants.SPEED_ALARM, true)) {
             when {
@@ -131,6 +135,7 @@ class MotionCalculatorPresenter(
         val distance = calculateDistance(lastLocation)
         val averageSpeed = getAverageSpeed()
         val currentSpeed = calculateSpeed(lastLocation)
+
         listSpeed.add(currentSpeed)
         val maxSpeed = calculateMaxSpeed()
         val time = calculateTime()
@@ -169,6 +174,7 @@ class MotionCalculatorPresenter(
             movementData.endLongitude = 0.0
         }
         myDataBase.movementDao().updateMovementData(movementData)
+        shareShow.edit().putInt("id",movementData.id).apply()
         resetSharedData()
         val i = Intent(context, ShowActivity::class.java)
         i.flags = Intent.FLAG_ACTIVITY_NEW_TASK

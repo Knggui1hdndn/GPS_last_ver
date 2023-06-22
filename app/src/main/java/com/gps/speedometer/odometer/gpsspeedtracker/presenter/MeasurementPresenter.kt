@@ -30,15 +30,15 @@ class MeasurementPresenter(val view: MeasurementInterFace.View, val fragment: Fr
 
     override fun currentSpeedChange() {
         SharedData.currentSpeedLiveData.observe(fragment) {
-            Log.d("okokok,", SharedData.convertSpeed(it.keys.first()).toInt().toString())
-            it[it.keys.first()]?.let { it1 ->
-
-                view.displayCurrentSpeedChange(
-                    if (it.keys.first() <= 0) "000" else "%03d".format(
-                        SharedData.convertSpeed(it.keys.first()).toInt()
-                    ), it1
-                )
-            }
+             if (it!=null){
+                 it[it.keys.first()]?.let { it1 ->
+                     view.displayCurrentSpeedChange(
+                         if (it.keys.first() <= 0) "000" else "%03d".format(
+                             SharedData.convertSpeed(it.keys.first()).toInt()
+                         ), it1
+                     )
+                 }
+             }
         }
     }
 }

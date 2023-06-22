@@ -21,7 +21,8 @@ interface MovementDataDao {
 
     @Query("SELECT * FROM MovementData ORDER BY id DESC LIMIT 1")
     fun getLastMovementData(): MovementData
-
+    @Query("SELECT * FROM MovementData where id= :id")
+    fun getMovementDataById(id:Int): MovementData
     @Update
     fun updateMovementData(movementData: MovementData)
 

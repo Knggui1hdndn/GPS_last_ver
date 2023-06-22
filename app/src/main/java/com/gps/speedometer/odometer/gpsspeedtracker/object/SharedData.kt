@@ -64,8 +64,12 @@ object SharedData {
     }
 
     fun convertDistance(distance: Double): Double {
-        val sp: Double = distance * conversionRatesDistance[fromUnitDistance]!![toUnitDistance]!!
-        return sp
+
+        return try {
+            distance * conversionRatesDistance[fromUnitDistance]!![toUnitDistance]!!
+        }catch (e:Exception){
+            0.0
+        }
     }
 
     var activity: Activity? = null

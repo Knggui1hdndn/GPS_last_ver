@@ -15,6 +15,7 @@ import android.location.Geocoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
@@ -26,10 +27,10 @@ import android.widget.RelativeLayout
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
- import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
+import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
 import com.gps.speedometer.odometer.gpsspeedtracker.dao.MyDataBase
- import com.gps.speedometer.odometer.gpsspeedtracker.model.MovementData
+import com.gps.speedometer.odometer.gpsspeedtracker.model.MovementData
 import com.gps.speedometer.odometer.gpsspeedtracker.utils.ColorUtils
 import com.gps.speedometer.odometer.gpsspeedtracker.utils.FontUtils
 import com.gps.speedometer.odometer.gpsspeedtracker.utils.StringUtils
@@ -46,6 +47,7 @@ import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.gps.speedometer.odometer.gpsspeedtracker.R
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.ActivityShowBinding
+import com.gps.speedometer.odometer.gpsspeedtracker.ui.adpater.HistoryAdapter
 import java.io.File
 import java.io.FileOutputStream
 import java.text.DateFormat
@@ -57,15 +59,15 @@ import java.util.Locale
 class ShowActivity : AppCompatActivity() {
     private lateinit var bottomSheet: RelativeLayout
     private lateinit var binding: ActivityShowBinding
-    private var mData2: MovementData? = null
+    private lateinit var mData2: MovementData
     private val polylineOptions = PolylineOptions()
     private lateinit var myDataBase: MyDataBase
 
     @SuppressLint("MissingPermission")
     private val callback = OnMapReadyCallback { p0 ->
         map = p0
-        val startLatLng = LatLng(mData2!!.startLatitude, mData2!!.startLongitude)
-        val endLatLng = LatLng(mData2!!.endLatitude, mData2!!.endLongitude)
+        val startLatLng = LatLng(mData2.startLatitude, mData2.startLongitude)
+        val endLatLng = LatLng(mData2.endLatitude, mData2.endLongitude)
 
         val builder = LatLngBounds.Builder()
         builder.include(startLatLng)
@@ -85,7 +87,7 @@ class ShowActivity : AppCompatActivity() {
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
         )
 
-        if (mData2!!.endLatitude != 0.0) {
+        if (mData2.endLatitude != 0.0) {
             p0.addMarker(
                 MarkerOptions()
                     .position(endLatLng)
@@ -117,31 +119,50 @@ class ShowActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId", "CutPasteId", "WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupMyActivity()
+        val shareShow = getSharedPreferences("show", MODE_PRIVATE)
+        mData2 = MyDataBase.getInstance(this).movementDao()
+            .getMovementDataById(shareShow.getInt("id", 0))
+        Log.d("sddddd",mData2.toString())
+        setupMyActivity(savedInstanceState)
         setBackgroundColor()
         setFont()
         if (ColorUtils.isThemeDark()) binding.mCoordinatorLayout.setBackgroundColor(Color.BLACK) else binding.mCoordinatorLayout.setBackgroundColor(
             Color.WHITE
         )
 
+
     }
 
+    override fun onPause() {
+        super.onPause()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable("key_intent", intent)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("ssssssssssssss", "sssssssss")
+    }
 
     private fun formatTripInformation(): String {
         with(mData2) {
-            val startLaLong = "${this!!.startLatitude},${startLongitude}"
+            val startLaLong = "${this.startLatitude},${startLongitude}"
             val endLaLong = "${this.startLatitude},${startLongitude}"
             val startPoint = "Start point: $startLaLong"
             val endPoint = "End point: $endLaLong"
             val time = "Time: ${TimeUtils.formatTime(time)}"
-            val date = "Date: ${SimpleDateFormat("dd/MM/YYYY").format(mData2?.date)}"
+            val date = "Date: ${SimpleDateFormat("dd/MM/YYYY").format(mData2.date)}"
             return "$startPoint\n$endPoint\n$time,$date"
         }
         return ""
     }
 
+
     @SuppressLint("NewApi")
-    private fun setupMyActivity() {
+    private fun setupMyActivity(savedInstanceState: Bundle?) {
         binding = ActivityShowBinding.inflate(layoutInflater)
         setContentView(binding.root)
         myDataBase = MyDataBase.getInstance(this)
@@ -150,7 +171,11 @@ class ShowActivity : AppCompatActivity() {
         setSupportActionBar(binding.mToolBar)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        setData(intent.extras?.getSerializable("movementData") as MovementData?)
+
+
+
+
+        setData(mData2)
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(callback)
     }
@@ -198,7 +223,11 @@ class ShowActivity : AppCompatActivity() {
 
 
     private fun openScreenshot(imageFile: File) {
-        val contentUri: Uri = FileProvider.getUriForFile(this, "com.gps.speedometer.odometer.gpsspeedtracker", imageFile)
+        val contentUri: Uri = FileProvider.getUriForFile(
+            this,
+            "com.gps.speedometer.odometer.gpsspeedtracker",
+            imageFile
+        )
         val sharingIntent = Intent(Intent.ACTION_SEND)
         sharingIntent.setType("image/png");
         sharingIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
@@ -269,15 +298,14 @@ class ShowActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
     private fun setData(mData: MovementData?) {
-        Log.d("okskoos", mData.toString())
         val df: DateFormat = SimpleDateFormat("dd/MM/yyyy_HH:mm:ss")
         with(binding)
         {
             if (mData != null) {
-                mData2 = mData
-                val dateTime=df.format(mData.date).split("_")
-                txtTimeStart.text =  dateTime[0]
-                txtDateStart.text =   dateTime[1]
+
+                val dateTime = df.format(mData.date).split("_")
+                txtTimeStart.text = dateTime[0]
+                txtDateStart.text = dateTime[1]
                 txtAddressEnd.text = getAddressLine(mData.endLatitude, mData.endLongitude)
                     ?: "_ _"
                 txtAddressStart.text = getAddressLine(mData.startLatitude, mData.startLongitude)
@@ -287,6 +315,8 @@ class ShowActivity : AppCompatActivity() {
                 txtTime.text = TimeUtils.formatTime(mData.time)
                 txtDistance.text =
                     DecimalFormat("#.##").format(SharedData.convertDistance(mData.distance)) + SharedData.toUnit
+
+
             }
         }
     }
@@ -340,7 +370,7 @@ class ShowActivity : AppCompatActivity() {
     }
 
     private fun onClickMenuDelete() {
-        mData2?.let { it1 ->
+        mData2.let { it1 ->
             myDataBase.movementDao().delete(it1)
             finish()
         }
