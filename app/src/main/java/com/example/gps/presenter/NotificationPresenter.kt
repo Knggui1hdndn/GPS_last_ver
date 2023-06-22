@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.gps.constants.MyLocationConstants
+import com.example.gps.constants.SettingConstants
 import com.example.gps.dao.MyDataBase
 import com.example.gps.interfaces.MapInterface
 import com.example.gps.`object`.CheckPermission
@@ -26,23 +27,28 @@ class NotificationPresenter(val view: MapInterface.View, val smf: SupportMapFrag
     private val context = smf.requireContext()
     private val shared = context.getSharedPreferences(MyLocationConstants.STATE, MODE_PRIVATE)
     private var map: GoogleMap? = null
-    private val polylineOptions= PolylineOptions()
+    private var polylineOptions = PolylineOptions()
     private val myDataBase = MyDataBase.getInstance(context)
+
     override fun checkShowPolyLine() {
+        Log.d("okokokom,m",isServiceRunning(MyService::class.java).toString())
         if (isServiceRunning(MyService::class.java)) {
-            polylineOptions.addAll(mutableListOf())
-            map?.addPolyline(
-                PolylineOptions().addAll(conVertToLatLng()).color(Color.GREEN).width(15f)
+             map?.addPolyline(
+                 PolylineOptions().addAll(conVertToLatLng()).color(Color.GREEN).width(15f)
             )
+        }else{
+            polylineOptions = PolylineOptions()
         }
     }
 
     override fun updatePolyLine() {
-        checkShowPolyLine()
+        val shared = context.getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         SharedData.locationLiveData.observe(smf) {
-            if (it != null) {
+            if (it != null && shared.getBoolean(SettingConstants.TRACK_ON_MAP, true)) {
+                Log.d("splaps",it.latitude.toString()+"   "+ it.longitude)
+
                 map?.addPolyline(
-               polylineOptions.add(LatLng(it.latitude, it.longitude)).color(Color.GREEN)
+                    polylineOptions.add(LatLng(it.latitude, it.longitude)).color(Color.GREEN)
                         .width(15f)
                 )
             }
@@ -76,8 +82,7 @@ class NotificationPresenter(val view: MapInterface.View, val smf: SupportMapFrag
     }
 
     override fun isServiceRunning(serviceClass: Class<*>): Boolean {
-        val manager =
-            context.getSystemService(AppCompatActivity.ACTIVITY_SERVICE) as ActivityManager
+        val manager =  context.getSystemService(AppCompatActivity.ACTIVITY_SERVICE) as ActivityManager
         for (service in manager.getRunningServices(Int.MAX_VALUE)) {
             if (serviceClass.name == service.service.className) {
                 return true
@@ -97,16 +102,16 @@ class NotificationPresenter(val view: MapInterface.View, val smf: SupportMapFrag
     override fun setUpMap() {
         val callback = OnMapReadyCallback { googleMap ->
             map = googleMap
-            updatePolyLine()
             view.setMap(map!!)
             map?.apply {
                 moveCamera(CameraUpdateFactory.newLatLng(LatLng(18.683500, 105.485750)))
-                 uiSettings.isRotateGesturesEnabled = true
+                uiSettings.isRotateGesturesEnabled = true
                 if (CheckPermission.hasLocationPermission(context)) isMyLocationEnabled = true;
                 getUiSettings().setMyLocationButtonEnabled(false);
                 mapType = GoogleMap.MAP_TYPE_HYBRID
                 setOnMapLoadedCallback {
                     getCurrentPosition()
+                     updatePolyLine()
                 }
                 setOnCameraMoveListener {
                     view.onMoveCamera()

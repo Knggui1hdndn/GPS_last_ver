@@ -68,6 +68,7 @@ class ParameterPresenter(
         }
     }
     override fun callMyService(action: String) {
+
         val intent = Intent(context.requireContext(), MyService::class.java)
         intent.action = action
         context.requireContext().startService(intent)

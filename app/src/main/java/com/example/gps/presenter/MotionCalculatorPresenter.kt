@@ -36,7 +36,7 @@ class MotionCalculatorPresenter(
     val sharedPreferencesSetting =
         context.getSharedPreferences(SettingConstants.SETTING, Context.MODE_PRIVATE)
     private val mediaPlayer: MediaPlayer = MediaPlayer.create(context, R.raw.wraning)
-    private var isWarningPlaying = false
+
     private var lastMovementDataId = myDataBase.movementDao().getLastMovementDataId()
 
     private val countRunnable: Runnable = object : Runnable {
@@ -44,8 +44,7 @@ class MotionCalculatorPresenter(
             timer += 1000
             SharedData.time.value = timer
             SharedData.averageSpeedLiveData.value = getAverageSpeed()
-            Log.d("okkokook", timer.toString())
-            handler.postDelayed(this, 1000)
+             handler.postDelayed(this, 1000)
         }
     }
 
@@ -70,8 +69,7 @@ class MotionCalculatorPresenter(
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun calculateSpeed(lastLocation: Location): Double {
-        Log.d("sssssaaaaaaac",lastLocation.hasSpeedAccuracy().toString()+"      "+lastLocation.hasSpeed())
-        if (!lastLocation.hasSpeedAccuracy()||!lastLocation.hasSpeed()) return 0.0;
+         if (!lastLocation.hasSpeedAccuracy()||!lastLocation.hasSpeed()) return 0.0;
         val speed = (lastLocation.speed * 3.6)
         if (sharedPreferencesSetting.getBoolean(SettingConstants.SPEED_ALARM, true)) {
             when {

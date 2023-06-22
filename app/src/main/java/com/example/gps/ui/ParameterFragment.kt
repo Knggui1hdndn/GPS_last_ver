@@ -131,6 +131,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
         }
         binding.btnStop.setOnClickListener {
             presenter.stopService()
+            requireContext().stopService(Intent(context , MyService::class.java))
             (requireActivity() as MainActivity2).sendDataToSecondFragment()
             val notificationsFragment =
                 (requireActivity() as MainActivity2).supportFragmentManager.findFragmentByTag("f2")

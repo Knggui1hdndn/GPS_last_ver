@@ -9,6 +9,7 @@ import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -73,11 +74,13 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
     }
 
     override fun onClearMap(boolean: Boolean) {
-        if(boolean) presenter.checkShowPolyLine() else googleMap.clear()
+        Log.d("ssssssssssssssssssssa",boolean.toString())
+        if(boolean) presenter.checkShowPolyLine() else  googleMap.clear();presenter.checkShowPolyLine()
     }
 
     override fun onShowCurrentSpeed(string: String) {
         binding!!.speed!!.text = string
+
     }
 
     override fun onMoveCamera() {
