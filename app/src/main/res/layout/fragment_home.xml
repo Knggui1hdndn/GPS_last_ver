@@ -10,7 +10,7 @@
     <!--        app:sv_withTremble="false"-->
     <fragment
         android:id="@+id/signal"
-        android:name="com.example.gps.ui.FragmentSignal"
+        android:name="com.gps.speedometer.odometer.gpsspeedtracker.ui.FragmentSignal"
         android:layout_width="match_parent"
         android:layout_height="0sp"
         android:layout_weight="0.5" />
@@ -72,7 +72,7 @@
 
         <fragment
             android:id="@+id/frag"
-            android:name="com.example.gps.ui.ParameterFragment"
+            android:name="com.gps.speedometer.odometer.gpsspeedtracker.ui.ParameterFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>

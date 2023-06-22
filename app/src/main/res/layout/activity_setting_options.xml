@@ -194,6 +194,7 @@ android:visibility="invisible"
                     android:layout_height="wrap_content"
                     android:layout_toLeftOf="@+id/a"
                     android:inputType="number"
+                    android:text="80"
                     android:textColor="@color/white" />
 
                 <TextView

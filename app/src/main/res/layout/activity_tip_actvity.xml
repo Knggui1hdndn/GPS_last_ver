@@ -5,7 +5,7 @@
     style="@style/BckGroundTip"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_weight="6"
+    android:layout_weight="10"
     android:orientation="vertical"
     android:padding="20dp">
 
@@ -21,9 +21,9 @@
         style="@style/ButtonTipNight"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="0.7"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="5dp"
-        android:layout_weight="1"
         android:autoLink="all"
         android:linksClickable="false"
         android:selectAllOnFocus="false"
@@ -37,7 +37,7 @@
         android:layout_height="0dp"
         android:layout_marginEnd="40dp"
 
-        android:layout_weight="1"
+        android:layout_weight="0.7"
         android:autoLink="all"
         android:linksClickable="false"
         android:selectAllOnFocus="false"
@@ -52,7 +52,7 @@
         android:layout_marginStart="40dp"
 
         android:layout_marginEnd="5dp"
-        android:layout_weight="1"
+        android:layout_weight="0.7"
         android:autoLink="all"
         android:text="Reduce and Enforce Speed Limits"
         app:cornerRadius="180dp" />
@@ -66,9 +66,9 @@
         android:id="@+id/btn4"
         style="@style/ButtonTipDrak"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginEnd="40dp"
-        android:layout_weight="1"
+        android:layout_weight="0.7"
         android:autoLink="all"
         android:linksClickable="false"
         android:selectAllOnFocus="false"
@@ -77,7 +77,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="center"
         android:layout_gravity="bottom"

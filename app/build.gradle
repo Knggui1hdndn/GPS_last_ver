@@ -6,15 +6,15 @@ plugins {
  }
 
 android {
-    namespace 'com.example.gps'
+    namespace 'com.gps.speedometer.odometer.gpsspeedtracker'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.gps"
+        applicationId "com.gps.speedometer.odometer.gpsspeedtracker"
         minSdk 24
         targetSdk 33
-        versionCode 100
-        versionName "1.0.0"
+        versionCode 102
+        versionName "1.0.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

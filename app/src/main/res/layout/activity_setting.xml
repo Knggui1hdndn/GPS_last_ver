@@ -37,8 +37,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="serif"
-                    android:shadowColor="#92AAA3A3"
+                     android:shadowColor="#92AAA3A3"
                     android:shadowDx="10"
                     android:shadowDy="12"
                     android:shadowRadius="13"
@@ -49,7 +48,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnDelete"
-                    style="@style/BackGroundButton"
+                    style="@style/BTNHori"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"

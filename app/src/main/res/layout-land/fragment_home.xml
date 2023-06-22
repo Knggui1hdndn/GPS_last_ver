@@ -48,7 +48,7 @@
 
         <fragment
             android:id="@+id/frag"
-            android:name="com.example.gps.ui.ParameterFragment"
+            android:name="com.gps.speedometer.odometer.gpsspeedtracker.ui.ParameterFragment"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="bottom"
