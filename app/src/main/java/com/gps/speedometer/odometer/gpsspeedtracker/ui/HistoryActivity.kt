@@ -53,8 +53,6 @@ class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
         if (SharedData.time.value != 0L && mutableListMovementData.size > 0) mutableListMovementData.removeAt(
             mutableListMovementData.size - 1
         )
-
-
         val mng = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         adapter = HistoryAdapter(this)
         list = mutableListMovementData.map { it to false }.toMap().toMutableMap()

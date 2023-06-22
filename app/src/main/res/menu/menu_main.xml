@@ -13,11 +13,16 @@
         android:icon="@drawable/subcribe"
         android:title="Subcribe"
         app:showAsAction="always"
-       />
+        android:visible="false"
+
+        />
     <item
         android:id="@+id/tip"
         android:icon="@drawable/tip"
         android:title="Tip"
+        android:visible="false"
+
+
         app:showAsAction="always" />
     <item
         android:id="@+id/history"

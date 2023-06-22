@@ -21,53 +21,65 @@
         <item name="android:textColor">@color/black</item>
 
     </style>
-    <style name="BTNHori">
-        <item name="android:background">@drawable/background_button_hori_dark</item>
+
+    <style name="BGSTART">
+        <item name="android:background">@drawable/background_button_stop_light</item>
+        <item name="android:textColor">@color/black</item>
     </style>
 
-<style name="AlertDialogCustom" parent="Theme.MaterialComponents.Light.Dialog.Alert">
-<item name="android:colorAccent">@color/black</item>
-</style>
+    <style name="txtColorPraram">
+        <item name="android:textColor">@color/CCCCCC</item>
+    </style>
+
+    <style name="BTNHori">
+        <item name="android:background">@drawable/background_button_hori_dark</item>
+        <item name="android:textColor">@color/black</item>
+
+    </style>
+
+    <style name="AlertDialogCustom" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+        <item name="android:colorAccent">@color/black</item>
+    </style>
 
 
-<style name="BackgroundItem">
-<item name="android:background">#5D5D5D</item>
-</style>
+    <style name="BackgroundItem">
+        <item name="android:background">#5D5D5D</item>
+    </style>
 
-<style name="BackgroundTint">
-<item name="android:backgroundTint">@color/white</item>
-</style>
+    <style name="BackgroundTint">
+        <item name="android:backgroundTint">@color/white</item>
+    </style>
 
-<style name="BackgroundTintImg">
-<item name="android:backgroundTint">@color/white</item>
-</style>
+    <style name="BackgroundTintImg">
+        <item name="android:backgroundTint">@color/white</item>
+    </style>
 
-<style name="BackgroundTint1">
-<item name="android:backgroundTint">#0d0d0d</item>
-</style>
+    <style name="BackgroundTint1">
+        <item name="android:backgroundTint">#0d0d0d</item>
+    </style>
 
-<style name="Button">
-<item name="android:backgroundTint">#0d0d0d</item>
-<item name="android:textColor">@color/white</item>
-<item name="android:iconTint" tools:targetApi="o">@color/black</item>
-</style>
+    <style name="Button">
+        <item name="android:backgroundTint">#0d0d0d</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:iconTint" tools:targetApi="o">@color/black</item>
+    </style>
 
-<style name="BackgroundDialog">
-<item name="android:backgroundTint">@color/black</item>
-</style>
+    <style name="BackgroundDialog">
+        <item name="android:backgroundTint">@color/black</item>
+    </style>
 
-<style name="TextDialog">
-<item name="android:textColor">@color/white</item>
-</style>
+    <style name="TextDialog">
+        <item name="android:textColor">@color/white</item>
+    </style>
 
-<style name="MyTheme" parent="@android:style/TextAppearance">
-<item name="android:textColor">#ffffffff</item>
-</style>
+    <style name="MyTheme" parent="@android:style/TextAppearance">
+        <item name="android:textColor">#ffffffff</item>
+    </style>
 
-<style name="Theme.GPS" parent="Base.Theme.GPS" />
+    <style name="Theme.GPS" parent="Base.Theme.GPS" />
 
-<style name="BckGroundTip">
-<item name="android:background">@color/backGroundTip</item>
-</style>
+    <style name="BckGroundTip">
+        <item name="android:background">@color/backGroundTip</item>
+    </style>
 
-    </resources>
+</resources>

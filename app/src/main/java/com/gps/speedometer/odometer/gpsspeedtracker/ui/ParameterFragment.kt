@@ -35,15 +35,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
     private val permissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
             if (granted.entries.all { it.value }) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    if (granted[Manifest.permission.ACCESS_BACKGROUND_LOCATION] == true) {
-                        presenter.startService()
-                    } else {
-                        checkBackgroundLocationPermission()
-                    }
-                }else{
-                    presenter.startService()
-                }
+                presenter.startService()
 
             } else {
                 Toast.makeText(
@@ -56,7 +48,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
 
 
     private fun checkBackgroundLocationPermission() {
-        permissionsLauncher.launch(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+//        permissionsLauncher.launch(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
 
     }
 
@@ -73,16 +65,16 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
         presenter.timeStart()
         SharedData.color.observe(viewLifecycleOwner) {
             with(binding) {
-                     val colorStateList = ColorStateList.valueOf(ColorUtils.checkColor(it))
-                    txtDistance.setTextColor(colorStateList)
-                    txtAvgSpeed.setTextColor(colorStateList)
-                    txtMaxSpeed.setTextColor(colorStateList)
-                    txtStartTime.setTextColor(colorStateList)
-                    btnStart.backgroundTintList = colorStateList
-                    btnStop.backgroundTintList = colorStateList
-                    imgPause.imageTintList = colorStateList
-                    imgReset.imageTintList = colorStateList
-                    imgResume.imageTintList = colorStateList
+                val colorStateList = ColorStateList.valueOf(ColorUtils.checkColor(it))
+                txtDistance.setTextColor(colorStateList)
+                txtAvgSpeed.setTextColor(colorStateList)
+                txtMaxSpeed.setTextColor(colorStateList)
+                txtStartTime.setTextColor(colorStateList)
+                btnStart.backgroundTintList = colorStateList
+                btnStop.backgroundTintList = colorStateList
+                imgPause.imageTintList = colorStateList
+                imgReset.imageTintList = colorStateList
+                imgResume.imageTintList = colorStateList
 
             }
         }
@@ -104,19 +96,18 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
             if (!CheckPermission.hasLocationPermission(requireContext())) {
                 permissionsLauncher.launch(
                     arrayOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
+                         Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.ACCESS_COARSE_LOCATION,
                     )
                 )
             } else {
-
                 presenter.startService()
             }
 
         }
         binding.btnStop.setOnClickListener {
             presenter.stopService()
-            requireContext().stopService(Intent(context , MyService::class.java))
+            requireContext().stopService(Intent(context, MyService::class.java))
             (requireActivity() as MainActivity2).sendDataToSecondFragment()
             val notificationsFragment =
                 (requireActivity() as MainActivity2).supportFragmentManager.findFragmentByTag("f2")
@@ -210,10 +201,12 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
         binding.imgReset.visibility = SharedData.onShowResetButton.value!!
 
     }
+
     override fun onShowReset(int: Int) {
         binding.imgReset.isEnabled = int == View.VISIBLE
         binding.imgReset.visibility = int
     }
+
     override fun onTimeStart(s: String) {
         binding.txtStartTime.text = s
     }

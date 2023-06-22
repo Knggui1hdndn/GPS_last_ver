@@ -73,6 +73,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), MeasurementInterFace.View
     }
 
     override fun displayColorChange(int: Int) {
+        Log.d("ssaklsadd",int.toString())
         binding.speed.speedTextColor = textColor
         binding.speed.textColor = textColor
         binding.speed.unitTextColor = ColorUtils.checkColor(int)

@@ -8,7 +8,7 @@ class ColorUtils {
     companion object {
         fun checkColor(position: Int): Int {
             var color = 0
-            if (position == 0){
+            if (position == 0) {
                 if (isThemeDark()) return Color.parseColor(ColorConstants.COLOR_1_1) else return Color.parseColor(
                     ColorConstants.COLOR_1
                 )

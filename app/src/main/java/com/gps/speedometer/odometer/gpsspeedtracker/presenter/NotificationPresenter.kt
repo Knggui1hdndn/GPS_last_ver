@@ -103,6 +103,7 @@ class NotificationPresenter(val view: MapInterface.View, val smf: SupportMapFrag
         val callback = OnMapReadyCallback { googleMap ->
             map = googleMap
             view.setMap(map!!)
+            checkShowPolyLine()
             map?.apply {
                 moveCamera(CameraUpdateFactory.newLatLng(LatLng(18.683500, 105.485750)))
                 uiSettings.isRotateGesturesEnabled = true

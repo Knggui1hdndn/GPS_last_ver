@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.app.Service
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -82,7 +83,11 @@ class Setting : AppCompatActivity(), SettingInterface.View, View.OnKeyListener {
         swtAlarm.setOnCheckedChangeListener { _, isChecked ->
             saveSettingBoolean(SettingConstants.SPEED_ALARM, isChecked, swtAlarm)
         }
-
+        binding.txtPolicy.setOnClickListener {
+            val intent = Intent(this, ShowWebActitvity::class.java)
+            intent.putExtra("link", "https://sites.google.com/view/policytosforgpsspeedometer/")
+            startActivity(intent)
+        }
         swtShowReset.setOnCheckedChangeListener { _, isChecked ->
             toggleShowReset()
         }
@@ -106,7 +111,7 @@ class Setting : AppCompatActivity(), SettingInterface.View, View.OnKeyListener {
 
         binding.resetColor.setOnClickListener {
             sharedPreferences.edit().putInt(SettingConstants.COLOR_DISPLAY, 0).apply()
-            SharedData.color.value=0
+            SharedData.color.value = 0
             recreate()
         }
 
@@ -443,6 +448,7 @@ class Setting : AppCompatActivity(), SettingInterface.View, View.OnKeyListener {
     private fun setBackgroundALL() {
         edtWarningLimit.setTextColor(ColorUtils.checkColor(colorPosition))
         btnMaxSpeepAnalog.setTextColor(ColorUtils.checkColor(colorPosition))
+        btnMaxSpeepAnalog.iconTint = ColorStateList.valueOf(ColorUtils.checkColor(colorPosition))
         setColorSwt()
         setSpecifications()
         setBackGroundButtonUnitClick()

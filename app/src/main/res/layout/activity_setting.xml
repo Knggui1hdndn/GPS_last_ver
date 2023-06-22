@@ -702,6 +702,7 @@
                 android:layout_alignBottom="@+id/edtSpeedLimit"
                 android:layout_alignParentRight="true"
                 android:padding="10dp"
+                android:id="@+id/txtPolicy"
                 android:text="Privacy Policy &amp; TOS"
                 android:textStyle="bold" />
 

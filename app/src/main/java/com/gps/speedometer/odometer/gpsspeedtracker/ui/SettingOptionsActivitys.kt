@@ -46,7 +46,6 @@ class SettingOptionsActivitys : AppCompatActivity() {
         setContentView(binding.root)
         val sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         myDataBase = MyDataBase.getInstance(this)
-        getDialog().show()
 
         with(binding) {
             clickVehicle(btnBicycle, btnCar, btnMotorbike)
@@ -99,32 +98,7 @@ class SettingOptionsActivitys : AppCompatActivity() {
         }
     }
 
-    private fun getDialog(): Dialog {
-        dialog = Dialog(this).apply {
-            window?.setBackgroundDrawableResource(android.R.color.transparent);
-            setContentView(R.layout.dialog_show_rq)
-            window?.setLayout(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT
-            )
-        }
-        val onGPS = dialog.findViewById<MaterialButton>(R.id.btnOnGPS)
-        onGPS.setOnClickListener {
-            rq.launch(
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-            )
-        }
-        return dialog
-    }
 
-    private val rq =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
-            dialog.cancel()
-            binding.mLinear.visibility = View.VISIBLE
-        }
 
     fun setBackGroundBtnClick(btn: MaterialButton) {
         btn.strokeWidth = 5

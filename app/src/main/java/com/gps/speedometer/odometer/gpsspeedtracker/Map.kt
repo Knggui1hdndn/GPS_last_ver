@@ -2,8 +2,10 @@ package com.gps.speedometer.odometer.gpsspeedtracker
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Looper
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.gps.speedometer.odometer.gpsspeedtracker.interfaces.MotionCalculatorInterface
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
@@ -15,6 +17,8 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import com.gps.speedometer.odometer.gpsspeedtracker.constants.MyLocationConstants
+import com.gps.speedometer.odometer.gpsspeedtracker.service.MyService
 
 
 interface LocationChangeListener {
@@ -33,9 +37,9 @@ class Map(
 
     private val locationCallback = object : LocationCallback() {
         @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-        @SuppressLint("SuspiciousIndentation", "MissingPermission")
-        override fun onLocationResult(locationResult: LocationResult) {
+         override fun onLocationResult(locationResult: LocationResult) {
             val lastLocation = locationResult.lastLocation
+            Log.d("lollllllllllllll",lastLocation.toString())
             motion.updateLocation(lastLocation!!) { averageSpeed, currentSpeed, distance, maxSpeed, time ->
                 if (checkStart) {
                     motion.updateMovementDataWhenStart()
@@ -54,7 +58,9 @@ class Map(
                     averageSpeedLiveData.value = averageSpeed
                 }
                 motion.insertLocationData(lastLocation)
+
             }
+
         }
     }
 

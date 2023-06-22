@@ -7,11 +7,13 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.IBinder
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.MyLocationConstants
- import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
+import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
 import com.gps.speedometer.odometer.gpsspeedtracker.dao.MyDataBase
 import com.gps.speedometer.odometer.gpsspeedtracker.presenter.MotionCalculatorPresenter
@@ -41,6 +43,7 @@ class MyService : Service(), LocationChangeListener {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+
         handle(intent?.action)
         return START_NOT_STICKY
     }
@@ -48,6 +51,16 @@ class MyService : Service(), LocationChangeListener {
     private fun handle(action: String?) {
         when (action) {
             MyLocationConstants.START -> {
+                map = Map(
+                    applicationContext,
+                    MotionCalculatorPresenter(
+                        this,
+                        mutableListOf(),
+                        MyDataBase.getInstance(applicationContext)
+                    ),
+                    this
+                )
+                updateNotification("0", "0", "0")
                 map.setStart()
                 map.startCallBack()
                 startForeground(1, getNotifications("0", "0", "0"))
@@ -107,7 +120,7 @@ class MyService : Service(), LocationChangeListener {
 
         notificationLayout.setTextViewText(
             R.id.txtCurrentSp, if (checkHide)
-                "Tốc độ hiện tại" else ""
+                "Current Speeds" else ""
         )
 
         notificationLayout.setTextViewText(
@@ -119,10 +132,10 @@ class MyService : Service(), LocationChangeListener {
             SharedData.convertSpeed(maxSpeed.toDouble()).toInt().toString()
         )
         notificationLayout.setTextViewText(R.id.unit1, if (checkHide) SharedData.toUnit else "")
-        notificationLayout.setTextViewText(R.id.unit2, SharedData.toUnit)
+        notificationLayout.setTextViewText(R.id.unit2, SharedData.toUnitDistance)
         notificationLayout.setTextViewText(R.id.unit3, SharedData.toUnit)
         return NotificationCompat.Builder(this, "1")
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.logo1)
             .setContentIntent(pendingIntent)
             .setCustomContentView(notificationLayout)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
