@@ -18,21 +18,7 @@ import com.gps.speedometer.odometer.gpsspeedtracker.R
 
 
 class SplashActivity : AppCompatActivity() {
-    private fun setUnitSpeedAndDistance() {
-        try {
-            SharedData.toUnit =
-                getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE).getString(
-                    SettingConstants.UNIT,
-                    ""
-                ).toString()
-            when (SharedData.toUnit) {
-                "km/h" -> SharedData.toUnitDistance = "km"
-                "mph" -> SharedData.toUnitDistance = "mi"
-                "knot" -> SharedData.toUnitDistance = "nm"
-            }
-        } catch (_: Exception) {
-        }
-    }
+
 
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -42,8 +28,7 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-        setUnitSpeedAndDistance()
-        createTimer(3L)
+         createTimer(3L)
        // MobileAds.initialize(this)
         sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         with(SharedData) {

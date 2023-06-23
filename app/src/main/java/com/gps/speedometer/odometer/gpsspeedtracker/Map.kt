@@ -37,7 +37,7 @@ class Map(
     private var checkStop: Boolean = false
 
     private val locationCallback = object : LocationCallback() {
-        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+
         override fun onLocationResult(locationResult: LocationResult) {
             val lastLocation = locationResult.lastLocation
             motion.updateLocation(lastLocation!!) { averageSpeed, currentSpeed, distance, maxSpeed, time ->

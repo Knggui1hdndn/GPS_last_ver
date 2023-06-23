@@ -10,6 +10,7 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.annotation.RequiresApi
@@ -117,12 +118,12 @@ class MainActivity2 : AppCompatActivity(), onRecever {
     }
 
     private var checkRotation = false
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onOptionsItemSelected(item:MenuItem): Boolean {
         when (item.itemId) {
             R.id.settings -> startActivity(Intent(this, Setting::class.java))
             R.id.history -> startActivity(Intent(this, HistoryActivity::class.java))
             R.id.tip -> {
-//                val intent = Intent(this, MoreTipActivity::class.java)
+//                val intent = Intent         (this, MoreTipActivity::class.java)
 //                intent.putExtra("activityLaunchedFrom", "Main2")
 //                startActivity(intent)
             }

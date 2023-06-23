@@ -5,6 +5,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -23,6 +24,7 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.appopen.AppOpenAd
+import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
 import java.util.Date
 
 private const val LOG_TAG = "MyApplication"
@@ -31,34 +33,87 @@ private const val AD_UNIT_ID = "ca-app-pub-3940256099942544/3419835294"
 class MyApplication :
     MultiDexApplication(), Application.ActivityLifecycleCallbacks, LifecycleObserver {
     companion object {
-    var check=true
+        var check = true
     }
 
     private lateinit var appOpenAdManager: AppOpenAdManager
     private var currentActivity: Activity? = null
+    private fun setUnitSpeedAndDistance() {
+        try {
+            SharedData.toUnit =
+                getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE).getString(
+                    SettingConstants.UNIT,
+                    ""
+                ).toString()
+            when (SharedData.toUnit) {
+                "km/h" -> SharedData.toUnitDistance = "km"
+                "mph" -> SharedData.toUnitDistance = "mi"
+                "knot" -> SharedData.toUnitDistance = "nm"
+            }
+        } catch (_: Exception) {
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
+        setUnitSpeedAndDistance()
+        SharedData.color.value = getSharedPreferences(
+            SettingConstants.SETTING,
+            MODE_PRIVATE
+        ).getInt(SettingConstants.COLOR_DISPLAY, 0)
+
         val sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         if (!sharedPreferences.getBoolean(SettingConstants.THEME, true)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
-        //     registerActivityLifecycleCallbacks(this)
+
+
+        //      registerActivityLifecycleCallbacks(this)
         createChannelId()
+
+
 //        // Log the Mobile Ads SDK version.
 //        MobileAds.initialize(this) {}
-//        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 //        appOpenAdManager = AppOpenAdManager()
     }
 
     //hiển thị quảng cáo khi ứng dụng ở chế độ nền
-//    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-//    fun onMoveToForeground() {
-//        // Show the ad (if available) when the app moves to foreground.
-//        currentActivity?.let { appOpenAdManager.showAdIfAvailable(it) }
-//    }
+    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+    fun onMoveToForeground1() {
+        Log.d("sasssass", "ON_CREATE")
+
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    fun onMoveToForeground5() {
+        Log.d("sasssass", "ON_START")
+
+
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun onMoveToForeground2() {
+        Log.d("sasssass", "ON_DESTROY")
+
+
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    fun onMoveToForeground3() {
+        Log.d("sasssass", "ON_PAUSE")
+
+
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    fun onMoveToForeground4() {
+        Log.d("sasssass", "ON_RESUME")
+
+
+    }
 
     private fun createChannelId() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

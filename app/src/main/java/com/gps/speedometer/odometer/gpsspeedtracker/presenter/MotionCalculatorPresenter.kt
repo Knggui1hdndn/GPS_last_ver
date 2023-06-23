@@ -70,7 +70,6 @@ class MotionCalculatorPresenter(
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun calculateSpeed(lastLocation: Location): Double {
-
         if (!lastLocation.hasSpeed()) return 0.0
         val speed = (lastLocation.speed * 3.6)
         if (sharedPreferencesSetting.getBoolean(SettingConstants.SPEED_ALARM, true)) {

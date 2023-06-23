@@ -115,22 +115,20 @@ class ShowActivity : AppCompatActivity() {
     private lateinit var map: GoogleMap
     private lateinit var bottom2: BottomSheetBehavior<*>
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+
     @SuppressLint("MissingInflatedId", "CutPasteId", "WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val shareShow = getSharedPreferences("show", MODE_PRIVATE)
         mData2 = MyDataBase.getInstance(this).movementDao()
             .getMovementDataById(shareShow.getInt("id", 0))
-        Log.d("sddddd",mData2.toString())
-        setupMyActivity(savedInstanceState)
+        Log.d("ssssssss", "fadsfafsdf1" + mData2.toString())
+                setupMyActivity(savedInstanceState)
         setBackgroundColor()
         setFont()
         if (ColorUtils.isThemeDark()) binding.mCoordinatorLayout.setBackgroundColor(Color.BLACK) else binding.mCoordinatorLayout.setBackgroundColor(
             Color.WHITE
         )
-
-
     }
 
     override fun onPause() {
@@ -139,12 +137,10 @@ class ShowActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable("key_intent", intent)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("ssssssssssssss", "sssssssss")
     }
 
     private fun formatTripInformation(): String {
@@ -174,7 +170,7 @@ class ShowActivity : AppCompatActivity() {
 
 
 
-
+        if (!this::mData2.isInitialized) finish()
         setData(mData2)
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(callback)
@@ -379,4 +375,9 @@ class ShowActivity : AppCompatActivity() {
     private fun onClickMenuShare() {
         getDialogCapScreen().show()
     }
+
+    override fun onStop() {
+        super.onStop()
+    }
+
 }
