@@ -9,11 +9,11 @@ class ColorConstants {
 
         const val COLOR_1 = "#FF000000"
         const val COLOR_1_1 = "#FFFFFFFF"
-          val COLOR_2 = "#A0C49D"
-          val COLOR_3 =  "#F24C3D"
-          val COLOR_4 = "#F2BE22"
-          val COLOR_5 = "#F29727"
-          val COLOR_6 = "#9BCDD2"
-        val COLOR_7 = "#9376E0"
+        const val COLOR_2 = "#50EAFF"
+        const val COLOR_3 = "#FB4E54"
+        const val COLOR_4 = "#FEF016"
+        const val COLOR_5 = "#FF6E41"
+        const val COLOR_6 = "#B2FC00"
+        const val COLOR_7 = "#BF7EFF"
     }
 }

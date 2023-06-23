@@ -68,9 +68,7 @@ class MyApplication :
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
-
-
-        //      registerActivityLifecycleCallbacks(this)
+       // registerActivityLifecycleCallbacks(this)
         createChannelId()
 
 

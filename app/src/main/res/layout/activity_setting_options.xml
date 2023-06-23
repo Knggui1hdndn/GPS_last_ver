@@ -10,11 +10,11 @@
     tools:context=".ui.SettingOptionsActivitys">
 
     <LinearLayout
+        android:id="@+id/mLinear"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-                android:orientation="vertical"
-        android:id="@+id/mLinear"
-         >
+        android:orientation="vertical">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -185,13 +185,14 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:padding="15dp">
 
                 <EditText
                     android:id="@+id/edtSpeedLimit"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@+id/a"
+                    android:layout_centerVertical="true"
                     android:inputType="number"
                     android:text="80"
                     android:textColor="@color/white" />
@@ -200,10 +201,9 @@
                     android:id="@+id/a"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/edtSpeedLimit"
-                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/edtSpeedLimit"
                     android:text="Km/h"
-
                     android:textColor="@color/white" />
             </RelativeLayout>
 
@@ -215,12 +215,12 @@
             android:layout_height="60dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:text="OK"
             android:layout_marginTop="20dp"
+            android:layout_marginEnd="5dp"
+            android:backgroundTint="@color/backgroundbuttonsettingopstions"
+            android:text="OK"
             android:textColor="@color/white"
             app:cornerRadius="20dp"
-            android:backgroundTint="@color/backgroundbuttonsettingopstions"
             app:strokeColor="@color/white"
             app:strokeWidth="2dp" />
     </LinearLayout>
