@@ -104,7 +104,6 @@ class ParameterPresenter(
     override fun stopService() {
         setState(MyLocationConstants.STOP)
         callMyService(MyLocationConstants.STOP)
-
         showStart()
         SharedData.onTimeStart.value= SimpleDateFormat("dd/MM/yyyy\n00:00:00").format(System.currentTimeMillis())
     }

@@ -24,7 +24,9 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.appopen.AppOpenAd
+import com.gps.speedometer.odometer.gpsspeedtracker.`object`.CheckPermission
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
+import com.gps.speedometer.odometer.gpsspeedtracker.service.MyService
 import java.util.Date
 
 private const val LOG_TAG = "MyApplication"
@@ -68,7 +70,7 @@ class MyApplication :
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
-       // registerActivityLifecycleCallbacks(this)
+       //  registerActivityLifecycleCallbacks(this)
         createChannelId()
 
 
@@ -101,7 +103,7 @@ class MyApplication :
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun onMoveToForeground3() {
-        Log.d("sasssass", "ON_PAUSE")
+
 
 
     }

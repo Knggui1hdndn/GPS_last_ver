@@ -37,22 +37,10 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
     private val permissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
             if (granted.entries.all { it.value }) {
-                presenter.startService()
-
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Bạn không thể sử dụng chức năng nếu không cấp quyền",
-                    Toast.LENGTH_SHORT
-                ).show()
+                    presenter.startService()
             }
         }
 
-
-    private fun checkBackgroundLocationPermission() {
-//        permissionsLauncher.launch(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
-
-    }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     @SuppressLint("SetTextI18n", "RestrictedApi")
@@ -92,7 +80,9 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
         handleOrientationClickAll()
 
     }
-
+fun stopService(){
+    presenter.stopService()
+}
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun handleOrientationClickAll() {
         binding.btnStart.setOnClickListener {
@@ -104,7 +94,9 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
                     )
                 )
             } else {
+
                 presenter.startService()
+
             }
 
         }

@@ -13,8 +13,8 @@ android {
         applicationId "com.gps.speedometer.odometer.gpsspeedtracker"
         minSdk 24
         targetSdk 33
-        versionCode 104
-        versionName "1.0.4"
+        versionCode 106
+        versionName "1.0.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -21,6 +21,7 @@ import com.gps.speedometer.odometer.gpsspeedtracker.ui.MainActivity2
 import com.gps.speedometer.odometer.gpsspeedtracker.LocationChangeListener
 import com.gps.speedometer.odometer.gpsspeedtracker.Map
 import com.gps.speedometer.odometer.gpsspeedtracker.R
+import com.gps.speedometer.odometer.gpsspeedtracker.`object`.CheckPermission
 
 
 class MyService : Service(), LocationChangeListener {
@@ -67,18 +68,20 @@ class MyService : Service(), LocationChangeListener {
             }
 
             MyLocationConstants.STOP -> {
-                map.setStop()
-                map.removeCallBack()
-                SharedData.time.value = 0
-                map = Map(
-                    applicationContext,
-                    MotionCalculatorPresenter(
-                        this,
-                        mutableListOf(),
-                        MyDataBase.getInstance(applicationContext)
-                    ),
-                    this
-                )
+               if(CheckPermission.hasLocationSetting(applicationContext)){
+                   map.setStop()
+                   map.removeCallBack()
+                   SharedData.time.value = 0
+                   map = Map(
+                       applicationContext,
+                       MotionCalculatorPresenter(
+                           this,
+                           mutableListOf(),
+                           MyDataBase.getInstance(applicationContext)
+                       ),
+                       this
+                   )
+               }
             }
         }
     }

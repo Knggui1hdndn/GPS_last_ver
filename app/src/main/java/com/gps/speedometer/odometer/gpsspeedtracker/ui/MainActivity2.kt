@@ -13,9 +13,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.view.get
 import androidx.viewpager2.widget.ViewPager2
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
@@ -24,7 +28,10 @@ import com.gps.speedometer.odometer.gpsspeedtracker.utils.ColorUtils
 import com.google.android.material.tabs.TabLayoutMediator
 import com.gps.speedometer.odometer.gpsspeedtracker.MyApplication
 import com.gps.speedometer.odometer.gpsspeedtracker.R
+import com.gps.speedometer.odometer.gpsspeedtracker.constants.MyLocationConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.ActivityMain2Binding
+import com.gps.speedometer.odometer.gpsspeedtracker.`object`.CheckPermission
+import com.gps.speedometer.odometer.gpsspeedtracker.service.MyService
 
 interface onRecever {
     fun sendDataToSecondFragment()
@@ -33,6 +40,10 @@ interface onRecever {
 
 class MainActivity2 : AppCompatActivity(), onRecever {
 
+    companion object {
+        val REQUEST_CHECK_SETTING = 1
+
+    }
 
     lateinit var binding: ActivityMain2Binding
     private lateinit var tabAdapter: TabAdapter
@@ -40,13 +51,57 @@ class MainActivity2 : AppCompatActivity(), onRecever {
     private lateinit var sharedPreferences: SharedPreferences
     var color = if (ColorUtils.isThemeDark()) Color.WHITE else Color.BLACK
 
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CHECK_SETTING) {
+            if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(
+                    this,
+                    "You cannot use this feature without granting the necessary permissions.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                when (binding.viewPager2.currentItem) {
+                    0 -> {
+                        val frag =
+                            supportFragmentManager.findFragmentByTag("f0")?.childFragmentManager!!.findFragmentById(
+                                R.id.frag
+                            ) as ParameterFragment
+                        frag.stopService()
+                    }
+
+                    1 -> {
+                        val frag =
+                            supportFragmentManager.findFragmentByTag("f1")?.childFragmentManager!!.findFragmentById(
+                                R.id.frag
+                            ) as ParameterFragment
+                        frag.stopService()
+                    }
+
+                    2 -> {
+                        val frag =
+                            supportFragmentManager.findFragmentByTag("f2")?.childFragmentManager!!.findFragmentById(
+                                R.id.frag
+                            ) as ParameterFragment
+                        frag.stopService()
+                    }
+                }
+                getSharedPreferences("state", Service.MODE_PRIVATE).edit().putString(
+                    MyLocationConstants.STATE, MyLocationConstants.STOP
+                ).apply()
+            } else {
+                val intent = Intent(applicationContext, MyService::class.java)
+                intent.action = MyLocationConstants.START
+                applicationContext.startService(intent)
+            }
+        }
+    }
 
     @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setUpActivity()
-
     }
 
     @SuppressLint("MissingPermission", "ResourceType")
@@ -65,10 +120,12 @@ class MainActivity2 : AppCompatActivity(), onRecever {
                 binding.viewPager2.isUserInputEnabled = false
             }
         }
+
         SharedData.color.observe(this) {
             binding.tabLayout.setTabTextColors(getColor(R.color.unchanged), getColor(getColorRes()))
             binding.tabLayout.setSelectedTabIndicatorColor(getColor(getColorRes()))
         }
+
         binding.viewPager2.adapter = tabAdapter
         TabLayoutMediator(binding.tabLayout, viewPager) { tab, position ->
             when (position) {
@@ -80,7 +137,8 @@ class MainActivity2 : AppCompatActivity(), onRecever {
             }
         }.attach()
         val viewMode = sharedPreferences.getInt(SettingConstants.ViEW_MODE, 0)
-        if(MyApplication.check) binding.viewPager2.currentItem = viewMode - 1;MyApplication.check=false
+        if (MyApplication.check) binding.viewPager2.currentItem = viewMode - 1;MyApplication.check =
+            false
     }
 
 
@@ -118,7 +176,7 @@ class MainActivity2 : AppCompatActivity(), onRecever {
     }
 
     private var checkRotation = false
-    override fun onOptionsItemSelected(item:MenuItem): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.settings -> startActivity(Intent(this, Setting::class.java))
             R.id.history -> startActivity(Intent(this, HistoryActivity::class.java))
@@ -136,14 +194,37 @@ class MainActivity2 : AppCompatActivity(), onRecever {
         return true
     }
 
+    override fun onPause() {
+        super.onPause()
+        if (!CheckPermission.hasLocationSetting(this)) {
+            stopService(Intent(this, MyService::class.java))
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+    }
 
     override fun sendDataToSecondFragment() {
-        try {
-            val frag = supportFragmentManager.findFragmentByTag("f0") as? FragmentSignal
-            val frag1 = supportFragmentManager.findFragmentByTag("f1") as? FragmentSignal
-            frag?.onStrengthGPSDataReceived(0, 0)
-            frag1?.onStrengthGPSDataReceived(0, 0)
-        } catch (_: Exception) {
+        when (binding.viewPager2.currentItem) {
+            0 -> {
+                val frag =
+                    supportFragmentManager.findFragmentByTag("f0")?.childFragmentManager!!.findFragmentById(
+                        R.id.signal
+                    ) as FragmentSignal
+                frag.onStrengthGPSDataReceived(0, 0)
+            }
+
+            1 -> {
+                val frag =
+                    supportFragmentManager.findFragmentByTag("f1")?.childFragmentManager!!.findFragmentById(
+                        R.id.signal
+                    ) as FragmentSignal
+                frag.onStrengthGPSDataReceived(0, 0)
+
+            }
+
+
         }
     }
 }
