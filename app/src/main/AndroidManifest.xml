@@ -40,14 +40,6 @@
             android:name=".ui.TipActivity"
             android:exported="true" />
 
-        <meta-data
-            android:name="com.google.android.gms.car.application"
-            android:resource="@xml/automotive_app_desc" />
-        <!--
-         Main music service, provides media browsing and media playback services to
-         consumers through MediaBrowserService and MediaSession. Consumers connect to it through
-         MediaBrowser (for browsing) and MediaController (for playback control)
-        -->
         <provider
             android:name=".provider.MyFileProvider"
             android:authorities="com.gps.speedometer.odometer.gpsspeedtracker"
