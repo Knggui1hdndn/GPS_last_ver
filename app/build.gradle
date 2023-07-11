@@ -13,9 +13,8 @@ android {
         applicationId "com.gps.speedometer.odometer.gpsspeedtracker"
         minSdk 24
         targetSdk 33
-        versionCode 106
-        versionName "1.0.6"
-
+        versionCode 112
+        versionName "1.1.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -70,5 +69,4 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation 'com.github.ibrahimsn98:speedometer:1.0.1'
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.8.21"
-
 }

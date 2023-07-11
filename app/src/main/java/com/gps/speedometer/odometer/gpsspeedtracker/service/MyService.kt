@@ -68,20 +68,20 @@ class MyService : Service(), LocationChangeListener {
             }
 
             MyLocationConstants.STOP -> {
-               if(CheckPermission.hasLocationSetting(applicationContext)){
-                   map.setStop()
-                   map.removeCallBack()
-                   SharedData.time.value = 0
-                   map = Map(
-                       applicationContext,
-                       MotionCalculatorPresenter(
-                           this,
-                           mutableListOf(),
-                           MyDataBase.getInstance(applicationContext)
-                       ),
-                       this
-                   )
-               }
+                if (CheckPermission.hasLocationSetting(applicationContext)) {
+                    map.setStop()
+                    map.removeCallBack()
+                    SharedData.time.value = 0
+                    map = Map(
+                        applicationContext,
+                        MotionCalculatorPresenter(
+                            this,
+                            mutableListOf(),
+                            MyDataBase.getInstance(applicationContext)
+                        ),
+                        this
+                    )
+                }
             }
         }
     }

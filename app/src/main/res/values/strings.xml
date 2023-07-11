@@ -22,4 +22,10 @@
     <string name="average_speed">Avg Speed</string>
     <string name="distance">Distance</string>
     <string name="max_speed">Max Speed</string>
+    <string name="mess_dialog">Granting &lt;b>Location Permission&lt;/b> at all times allows us to track your speed &lt;br>
+This app collects location data in the background to enable&lt;br>
+- Track your trips&lt;br>
+- Measure real-time velocity&lt;br>
+- Calculate average speed&lt;br>
+- Display your speed in notification bar</string>
 </resources>

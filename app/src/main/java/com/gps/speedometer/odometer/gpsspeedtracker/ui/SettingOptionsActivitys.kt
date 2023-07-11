@@ -1,21 +1,33 @@
 package com.gps.speedometer.odometer.gpsspeedtracker.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Html
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.SpannedString
+import android.text.style.RelativeSizeSpan
+import android.text.style.StyleSpan
+import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
- import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
+import androidx.core.text.HtmlCompat
+import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.dao.MyDataBase
- import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
+import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
 import com.google.android.material.button.MaterialButton
 import com.gps.speedometer.odometer.gpsspeedtracker.R
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.ActivitySettingOptionsBinding
+import com.gps.speedometer.odometer.gpsspeedtracker.databinding.DialogPermissionDescriptionBinding
 
 class SettingOptionsActivitys : AppCompatActivity() {
     private lateinit var binding: ActivitySettingOptionsBinding
@@ -46,7 +58,7 @@ class SettingOptionsActivitys : AppCompatActivity() {
         setContentView(binding.root)
         val sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         myDataBase = MyDataBase.getInstance(this)
-
+        showDialog()
         with(binding) {
             clickVehicle(btnBicycle, btnCar, btnMotorbike)
             clickUnit(btnKm, btnMph, btnKnot)
@@ -55,7 +67,7 @@ class SettingOptionsActivitys : AppCompatActivity() {
             setBackGroundBtnClick(btnDigital)
             setBackGroundBtnClick(btnKm)
             btnOK.setOnClickListener {
-                if(edtSpeedLimit.text.isNotEmpty()){
+                if (edtSpeedLimit.text.isNotEmpty()) {
                     if (edtSpeedLimit.text.toString().toInt() >= 0
                     ) {
                         sharedPreferences.edit().apply {
@@ -77,17 +89,21 @@ class SettingOptionsActivitys : AppCompatActivity() {
                             .insertVehicle(360, 120, 3, if (vehicleClick == 3) 1 else 0)
                         myDataBase.vehicleDao().updateWarning(edtSpeedLimit.text.toString().toInt())
                         setUnitSpeedAndDistance()
-                        startActivity(Intent(this@SettingOptionsActivitys, MainActivity2::class.java))
+                        startActivity(
+                            Intent(
+                                this@SettingOptionsActivitys,
+                                MainActivity2::class.java
+                            )
+                        )
                         finish()
-                    }else {
+                    } else {
                         Toast.makeText(
                             this@SettingOptionsActivitys,
                             ">0",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                }
-                 else {
+                } else {
                     Toast.makeText(
                         this@SettingOptionsActivitys,
                         "do not leave blank",
@@ -98,6 +114,47 @@ class SettingOptionsActivitys : AppCompatActivity() {
         }
     }
 
+    private val permissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
+            if (granted.entries.all { it.value }) {
+                dialog.dismiss()
+            } else {
+                Toast.makeText(
+                    this,
+                    "Permission Denied",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+    @SuppressLint("ResourceType", "SetTextI18n")
+    fun showDialog() {
+        var dialogBinding: DialogPermissionDescriptionBinding =
+            DialogPermissionDescriptionBinding.inflate(layoutInflater)
+        dialog = Dialog(this)
+        dialog.window!!.setLayout(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT
+        )
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent);
+        dialog.setContentView(dialogBinding.root)
+        dialogBinding.textView2.text = Html.fromHtml(getString(R.string.mess_dialog),HtmlCompat.FROM_HTML_MODE_LEGACY)
+        dialog.setCancelable(false)
+        dialog.show()
+
+        dialogBinding.button.setOnClickListener {
+            permissionsLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                )
+            )
+        }
+        dialogBinding.txtLater.setOnClickListener {
+            Toast.makeText(this,"Required permissions for GPS location",Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+    }
 
 
     fun setBackGroundBtnClick(btn: MaterialButton) {
@@ -150,7 +207,6 @@ class SettingOptionsActivitys : AppCompatActivity() {
             }
         }
     }
-
 
 
     fun setTextAndStrokeWidthColor(vararg btn: MaterialButton) {

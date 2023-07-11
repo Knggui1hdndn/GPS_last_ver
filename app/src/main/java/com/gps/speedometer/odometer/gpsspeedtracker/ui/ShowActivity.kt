@@ -68,7 +68,6 @@ class ShowActivity : AppCompatActivity() {
         map = p0
         val startLatLng = LatLng(mData2.startLatitude, mData2.startLongitude)
         val endLatLng = LatLng(mData2.endLatitude, mData2.endLongitude)
-
         val builder = LatLngBounds.Builder()
         builder.include(startLatLng)
         builder.include(endLatLng)

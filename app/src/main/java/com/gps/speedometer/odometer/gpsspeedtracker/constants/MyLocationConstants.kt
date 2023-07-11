@@ -6,8 +6,8 @@ class MyLocationConstants {
         const val PAUSE = "PAUSE"
         const val RESUME = "RESUME"
         const val STOP = "STOP"
-         const val STATE="STATE"
-        const val DISTANCE="DISTANCE"
+        const val STATE = "STATE"
+        const val DISTANCE = "DISTANCE"
 
 
     }

@@ -104,7 +104,6 @@ class Map(
         motion.stopTimer()
         if (checkStop) {
             motion.updateMovementDataWhenStop()
-
             checkStop = false
             checkStart = false
         }

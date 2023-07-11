@@ -73,8 +73,7 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
     }
 
     override fun onClearMap(boolean: Boolean) {
-        Log.d("ssssssssssssssssssssa",boolean.toString())
-        if(boolean) presenter.checkShowPolyLine() else  googleMap.clear();presenter.checkShowPolyLine()
+         if(boolean) presenter.checkShowPolyLine() else  googleMap.clear();presenter.checkShowPolyLine()
     }
 
     override fun onShowCurrentSpeed(string: String) {

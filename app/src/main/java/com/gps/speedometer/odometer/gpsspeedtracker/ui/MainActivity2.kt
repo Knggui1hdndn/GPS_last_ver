@@ -8,46 +8,55 @@ import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.view.get
+import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.viewpager2.widget.ViewPager2
-import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
-import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
-import com.gps.speedometer.odometer.gpsspeedtracker.ui.adpater.TabAdapter
-import com.gps.speedometer.odometer.gpsspeedtracker.utils.ColorUtils
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.gif.GifDrawable
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.google.android.material.tabs.TabLayoutMediator
 import com.gps.speedometer.odometer.gpsspeedtracker.MyApplication
 import com.gps.speedometer.odometer.gpsspeedtracker.R
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.MyLocationConstants
+import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.ActivityMain2Binding
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.CheckPermission
+import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
 import com.gps.speedometer.odometer.gpsspeedtracker.service.MyService
+import com.gps.speedometer.odometer.gpsspeedtracker.ui.adpater.TabAdapter
+import com.gps.speedometer.odometer.gpsspeedtracker.utils.ColorUtils
+
 
 interface onRecever {
     fun sendDataToSecondFragment()
 
 }
 
-class MainActivity2 : AppCompatActivity(), onRecever {
+class MainActivity2 : AppCompatActivity(), onRecever, RequestListener<GifDrawable> {
 
     companion object {
-        val REQUEST_CHECK_SETTING = 1
+        const val REQUEST_CHECK_SETTING = 1
 
     }
 
+    private var x = 1
+    private var y = 1
+
     lateinit var binding: ActivityMain2Binding
     private lateinit var tabAdapter: TabAdapter
-    lateinit var viewPager: ViewPager2
+      lateinit var viewPager: ViewPager2
     private lateinit var sharedPreferences: SharedPreferences
     var color = if (ColorUtils.isThemeDark()) Color.WHITE else Color.BLACK
 
@@ -131,9 +140,7 @@ class MainActivity2 : AppCompatActivity(), onRecever {
             when (position) {
                 0 -> tab.text = "Analog"
                 1 -> tab.text = "Digital"
-                2 -> {
-                    tab.text = "Map"
-                }
+                2 -> tab.text = "Map"
             }
         }.attach()
         val viewMode = sharedPreferences.getInt(SettingConstants.ViEW_MODE, 0)
@@ -201,9 +208,6 @@ class MainActivity2 : AppCompatActivity(), onRecever {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-    }
 
     override fun sendDataToSecondFragment() {
         when (binding.viewPager2.currentItem) {
@@ -221,10 +225,89 @@ class MainActivity2 : AppCompatActivity(), onRecever {
                         R.id.signal
                     ) as FragmentSignal
                 frag.onStrengthGPSDataReceived(0, 0)
-
             }
-
-
         }
+    }
+
+    @SuppressLint("CheckResult")
+    override fun onResume() {
+        super.onResume()
+        binding.mess.visibility = View.GONE
+        val shared = getSharedPreferences("state", MODE_PRIVATE)
+        val speed=SharedData.currentSpeedLiveData.value?.keys?.first()
+        if (shared.getString(
+                MyLocationConstants.STATE,
+                null
+            ) == MyLocationConstants.START || SharedData.convertSpeed(speed!!).toInt()>= 1
+        ) {
+            showWhenRun()
+        }
+        if (shared.getString(
+                MyLocationConstants.STATE,
+                null
+            ) == MyLocationConstants.START &&SharedData.convertSpeed(speed!!).toInt()  == 0
+        ) {
+            showWhenStart()
+        }
+    }
+
+    fun showMess() {
+        x = 1
+        y = 1
+        SharedData.currentSpeedLiveData.observe(this) {
+
+            it.keys.first() .let { it1 ->
+                 if (y == 1 && SharedData.convertSpeed(it1).toInt() >= 1) {
+                    showWhenRun()
+                    y = 2
+                } else if ( SharedData.convertSpeed(it1).toInt()  == 0 && x == 1) {
+                    showWhenStart()
+                    x = 2
+                }
+            }
+        }
+    }
+
+    @SuppressLint("CheckResult")
+    fun showWhenRun() {
+        val glide = Glide.with(this).asGif()
+        glide.load(R.drawable.start)
+        binding.mess.visibility = View.VISIBLE
+        glide.listener(this).into(binding.mess)
+    }
+
+    @SuppressLint("CheckResult")
+    fun showWhenStart() {
+        x = 1
+         val glide = Glide.with(this).asGif()
+        glide.load(R.drawable.not_start)
+        binding.mess.visibility = View.VISIBLE
+        glide.listener(this).into(binding.mess)
+    }
+
+
+    override fun onLoadFailed(
+        e: GlideException?,
+        model: Any?,
+        target: Target<GifDrawable>?,
+        isFirstResource: Boolean
+    ): Boolean {
+        return false
+    }
+
+    override fun onResourceReady(
+        resource: GifDrawable?,
+        model: Any?,
+        target: Target<GifDrawable>?,
+        dataSource: DataSource?,
+        isFirstResource: Boolean
+    ): Boolean {
+        resource?.setLoopCount(1);
+        resource?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
+            override fun onAnimationEnd(drawable: Drawable?) {
+                binding.mess.visibility = View.GONE
+            }
+        })
+        return false
     }
 }

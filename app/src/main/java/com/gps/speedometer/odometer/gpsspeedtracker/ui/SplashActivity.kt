@@ -1,8 +1,10 @@
 package com.gps.speedometer.odometer.gpsspeedtracker.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -10,15 +12,12 @@ import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.gps.speedometer.odometer.gpsspeedtracker.MyApplication
+import com.gps.speedometer.odometer.gpsspeedtracker.R
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
-import com.google.android.gms.ads.MobileAds
-import com.gps.speedometer.odometer.gpsspeedtracker.R
 
 
 class SplashActivity : AppCompatActivity() {
-
 
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -28,8 +27,8 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-         createTimer(3L)
-       // MobileAds.initialize(this)
+        createTimer(3L)
+        // MobileAds.initialize(this)
         sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         with(SharedData) {
             onShowTime.value = if (sharedPreferences.getBoolean(
@@ -48,6 +47,16 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
+    fun getBatteryCapacity(context: Context): Long {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val mBatteryManager = context.getSystemService(BATTERY_SERVICE) as BatteryManager
+            val chargeCounter =
+                mBatteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER)
+            val capacity = mBatteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+            return if (chargeCounter == Int.MIN_VALUE || capacity == Int.MIN_VALUE) 0 else (chargeCounter / capacity * 100).toLong()
+        }
+        return 0
+    }
 
     private fun createTimer(seconds: Long) {
         val countDownTimer: CountDownTimer = object : CountDownTimer(seconds * 1000, 1000) {

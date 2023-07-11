@@ -73,8 +73,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), MeasurementInterFace.View
     }
 
     override fun displayColorChange(int: Int) {
-        Log.d("ssaklsadd",int.toString())
-        binding.speed.speedTextColor = textColor
+         binding.speed.speedTextColor = textColor
         binding.speed.textColor = textColor
         binding.speed.unitTextColor = ColorUtils.checkColor(int)
         binding.time?.setTextColor(if (ColorUtils.isThemeDark()) Color.BLACK else Color.WHITE)
@@ -87,7 +86,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), MeasurementInterFace.View
 
     override fun displayCurrentSpeedChange(string: String, l: Long) {
          binding.speed.speedTo(string.toFloat(), l)
-        Log.d("oksoks0sdasd", (l*1000).toString())
-    }
+     }
 
 }

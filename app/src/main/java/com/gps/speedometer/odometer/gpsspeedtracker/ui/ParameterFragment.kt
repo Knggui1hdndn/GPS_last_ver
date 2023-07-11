@@ -3,20 +3,25 @@ package com.gps.speedometer.odometer.gpsspeedtracker.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.app.Service
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
+import android.text.Html
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.HtmlCompat
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.MyLocationConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.R
+import com.gps.speedometer.odometer.gpsspeedtracker.databinding.DialogPermissionDescriptionBinding
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.FragmentParameterBinding
 import com.gps.speedometer.odometer.gpsspeedtracker.interfaces.ParameterContracts
@@ -29,6 +34,7 @@ import com.gps.speedometer.odometer.gpsspeedtracker.utils.FontUtils
 class ParameterFragment : Fragment(R.layout.fragment_parameter),
     ParameterContracts.View {
     private lateinit var binding: FragmentParameterBinding
+    private lateinit var dialog: Dialog
     private lateinit var presenter: ParameterPresenter
     private var check = false
     private var sharedPreferences: SharedPreferences? = null
@@ -37,7 +43,9 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
     private val permissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
             if (granted.entries.all { it.value }) {
-                    presenter.startService()
+                dialog.dismiss()
+                presenter.startService()
+                (activity as MainActivity2).showMess()
             }
         }
 
@@ -66,11 +74,8 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
                 imgPause.imageTintList = colorStateList
                 imgReset.imageTintList = colorStateList
                 imgResume.imageTintList = colorStateList
-
             }
         }
-
-
 
         if (!presenter.isMyServiceRunning(MyService::class.java)) {
             presenter.setState(
@@ -78,31 +83,26 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
             );
         }
         handleOrientationClickAll()
-
     }
-fun stopService(){
-    presenter.stopService()
-}
+
+    fun stopService() {
+
+        presenter.stopService()
+     }
+
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun handleOrientationClickAll() {
         binding.btnStart.setOnClickListener {
             if (!CheckPermission.hasLocationPermission(requireContext())) {
-                permissionsLauncher.launch(
-                    arrayOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                    )
-                )
+                showDialog()
             } else {
-
                 presenter.startService()
-
+                 (activity as MainActivity2).showMess()
             }
-
         }
         binding.btnStop.setOnClickListener {
             presenter.stopService()
-            requireContext().stopService(Intent(context, MyService::class.java))
+             requireContext().stopService(Intent(context, MyService::class.java))
             (requireActivity() as MainActivity2).sendDataToSecondFragment()
             val notificationsFragment =
                 (requireActivity() as MainActivity2).supportFragmentManager.findFragmentByTag("f2")
@@ -113,12 +113,39 @@ fun stopService(){
         }
         binding.imgPause.setOnClickListener {
             presenter.pauseService()
-        }
+         }
         binding.imgResume.setOnClickListener {
             presenter.resumeService()
-        }
+         }
         binding.imgReset.setOnClickListener {
             presenter.stopService()
+         }
+    }
+    fun showDialog() {
+        val dialogBinding: DialogPermissionDescriptionBinding =
+            DialogPermissionDescriptionBinding.inflate(layoutInflater)
+        dialog = Dialog(requireContext())
+        dialog.window!!.setLayout(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT
+        )
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent);
+        dialog.setContentView(dialogBinding.root)
+        dialogBinding.textView2.text = Html.fromHtml(getString(R.string.mess_dialog), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        dialog.setCancelable(false)
+        dialog.show()
+
+        dialogBinding.button.setOnClickListener {
+            permissionsLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                )
+            )
+        }
+        dialogBinding.txtLater.setOnClickListener {
+            Toast.makeText(requireContext(),"Required permissions for GPS location",Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
         }
     }
 
