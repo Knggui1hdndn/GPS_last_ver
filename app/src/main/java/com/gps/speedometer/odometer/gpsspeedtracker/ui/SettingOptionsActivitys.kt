@@ -28,14 +28,17 @@ import com.google.android.material.button.MaterialButton
 import com.gps.speedometer.odometer.gpsspeedtracker.R
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.ActivitySettingOptionsBinding
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.DialogPermissionDescriptionBinding
+import com.gps.speedometer.odometer.gpsspeedtracker.interfaces.SettingOptionsContract
+import com.gps.speedometer.odometer.gpsspeedtracker.presenter.SettingOptionsPresenter
 
-class SettingOptionsActivitys : AppCompatActivity() {
+class SettingOptionsActivitys : AppCompatActivity(), SettingOptionsContract.View {
     private lateinit var binding: ActivitySettingOptionsBinding
-    private lateinit var myDataBase: MyDataBase
+
     private var vehicleClick = 2
     private var unitClick = "km/h"
     private var viewModeClick = 2
     private lateinit var dialog: Dialog
+    private lateinit var settingPre: SettingOptionsPresenter
     private fun setUnitSpeedAndDistance() {
         try {
             SharedData.toUnit =
@@ -56,8 +59,8 @@ class SettingOptionsActivitys : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingOptionsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
-        myDataBase = MyDataBase.getInstance(this)
+        settingPre = SettingOptionsPresenter(this)
+
         showDialog()
         with(binding) {
             clickVehicle(btnBicycle, btnCar, btnMotorbike)
@@ -67,49 +70,7 @@ class SettingOptionsActivitys : AppCompatActivity() {
             setBackGroundBtnClick(btnDigital)
             setBackGroundBtnClick(btnKm)
             btnOK.setOnClickListener {
-                if (edtSpeedLimit.text.isNotEmpty()) {
-                    if (edtSpeedLimit.text.toString().toInt() >= 0
-                    ) {
-                        sharedPreferences.edit().apply {
-                            putString(SettingConstants.UNIT, unitClick)
-                            putInt(SettingConstants.ViEW_MODE, viewModeClick)
-                            putInt(SettingConstants.COLOR_DISPLAY, 0)
-                            putBoolean(SettingConstants.DISPLAY_SPEED, true)
-                            putBoolean(SettingConstants.TRACK_ON_MAP, true)
-                            putBoolean(SettingConstants.SHOW_RESET_BUTTON, true)
-                            putBoolean(SettingConstants.SPEED_ALARM, true)
-                            putBoolean(SettingConstants.CHECK_OPEN, true)
-                        }.apply()
-                        myDataBase.vehicleDao().deleteAll()
-                        myDataBase.vehicleDao()
-                            .insertVehicle(80, 40, 1, if (vehicleClick == 1) 1 else 0)
-                        myDataBase.vehicleDao()
-                            .insertVehicle(180, 80, 2, if (vehicleClick == 2) 1 else 0)
-                        myDataBase.vehicleDao()
-                            .insertVehicle(360, 120, 3, if (vehicleClick == 3) 1 else 0)
-                        myDataBase.vehicleDao().updateWarning(edtSpeedLimit.text.toString().toInt())
-                        setUnitSpeedAndDistance()
-                        startActivity(
-                            Intent(
-                                this@SettingOptionsActivitys,
-                                MainActivity2::class.java
-                            )
-                        )
-                        finish()
-                    } else {
-                        Toast.makeText(
-                            this@SettingOptionsActivitys,
-                            ">0",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                } else {
-                    Toast.makeText(
-                        this@SettingOptionsActivitys,
-                        "do not leave blank",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+                btnOkCLick()
             }
         }
     }
@@ -128,7 +89,7 @@ class SettingOptionsActivitys : AppCompatActivity() {
         }
 
     @SuppressLint("ResourceType", "SetTextI18n")
-    fun showDialog() {
+    override fun showDialog() {
         var dialogBinding: DialogPermissionDescriptionBinding =
             DialogPermissionDescriptionBinding.inflate(layoutInflater)
         dialog = Dialog(this)
@@ -138,7 +99,8 @@ class SettingOptionsActivitys : AppCompatActivity() {
         )
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent);
         dialog.setContentView(dialogBinding.root)
-        dialogBinding.textView2.text = Html.fromHtml(getString(R.string.mess_dialog),HtmlCompat.FROM_HTML_MODE_LEGACY)
+        dialogBinding.textView2.text =
+            Html.fromHtml(getString(R.string.mess_dialog), HtmlCompat.FROM_HTML_MODE_LEGACY)
         dialog.setCancelable(false)
         dialog.show()
 
@@ -151,18 +113,18 @@ class SettingOptionsActivitys : AppCompatActivity() {
             )
         }
         dialogBinding.txtLater.setOnClickListener {
-            Toast.makeText(this,"Required permissions for GPS location",Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Required permissions for GPS location", Toast.LENGTH_SHORT).show()
             dialog.dismiss()
         }
     }
 
 
-    fun setBackGroundBtnClick(btn: MaterialButton) {
+    override fun setBackGroundBtnClick(btn: MaterialButton) {
         btn.strokeWidth = 5
         btn.setTextColor(Color.WHITE)
     }
 
-    fun clickVehicle(vararg btn: MaterialButton) {
+    override fun clickVehicle(vararg btn: MaterialButton) {
         btn.forEach { button ->
             button.setOnClickListener {
                 setDefaultVehicle()
@@ -177,7 +139,7 @@ class SettingOptionsActivitys : AppCompatActivity() {
         }
     }
 
-    fun clickUnit(vararg btn: MaterialButton) {
+    override fun clickUnit(vararg btn: MaterialButton) {
         btn.forEach { button ->
             button.setOnClickListener {
                 setDefaultUnit()
@@ -193,7 +155,7 @@ class SettingOptionsActivitys : AppCompatActivity() {
         }
     }
 
-    fun clickViewMode(vararg btn: MaterialButton) {
+    override fun clickViewMode(vararg btn: MaterialButton) {
         btn.forEach { button ->
             button.setOnClickListener {
                 setDefaultViewMode()
@@ -209,29 +171,53 @@ class SettingOptionsActivitys : AppCompatActivity() {
     }
 
 
-    fun setTextAndStrokeWidthColor(vararg btn: MaterialButton) {
+    override fun setTextAndStrokeWidthColor(vararg btn: MaterialButton) {
         btn.forEach {
             it.strokeWidth = 0
             it.setTextColor(resources.getColor(R.color.unchanged, null))
         }
     }
 
-    private fun setDefaultVehicle() {
+    override fun setDefaultVehicle() {
         with(binding) {
             setTextAndStrokeWidthColor(btnBicycle, btnCar, btnMotorbike)
         }
     }
 
-    private fun setDefaultViewMode() {
+    override fun setDefaultViewMode() {
         with(binding) {
             setTextAndStrokeWidthColor(btnMap, btnAnalog, btnDigital)
         }
     }
 
-    private fun setDefaultUnit() {
+    override fun setDefaultUnit() {
         with(binding) {
             setTextAndStrokeWidthColor(btnKm, btnKnot, btnMph)
-
         }
+    }
+
+    override fun btnOkCLick() {
+        val edtSpeedLimit = binding.edtSpeedLimit.text
+        if (edtSpeedLimit.isNotEmpty()) {
+            if (edtSpeedLimit.toString().toInt() >= 0
+            ) {
+                settingPre.setDataConfig(
+                    unitClick,
+                    viewModeClick,
+                    vehicleClick,
+                    binding.edtSpeedLimit
+                )
+                setUnitSpeedAndDistance()
+                startActivity(Intent(this@SettingOptionsActivitys, MainActivity2::class.java))
+                finish()
+            } else {
+                Toast(">0")
+            }
+        } else {
+          Toast("do not leave blank")
+        }
+    }
+    override fun Toast(s:String){
+        Toast.makeText(this@SettingOptionsActivitys, s, Toast.LENGTH_SHORT).show()
     }
 }

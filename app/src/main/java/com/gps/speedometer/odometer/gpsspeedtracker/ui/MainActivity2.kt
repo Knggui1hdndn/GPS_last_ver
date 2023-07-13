@@ -15,6 +15,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.HorizontalScrollView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -144,9 +145,8 @@ class MainActivity2 : AppCompatActivity(), onRecever, RequestListener<GifDrawabl
             }
         }.attach()
         val viewMode = sharedPreferences.getInt(SettingConstants.ViEW_MODE, 0)
-        if (MyApplication.check) binding.viewPager2.currentItem = viewMode - 1;MyApplication.check =
-            false
-    }
+        if (MyApplication.check) binding.viewPager2.currentItem = viewMode - 1;MyApplication.check = false
+     }
 
 
     private fun getColorRes(): Int {

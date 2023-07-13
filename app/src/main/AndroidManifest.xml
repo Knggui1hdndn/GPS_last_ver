@@ -2,18 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
-
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
-
-    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
     <application
         android:name=".MyApplication"
@@ -23,16 +19,24 @@
         android:fullBackupContent="@xml/backup_rules"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
-         android:label="GPS Speedometer"
+        android:label="GPS Speedometer"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GPS"
         tools:targetApi="31">
         <activity
+            android:name=".biiling.SupVipActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".ui.MoreTipActivity"
-            android:exported="false"
-            />
+            android:exported="false" />
         <activity
             android:name=".ui.ShowWebActitvity"
             android:exported="false" />
@@ -66,9 +70,7 @@
             android:name=".ui.MainActivity2"
             android:exported="true"
             android:label="ODOMETER"
-            android:launchMode="singleTop" >
-
-        </activity>
+            android:launchMode="singleTop" />
         <activity
             android:name=".ui.ShowActivity"
             android:exported="false" />
@@ -76,7 +78,6 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-7922493569434903~3298955218" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAE9PxJdBbbOcxb65_tKdateOZ-HD8kNZ4" />
@@ -85,20 +86,15 @@
             android:name=".service.MyService"
             android:enabled="true"
             android:exported="true"
-            android:foregroundServiceType="location"/>
+            android:foregroundServiceType="location" />
 
-        <activity android:name=".ui.HistoryActivity"
-            android:exported="true">
-
-        </activity>
+        <activity
+            android:name=".ui.HistoryActivity"
+            android:exported="true"></activity>
         <activity
             android:name=".ui.SplashActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 

@@ -28,4 +28,14 @@ This app collects location data in the background to enable&lt;br>
 - Measure real-time velocity&lt;br>
 - Calculate average speed&lt;br>
 - Display your speed in notification bar</string>
+    <string name="title_sup">GPS Odometer &amp; Speedometer</string>
+    <string name="mess_sup">Accurately measure distance &amp; provide overspeed warning, accompanying you every step of the way</string>
+    <string name="title_sup_2">What GPS Odometer &amp; Speedometer\nPremium brings you</string>
+    <string name="title_buy_1">Get Your\n3-Day Free</string>
+    <string name="title_buy_2">3-Day
+Free Trial</string>
+    <string name="title_buy_3">Lifetime</string>
+    <string name="mess_buy">Then</string>
+    <string name="mess_buy_3">Never miss out on new updates</string>
+
 </resources>

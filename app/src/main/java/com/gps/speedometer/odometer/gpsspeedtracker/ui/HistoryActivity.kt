@@ -101,7 +101,6 @@ class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
                 WindowManager.LayoutParams.WRAP_CONTENT
             )
             if (ColorUtils.isThemeDark()) {
-
                 dialogBinding.btnCancel.setTextColor(Color.WHITE)
                 dialogBinding.btnCancel.backgroundTintList = ColorStateList.valueOf(Color.BLACK)
                 dialogBinding.btnDelete.setTextColor(Color.BLACK)

@@ -62,7 +62,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcy"
-        android:layout_width="match_parent"
+        android:background="@drawable/img_sup"
+         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/mToolBar" />
 
