@@ -16,6 +16,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
+import com.access.pro.application.ProApplication
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.ui.MainActivity2
 import com.google.android.gms.ads.AdError
@@ -31,7 +32,7 @@ import java.util.Date
 
 
 class MyApplication :
-   Application() {
+   ProApplication() {
     companion object {
         var check = true
     }

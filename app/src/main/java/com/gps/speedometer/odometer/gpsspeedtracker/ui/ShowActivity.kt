@@ -121,8 +121,7 @@ class ShowActivity : AppCompatActivity() {
         val shareShow = getSharedPreferences("show", MODE_PRIVATE)
         mData2 = MyDataBase.getInstance(this).movementDao()
             .getMovementDataById(shareShow.getInt("id", 0))
-        Log.d("ssssssss", "fadsfafsdf1" + mData2.toString())
-                setupMyActivity(savedInstanceState)
+                 setupMyActivity(savedInstanceState)
         setBackgroundColor()
         setFont()
         if (ColorUtils.isThemeDark()) binding.mCoordinatorLayout.setBackgroundColor(Color.BLACK) else binding.mCoordinatorLayout.setBackgroundColor(
