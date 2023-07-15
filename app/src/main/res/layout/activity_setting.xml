@@ -47,7 +47,7 @@
                     android:textStyle="bold" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnDelete"
+                    android:id="@+id/btnSub"
                     style="@style/BTNHori"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
@@ -60,6 +60,12 @@
                     android:textSize="20sp"
                     app:backgroundTint="@null" />
             </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/nativeContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#ffffff" />
 
             <LinearLayout
                 style="@style/BackgroundTint1"

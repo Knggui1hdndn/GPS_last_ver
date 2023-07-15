@@ -17,6 +17,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
 import com.access.pro.application.ProApplication
+import com.access.pro.config.AdsConfigModel
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.ui.MainActivity2
 import com.google.android.gms.ads.AdError
@@ -54,6 +55,11 @@ class MyApplication :
     }
 
     override fun onCreate() {
+        AdsConfigModel.GG_APP_OPEN = BuildConfig.GG_APP_OPEN
+        AdsConfigModel.GG_BANNER = BuildConfig.GG_BANNER
+        AdsConfigModel.GG_NATIVE = BuildConfig.GG_NATIVE
+        AdsConfigModel.GG_FULL = BuildConfig.GG_FULL
+        AdsConfigModel.GG_REWARDED = BuildConfig.GG_REWARDED
         super.onCreate()
         setUnitSpeedAndDistance()
         SharedData.color.value = getSharedPreferences(

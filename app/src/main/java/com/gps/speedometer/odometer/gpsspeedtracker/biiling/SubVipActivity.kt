@@ -44,15 +44,18 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
         )
         with(binding)
         {
+            setupBilling()
             handelClick(1)
+
             mLinearMonth.setOnClickListener {
                 handelClick(1)
-                currentProduct = subMonthProduct
-                setupBilling()
-                showPurchaseDialog()
             }
-            mLinearWeek.setOnClickListener { handelClick(2) }
-            mLinearLifeTime.setOnClickListener { handelClick(3) }
+            mLinearWeek.setOnClickListener {
+                handelClick(2)
+            }
+            mLinearLifeTime.setOnClickListener {
+                handelClick(3)
+            }
             txtPolicy.setOnClickListener {
                 val intent = Intent(this@SubVipActivity, ShowWebActitvity::class.java)
                 intent.putExtra("link", "https://sites.google.com/view/policytosforgpsspeedometer/")
@@ -79,9 +82,9 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
     override fun setTextColorDefault(color: Int) {
         with(binding) {
             val color = getColor(color)
-            txt1.setTextColor(color)
-            txt2.setTextColor(color)
-            txt3.setTextColor(color)
+            txtWeek.setTextColor(color)
+            txtMonth.setTextColor(color)
+            txtLifeTime.setTextColor(color)
         }
     }
 
@@ -100,9 +103,9 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
         with(binding) {
             val color = getColor(color)
             when (position) {
-                1 -> txt1.setTextColor(color)
-                2 -> txt2.setTextColor(color)
-                3 -> txt3.setTextColor(color)
+                1 -> txtMonth.setTextColor(color)
+                2 -> txtWeek.setTextColor(color)
+                3 -> txtLifeTime.setTextColor(color)
             }
         }
     }
@@ -112,6 +115,13 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
         setBackGroundClick(R.drawable.border_buy_click, position)
         setTextColorDefault(R.color.white)
         setTextColorClick(R.color.yellow, position)
+        when (position) {
+            1 -> currentProduct = subMonthProduct
+            2 -> currentProduct = subWeekProduct
+            3 -> currentProduct = lifeTimeProduct
+        }
+        showPurchaseDialog()
+
     }
 
     private var restore = false
@@ -166,8 +176,8 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
                     billingResult.debugMessage,
                     Toast.LENGTH_SHORT
                 ).show()
-                Log.d("ssssssssssssss", billingResult.debugMessage)
-            }
+
+             }
         }
 
         override fun onBillingServiceDisconnected() {
@@ -177,7 +187,6 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
                 Toast.LENGTH_SHORT
             ).show()
         }
-
     }
 
     private var subWeekProduct: ProductDetails? = null
@@ -234,7 +243,58 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
     }
 
     private fun fillDataToUI() {
-
+        if (subMonthProduct != null && !subMonthProduct!!.subscriptionOfferDetails.isNullOrEmpty()) {
+            var product = subMonthProduct!!.subscriptionOfferDetails!!.first()
+            var pricingPhase = product.pricingPhases.pricingPhaseList
+            if (pricingPhase.size > 1) {
+                binding.txtPriceMonth.text = "Then ".plus(
+                    product.pricingPhases.pricingPhaseList[1].formattedPrice
+                )
+                binding.txtMonth.text =
+                    product.pricingPhases.pricingPhaseList[0].formattedPrice.plus("\nFor 3 Day")
+            } else if (pricingPhase.isNotEmpty()) {
+                binding.txtPriceMonth.text =
+                    "Then ".plus(
+                        product.pricingPhases.pricingPhaseList[0].formattedPrice
+                    )
+                binding.txtMonth.text =
+                    product.pricingPhases.pricingPhaseList[0].formattedPrice
+            }
+        }
+        if (subWeekProduct != null && !subWeekProduct!!.subscriptionOfferDetails.isNullOrEmpty()) {
+            var product = subWeekProduct!!.subscriptionOfferDetails!!.first()
+            var pricingPhase = product.pricingPhases.pricingPhaseList
+            if (pricingPhase.size > 1) {
+                binding.txtPriceWeek.text = "Then ".plus(
+                    product.pricingPhases.pricingPhaseList[1].formattedPrice
+                )
+                binding.txtWeek.text =
+                    product.pricingPhases.pricingPhaseList[0].formattedPrice.plus("\nFor 3 Day")
+            } else if (pricingPhase.isNotEmpty()) {
+                binding.txtPriceWeek.text = "Then ".plus(
+                    product.pricingPhases.pricingPhaseList[0].formattedPrice
+                )
+                binding.txtWeek.text =
+                    product.pricingPhases.pricingPhaseList[0].formattedPrice
+            }
+        }
+        if (lifeTimeProduct != null) {
+            val product = lifeTimeProduct!!.oneTimePurchaseOfferDetails
+            if (product != null) {
+                binding.txtPriceLifeTime.text = product.formattedPrice
+            }
+        }
+        binding.description.text =
+            getString(R.string.billing_starts)
+                .plus(" ")
+                .plus(binding.txtWeek.text.toString().replace("Then ", ""))
+                .plus("/week or ")
+                .plus(binding.txtPriceMonth.text.toString().replace("Then ", ""))
+                .plus("/month or ")
+                .plus(binding.txtPriceLifeTime.text.toString().replace("Then ", ""))
+                .plus(" for LifeTime. ")
+                .plus(getString(R.string.billing_end))
+        Log.d("ádasdsdd",subMonthProduct.toString()+""+subWeekProduct+lifeTimeProduct)
     }
 
     private suspend fun getPurchasesProductDetail(

@@ -81,12 +81,11 @@
             android:background="@drawable/rotate_screen_from_map" />
     </FrameLayout>
 
-    <com.google.android.gms.ads.AdView
-        xmlns:ads="http://schemas.android.com/apk/res-auto"
-        ads:adSize="BANNER"
+    <FrameLayout
+        android:id="@+id/bannerContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        ads:adUnitId="ca-app-pub-3940256099942544/6300978111"/>
+        android:layout_height="60dp"
+        android:background="#ffffff" />
 
     <LinearLayout
         android:id="@+id/mLinear"

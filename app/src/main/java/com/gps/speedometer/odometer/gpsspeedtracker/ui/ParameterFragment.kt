@@ -11,6 +11,7 @@ import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.view.WindowManager
@@ -19,8 +20,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
+import com.access.pro.callBack.OnShowInterstitialListener
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.MyLocationConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.R
+import com.gps.speedometer.odometer.gpsspeedtracker.dao.MyDataBase
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.DialogPermissionDescriptionBinding
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.FragmentParameterBinding
@@ -83,6 +86,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
             );
         }
         handleOrientationClickAll()
+
     }
 
     fun stopService() {
@@ -93,6 +97,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun handleOrientationClickAll() {
         binding.btnStart.setOnClickListener {
+
             if (!CheckPermission.hasLocationPermission(requireContext())) {
                 showDialog()
             } else {
@@ -102,14 +107,23 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
         }
         binding.btnStop.setOnClickListener {
             presenter.stopService()
-             requireContext().stopService(Intent(context, MyService::class.java))
+            requireContext().stopService(Intent(context, MyService::class.java))
             (requireActivity() as MainActivity2).sendDataToSecondFragment()
             val notificationsFragment =
                 (requireActivity() as MainActivity2).supportFragmentManager.findFragmentByTag("f2")
             if (notificationsFragment != null) (notificationsFragment as NotificationsFragment).onClearMap(
                 false
             )
-
+//            (activity as MainActivity2).showAds(false, object : OnShowInterstitialListener {
+//                override fun onCloseAds(hasAds: Boolean) {
+                    //chuyen sang man hinh khac
+                    val myDataBase=MyDataBase.getInstance(requireContext())
+                    val i = Intent(context, ShowActivity::class.java)
+                    i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    i.putExtra("movementData", myDataBase.movementDao().getLastMovementData())
+                    requireContext().startActivity(i)
+//                }
+//            })
         }
         binding.imgPause.setOnClickListener {
             presenter.pauseService()

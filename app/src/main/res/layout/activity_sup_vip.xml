@@ -97,7 +97,7 @@
                     android:padding="5dp">
 
                     <TextView
-                        android:id="@+id/txt1"
+                        android:id="@+id/txtMonth"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/title_buy_1"
@@ -105,38 +105,24 @@
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/txt1_1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/txt1"
-                        android:layout_marginTop="10dp"
-                        android:text="Then"
-                        android:textColor="@color/white" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/txt1_1"
+                        android:gravity="bottom"
+                        android:layout_below="@id/txtMonth"
                         android:layout_alignParentBottom="true"
                         android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/txtPriceMonth"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
                             android:text="Tiền"
-                            android:id="@+id/txtPriceMonth"
                             android:textColor="@color/white"
                             android:textStyle="bold" />
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:text="/month"
-
-                            android:textColor="@color/white" />
                     </LinearLayout>
                 </RelativeLayout>
 
@@ -152,7 +138,7 @@
                     android:padding="10dp">
 
                     <TextView
-                        android:id="@+id/txt2"
+                        android:id="@+id/txtWeek"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/title_buy_2"
@@ -160,39 +146,24 @@
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/txt2_2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/txt2"
-                        android:layout_marginTop="10dp"
-                        android:text="Then"
-                        android:textColor="@color/white" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/txt2_2"
+                        android:gravity="bottom"
+                        android:layout_below="@id/txtWeek"
                         android:layout_alignParentBottom="true"
                         android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/txtPriceWeek"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
                             android:text="Tiền"
-                            android:id="@+id/txtPriceWeek"
-
                             android:textColor="@color/white"
                             android:textStyle="bold" />
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:text="/month"
-
-                            android:textColor="@color/white" />
                     </LinearLayout>
                 </RelativeLayout>
 
@@ -205,39 +176,30 @@
                     android:gravity="center"
                     android:orientation="vertical"
                     android:padding="10dp">
-
                     <TextView
-                        android:id="@+id/txt3"
+                        android:id="@+id/txtLifeTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentTop="true"
-                        android:text="@string/title_buy_3"
+                        android:text="@string/title_buy_2"
                         android:textColor="@color/white"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/txt3"
-                        android:text="@string/mess_buy_3"
-                        android:textColor="@color/white" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/txt1_1"
+                        android:gravity="bottom"
+                        android:layout_below="@id/txtLifeTime"
                         android:layout_alignParentBottom="true"
                         android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/txtPriceLifeTime"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
                             android:text="Tiền"
-                            android:id="@+id/txtPricelifeTime"
-
                             android:textColor="@color/white"
                             android:textStyle="bold" />
 
@@ -266,8 +228,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/payment_description"
-                android:textColor="@color/white" />
+                android:id="@+id/description"
+                 android:textColor="@color/white" />
 
             <TextView
                 android:layout_width="wrap_content"

@@ -15,8 +15,6 @@ import android.location.Geocoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -46,6 +44,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.gps.speedometer.odometer.gpsspeedtracker.R
+import com.gps.speedometer.odometer.gpsspeedtracker.biiling.BaseActivity
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.ActivityShowBinding
 import com.gps.speedometer.odometer.gpsspeedtracker.ui.adpater.HistoryAdapter
 import java.io.File
@@ -56,7 +55,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 
-class ShowActivity : AppCompatActivity() {
+class ShowActivity : BaseActivity() {
     private lateinit var bottomSheet: RelativeLayout
     private lateinit var binding: ActivityShowBinding
     private lateinit var mData2: MovementData
@@ -104,7 +103,6 @@ class ShowActivity : AppCompatActivity() {
         p0.apply {
             setMinZoomPreference(15.0f);
             setMaxZoomPreference(35.0f);
-
             uiSettings.isRotateGesturesEnabled = true
             setOnCameraMoveListener {
                 resetMinMaxZoomPreference()
@@ -115,30 +113,21 @@ class ShowActivity : AppCompatActivity() {
     private lateinit var bottom2: BottomSheetBehavior<*>
 
 
-    @SuppressLint("MissingInflatedId", "CutPasteId", "WrongViewCast")
+    @SuppressLint("MissingInflatedId", "CutPasteId", "WrongViewCast", "SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val shareShow = getSharedPreferences("show", MODE_PRIVATE)
         mData2 = MyDataBase.getInstance(this).movementDao()
             .getMovementDataById(shareShow.getInt("id", 0))
-                 setupMyActivity(savedInstanceState)
+        setupMyActivity()
         setBackgroundColor()
         setFont()
-        if (ColorUtils.isThemeDark()) binding.mCoordinatorLayout.setBackgroundColor(Color.BLACK) else binding.mCoordinatorLayout.setBackgroundColor(
-            Color.WHITE
-        )
-    }
+        showBannerAds(binding.bannerContainer!!)
 
-    override fun onPause() {
-        super.onPause()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
+        if (ColorUtils.isThemeDark())
+            binding.mCoordinatorLayout.setBackgroundColor(Color.BLACK)
+        else
+            binding.mCoordinatorLayout.setBackgroundColor(Color.WHITE)
     }
 
     private fun formatTripInformation(): String {
@@ -156,18 +145,15 @@ class ShowActivity : AppCompatActivity() {
 
 
     @SuppressLint("NewApi")
-    private fun setupMyActivity(savedInstanceState: Bundle?) {
+    private fun setupMyActivity() {
         binding = ActivityShowBinding.inflate(layoutInflater)
         setContentView(binding.root)
         myDataBase = MyDataBase.getInstance(this)
-        binding.mToolBar.setTitleTextColor(if (ColorUtils.isThemeDark()) Color.WHITE else Color.BLACK)
+
 
         setSupportActionBar(binding.mToolBar)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-
-
         if (!this::mData2.isInitialized) finish()
         setData(mData2)
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
@@ -182,7 +168,6 @@ class ShowActivity : AppCompatActivity() {
             binding.txtDistance,
             binding.txtAverageSpeed
         )
-
     }
 
 
@@ -193,7 +178,6 @@ class ShowActivity : AppCompatActivity() {
         val view = LayoutInflater.from(this).inflate(R.layout.layout_screen, null)
         dialog.setContentView(view)
         with(dialog) {
-
             val img = findViewById<ImageView>(R.id.img)
             var bitmapScreen: Bitmap? = null
             val returnedBitmap = loadBitmapFromView(

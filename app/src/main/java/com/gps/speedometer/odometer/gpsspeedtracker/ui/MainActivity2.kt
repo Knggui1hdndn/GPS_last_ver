@@ -30,6 +30,7 @@ import com.bumptech.glide.request.target.Target
 import com.google.android.material.tabs.TabLayoutMediator
 import com.gps.speedometer.odometer.gpsspeedtracker.MyApplication
 import com.gps.speedometer.odometer.gpsspeedtracker.R
+import com.gps.speedometer.odometer.gpsspeedtracker.biiling.BaseActivity
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.MyLocationConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.ActivityMain2Binding
@@ -45,7 +46,7 @@ interface onRecever {
 
 }
 
-class MainActivity2 : AppCompatActivity(), onRecever, RequestListener<GifDrawable> {
+class MainActivity2 : BaseActivity(), onRecever, RequestListener<GifDrawable> {
 
     companion object {
         const val REQUEST_CHECK_SETTING = 1

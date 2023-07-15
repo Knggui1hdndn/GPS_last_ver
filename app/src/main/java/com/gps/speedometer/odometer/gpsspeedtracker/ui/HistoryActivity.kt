@@ -22,10 +22,11 @@ import com.gps.speedometer.odometer.gpsspeedtracker.ui.adpater.HistoryAdapter
 import com.gps.speedometer.odometer.gpsspeedtracker.ui.adpater.sendHashMapChecked
 import com.gps.speedometer.odometer.gpsspeedtracker.utils.ColorUtils
 import com.gps.speedometer.odometer.gpsspeedtracker.R
+import com.gps.speedometer.odometer.gpsspeedtracker.biiling.BaseActivity
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.ActivityMainBinding
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.DialogDeleteBinding
 
-class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
+class HistoryActivity : BaseActivity(), sendHashMapChecked {
     private lateinit var adapter: HistoryAdapter
     private lateinit var myDataBase: MyDataBase
     private lateinit var mutableListMovementData: MutableList<MovementData>
@@ -44,6 +45,7 @@ class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setUpActivity()
+        showNativeAds(binding.nativeContainer1) { }
     }
 
     private fun setUpActivity() {
@@ -56,6 +58,7 @@ class HistoryActivity : AppCompatActivity(), sendHashMapChecked {
         val mng = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         adapter = HistoryAdapter(this)
         list = mutableListMovementData.map { it to false }.toMap().toMutableMap()
+        binding.txtNoti.visibility= if (list.isNotEmpty()) View.GONE else View.VISIBLE
         val direction = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
         with(binding) {
             rcy.addItemDecoration(direction)

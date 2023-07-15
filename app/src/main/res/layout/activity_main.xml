@@ -11,36 +11,35 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        app:title="Lịch sử di chuyển"
-        app:titleTextColor="@color/white">
+        app:title="Lịch sử di chuyển">
 
         <RelativeLayout
             android:layout_width="150dp"
-            android:layout_gravity="end"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="end">
 
             <LinearLayout
-                android:layout_width="wrap_content"
                 android:id="@+id/mLinear"
-                android:visibility="gone"
-                 android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:gravity="center">
+                android:gravity="center"
+                android:visibility="gone">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAll"
                     android:layout_width="60dp"
-                    android:gravity="center"
                     android:layout_height="35dp"
                     android:layout_gravity="center_vertical"
                     android:background="@drawable/background_button_light"
+                    android:gravity="center"
                     android:text="All"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     app:backgroundTint="@null"
                     app:cornerRadius="20dp"
 
-                   />
+                    />
 
                 <TextView
                     android:id="@+id/delete"
@@ -52,19 +51,48 @@
             </LinearLayout>
 
             <CheckBox
-                android:layout_alignParentRight="true"
                 android:id="@+id/checkbox"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true" />
         </RelativeLayout>
 
     </androidx.appcompat.widget.Toolbar>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rcy"
-        android:background="@drawable/img_sup"
-         android:layout_width="match_parent"
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/mToolBar" />
+        android:layout_below="@id/mToolBar">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:id="@+id/nativeContainer1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#ffffff" />
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcy"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/mToolBar" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <TextView
+        android:id="@+id/txtNoti"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="150dp"
+        android:text="No travel schedule"
+        android:textSize="25sp"
+        android:textStyle="bold" />
 </RelativeLayout>

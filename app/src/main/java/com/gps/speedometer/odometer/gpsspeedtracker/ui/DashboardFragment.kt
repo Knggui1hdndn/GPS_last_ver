@@ -12,10 +12,10 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.gps.speedometer.odometer.gpsspeedtracker.R
 import com.gps.speedometer.odometer.gpsspeedtracker.utils.FontUtils
- import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
+import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.FragmentDashboardBinding
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
- import com.gps.speedometer.odometer.gpsspeedtracker.interfaces.MeasurementInterFace
+import com.gps.speedometer.odometer.gpsspeedtracker.interfaces.MeasurementInterFace
 import com.gps.speedometer.odometer.gpsspeedtracker.presenter.MeasurementPresenter
 import com.gps.speedometer.odometer.gpsspeedtracker.utils.ColorUtils
 import com.gps.speedometer.odometer.gpsspeedtracker.utils.TimeUtils
@@ -43,6 +43,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), MeasurementInte
         measurement.timeChange()
         measurement.currentSpeedChange()
         measurement.setVisibilityTime()
+        (requireActivity() as MainActivity2).showBannerAds(binding.bannerContainer!!)
         binding.imgRotate?.setOnClickListener {
             requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }

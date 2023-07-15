@@ -41,8 +41,7 @@ class SettingOptionsActivitys : AppCompatActivity(), SettingOptionsContract.View
     private lateinit var settingPre: SettingOptionsPresenter
     private fun setUnitSpeedAndDistance() {
         try {
-            SharedData.toUnit =
-                getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE).getString(
+            SharedData.toUnit = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE).getString(
                     SettingConstants.UNIT,
                     ""
                 ).toString()
@@ -169,7 +168,6 @@ class SettingOptionsActivitys : AppCompatActivity(), SettingOptionsContract.View
             }
         }
     }
-
 
     override fun setTextAndStrokeWidthColor(vararg btn: MaterialButton) {
         btn.forEach {

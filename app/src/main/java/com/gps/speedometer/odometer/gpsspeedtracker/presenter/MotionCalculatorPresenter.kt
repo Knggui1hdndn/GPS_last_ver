@@ -175,10 +175,6 @@ class MotionCalculatorPresenter(
         myDataBase.movementDao().updateMovementData(movementData)
         shareShow.edit().putInt("id",movementData.id).apply()
         resetSharedData()
-        val i = Intent(context, ShowActivity::class.java)
-        i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        i.putExtra("movementData", myDataBase.movementDao().getLastMovementData())
-        context.startActivity(i)
         context.stopService(Intent(context, MyService::class.java))
     }
 

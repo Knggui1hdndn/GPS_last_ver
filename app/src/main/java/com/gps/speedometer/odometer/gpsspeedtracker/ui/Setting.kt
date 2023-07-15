@@ -32,11 +32,13 @@ import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
 import com.gps.speedometer.odometer.gpsspeedtracker.utils.ColorUtils
 import com.google.android.material.button.MaterialButton
 import com.gps.speedometer.odometer.gpsspeedtracker.R
+import com.gps.speedometer.odometer.gpsspeedtracker.biiling.BaseActivity
+import com.gps.speedometer.odometer.gpsspeedtracker.biiling.SubVipActivity
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.ActivitySettingBinding
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.DialogRateBinding
 
 
-class Setting : AppCompatActivity(), SettingInterface.View, View.OnKeyListener {
+class Setting : BaseActivity(), SettingInterface.View, View.OnKeyListener {
     private lateinit var binding: ActivitySettingBinding
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var btnMph: MaterialButton
@@ -80,6 +82,11 @@ class Setting : AppCompatActivity(), SettingInterface.View, View.OnKeyListener {
         initView()
         setUpActivity()
         setBackgroundALL()
+        binding.btnSub.setOnClickListener {
+            startActivity(Intent(this@Setting,SubVipActivity::class.java))
+        }
+        showNativeAds(binding.nativeContainer) {
+         }
         swtAlarm.setOnCheckedChangeListener { _, isChecked ->
             saveSettingBoolean(SettingConstants.SPEED_ALARM, isChecked, swtAlarm)
         }
