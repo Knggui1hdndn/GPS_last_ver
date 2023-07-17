@@ -38,8 +38,8 @@ Free Trial</string>
     <string name="mess_buy">Then</string>
     <string name="mess_buy_3">Never miss out on new updates</string>
     <string name="billing_end">You can cancel at anytime on Google Play.</string>
-<string name="billing_starts">Billing starts at the end of the 3-day free trail </string>
+    <string name="billing_starts">Billing starts at the end of the 3-day free trail </string>
     <string name="start_free_trial">Start free trial</string>
-     <string name="privacy_policy"><u>Privacy Policy</u></string>
+    <string name="privacy_policy"><u>Privacy Policy</u></string>
 
 </resources>

@@ -30,6 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
+                android:id="@+id/premium"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:padding="20dp">
@@ -49,7 +50,7 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSub"
                     style="@style/BTNHori"
-                    android:layout_width="150dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:layout_gravity="center"
@@ -65,7 +66,7 @@
                 android:id="@+id/nativeContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#ffffff" />
+           />
 
             <LinearLayout
                 style="@style/BackgroundTint1"

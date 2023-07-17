@@ -90,19 +90,19 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
     }
 
     fun stopService() {
-
         presenter.stopService()
      }
-
+    fun startService() {
+        presenter.startService()
+    }
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun handleOrientationClickAll() {
         binding.btnStart.setOnClickListener {
-
+            throw RuntimeException("Test Crash")
             if (!CheckPermission.hasLocationPermission(requireContext())) {
                 showDialog()
             } else {
-                presenter.startService()
-                 (activity as MainActivity2).showMess()
+               startActivity(Intent(requireContext(),ConfirmActivity::class.java))
             }
         }
         binding.btnStop.setOnClickListener {
@@ -114,16 +114,15 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
             if (notificationsFragment != null) (notificationsFragment as NotificationsFragment).onClearMap(
                 false
             )
-//            (activity as MainActivity2).showAds(false, object : OnShowInterstitialListener {
-//                override fun onCloseAds(hasAds: Boolean) {
-                    //chuyen sang man hinh khac
+            (activity as MainActivity2).showAds(false, object : OnShowInterstitialListener {
+                override fun onCloseAds(hasAds: Boolean) {
                     val myDataBase=MyDataBase.getInstance(requireContext())
                     val i = Intent(context, ShowActivity::class.java)
                     i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                     i.putExtra("movementData", myDataBase.movementDao().getLastMovementData())
                     requireContext().startActivity(i)
-//                }
-//            })
+                }
+            })
         }
         binding.imgPause.setOnClickListener {
             presenter.pauseService()

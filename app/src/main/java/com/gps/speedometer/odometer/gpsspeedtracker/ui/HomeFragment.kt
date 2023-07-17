@@ -24,7 +24,7 @@ import com.gps.speedometer.odometer.gpsspeedtracker.biiling.BaseActivity
 import kotlin.properties.Delegates
 
 
-class HomeFragment : Fragment(R.layout.fragment_home), MeasurementInterFace.View   {
+class HomeFragment : Fragment(R.layout.fragment_home), MeasurementInterFace.View {
 
     private lateinit var binding: FragmentHomeBinding
     private lateinit var sharedPreferencesSetting: SharedPreferences
@@ -47,7 +47,9 @@ class HomeFragment : Fragment(R.layout.fragment_home), MeasurementInterFace.View
         measurement.timeChange()
         measurement.currentSpeedChange()
         measurement.setVisibilityTime()
-        (requireActivity() as MainActivity2).showBannerAds(binding.bannerContainer!!)
+        if (binding.bannerContainer != null) (requireActivity() as MainActivity2).showBannerAds(
+            binding.bannerContainer!!
+        )
         with(binding) {
             imgRotate?.setOnClickListener {
                 requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
@@ -58,8 +60,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), MeasurementInterFace.View
             }
         }
 
-        val adRequest = AdRequest.Builder().build()
-//        binding.ads!!.loadAd(adRequest)
+
     }
 
 

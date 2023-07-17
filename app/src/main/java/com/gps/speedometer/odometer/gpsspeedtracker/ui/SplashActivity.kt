@@ -12,14 +12,15 @@ import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.ads.MobileAds
 import com.gps.speedometer.odometer.gpsspeedtracker.R
+import com.gps.speedometer.odometer.gpsspeedtracker.biiling.BaseActivity
+import com.gps.speedometer.odometer.gpsspeedtracker.biiling.SubVipActivity
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
 
 
-class SplashActivity : AppCompatActivity() {
-
-
+class SplashActivity : BaseActivity() {
     private lateinit var sharedPreferences: SharedPreferences
 
     @SuppressLint("MissingInflatedId")
@@ -27,8 +28,12 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
+//        setupBilling{p0,p1-> }
+        // Force a crash
+        //     proApplication.isSubVip=true
         createTimer(3L)
-        // MobileAds.initialize(this)
+        MobileAds.initialize(this)
+
         sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         with(SharedData) {
             onShowTime.value = if (sharedPreferences.getBoolean(
@@ -42,7 +47,6 @@ class SplashActivity : AppCompatActivity() {
                 )
             ) View.VISIBLE else View.INVISIBLE
             color.value = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, 0)
-            Log.d("okokodds", color.value.toString())
 
         }
     }
@@ -65,7 +69,7 @@ class SplashActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
-                startMainActivity()
+                startActivity(Intent(this@SplashActivity, SubVipActivity::class.java))
                 finish()
 //                val application = application as? MyApplication
 //                // If the application is not an instance of MyApplication, log an error message and
@@ -89,13 +93,5 @@ class SplashActivity : AppCompatActivity() {
     }
 
     /** Start the MainActivity. */
-    fun startMainActivity() {
-        if (!sharedPreferences.getBoolean(SettingConstants.CHECK_OPEN, false)) {
-            val intent = Intent(this, SettingOptionsActivitys::class.java)
-            startActivity(intent)
-        } else {
-            val intent = Intent(this, MainActivity2::class.java)
-            startActivity(intent)
-        }
-    }
+
 }

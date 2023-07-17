@@ -43,7 +43,9 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), MeasurementInte
         measurement.timeChange()
         measurement.currentSpeedChange()
         measurement.setVisibilityTime()
-        (requireActivity() as MainActivity2).showBannerAds(binding.bannerContainer!!)
+        if (binding.bannerContainer != null) (requireActivity() as MainActivity2).showBannerAds(
+            binding.bannerContainer!!
+        )
         binding.imgRotate?.setOnClickListener {
             requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
@@ -53,7 +55,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), MeasurementInte
 
     override fun onResume() {
         super.onResume()
-        this.binding.txtUnit?.text = SharedData.toUnitDistance
+        this.binding.txtUnit.text = SharedData.toUnitDistance
 
     }
 

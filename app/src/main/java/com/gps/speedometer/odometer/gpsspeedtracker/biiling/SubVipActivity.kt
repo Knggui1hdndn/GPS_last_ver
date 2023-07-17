@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.access.pro.config.ConfigModel
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
@@ -17,9 +18,12 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.queryProductDetails
 import com.gps.speedometer.odometer.gpsspeedtracker.R
+import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.ActivitySupVipBinding
 import com.gps.speedometer.odometer.gpsspeedtracker.interfaces.SubVipInterface
 import com.gps.speedometer.odometer.gpsspeedtracker.presenter.SubVipPresenter
+import com.gps.speedometer.odometer.gpsspeedtracker.ui.MainActivity2
+import com.gps.speedometer.odometer.gpsspeedtracker.ui.SettingOptionsActivitys
 import com.gps.speedometer.odometer.gpsspeedtracker.ui.ShowWebActitvity
 import com.gps.speedometer.odometer.gpsspeedtracker.ui.adpater.AdapterSupVip
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +34,8 @@ import kotlinx.coroutines.withContext
 class SubVipActivity : BaseActivity(), SubVipInterface.View {
     private var _binding: ActivitySupVipBinding? = null
     private val binding get() = _binding!!
+    private var restore = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivitySupVipBinding.inflate(layoutInflater)
@@ -46,15 +52,41 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
         {
             setupBilling()
             handelClick(1)
+            btnStart.setOnClickListener {
+                showPurchaseDialog()
+            }
+            close.setOnClickListener {
+                finish()
+//                if (getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE).getBoolean(
+//                        SettingConstants.CHECK_OPEN,
+//                        false
+//                    )
+//                ) {
+//                    val intent = Intent(this, SettingOptionsActivitys::class.java)
+//                    startActivity(intent)
+//                } else {
+//                    val intent = Intent(this, MainActivity2::class.java)
+//                    startActivity(intent)
+//                }
 
+            }
+            restore.setOnClickListener {
+                this@SubVipActivity.restore = true
+                billingClient!!.startConnection(billingClientStateListener)
+            }
             mLinearMonth.setOnClickListener {
                 handelClick(1)
+                showPurchaseDialog()
             }
+
             mLinearWeek.setOnClickListener {
                 handelClick(2)
+                showPurchaseDialog()
             }
+
             mLinearLifeTime.setOnClickListener {
                 handelClick(3)
+                showPurchaseDialog()
             }
             txtPolicy.setOnClickListener {
                 val intent = Intent(this@SubVipActivity, ShowWebActitvity::class.java)
@@ -120,11 +152,10 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
             2 -> currentProduct = subWeekProduct
             3 -> currentProduct = lifeTimeProduct
         }
-        showPurchaseDialog()
+
 
     }
 
-    private var restore = false
 
     private val purchasesUpdatedListener =
         PurchasesUpdatedListener { billingResult, purchases ->
@@ -177,7 +208,7 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
                     Toast.LENGTH_SHORT
                 ).show()
 
-             }
+            }
         }
 
         override fun onBillingServiceDisconnected() {
@@ -214,7 +245,9 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
         lifeTimeProduct =
             getPurchasesProductDetail("pack_life_time", BillingClient.ProductType.INAPP)
         currentProduct = subWeekProduct
-//        when (ConfigModel.subDefaultPack) {
+//         when (ConfigModel.subDefaultPack) {
+//
+//         }
 //            "pack_sub_week" -> {
 //                currentProduct = subWeekProduct
 //                listSubItem[0].setSelected(false)
@@ -294,7 +327,7 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
                 .plus(binding.txtPriceLifeTime.text.toString().replace("Then ", ""))
                 .plus(" for LifeTime. ")
                 .plus(getString(R.string.billing_end))
-        Log.d("ádasdsdd",subMonthProduct.toString()+""+subWeekProduct+lifeTimeProduct)
+        Log.d("ádasdsdd", subMonthProduct.toString() + "" + subWeekProduct + lifeTimeProduct)
     }
 
     private suspend fun getPurchasesProductDetail(

@@ -26,12 +26,13 @@ import com.gps.speedometer.odometer.gpsspeedtracker.dao.MyDataBase
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
 import com.google.android.material.button.MaterialButton
 import com.gps.speedometer.odometer.gpsspeedtracker.R
+import com.gps.speedometer.odometer.gpsspeedtracker.biiling.BaseActivity
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.ActivitySettingOptionsBinding
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.DialogPermissionDescriptionBinding
 import com.gps.speedometer.odometer.gpsspeedtracker.interfaces.SettingOptionsContract
 import com.gps.speedometer.odometer.gpsspeedtracker.presenter.SettingOptionsPresenter
 
-class SettingOptionsActivitys : AppCompatActivity(), SettingOptionsContract.View {
+class SettingOptionsActivitys : BaseActivity(), SettingOptionsContract.View {
     private lateinit var binding: ActivitySettingOptionsBinding
 
     private var vehicleClick = 2
@@ -41,7 +42,8 @@ class SettingOptionsActivitys : AppCompatActivity(), SettingOptionsContract.View
     private lateinit var settingPre: SettingOptionsPresenter
     private fun setUnitSpeedAndDistance() {
         try {
-            SharedData.toUnit = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE).getString(
+            SharedData.toUnit =
+                getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE).getString(
                     SettingConstants.UNIT,
                     ""
                 ).toString()
@@ -59,6 +61,8 @@ class SettingOptionsActivitys : AppCompatActivity(), SettingOptionsContract.View
         binding = ActivitySettingOptionsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         settingPre = SettingOptionsPresenter(this)
+
+        showNativeAds(binding.nativeContainer) {}
 
         showDialog()
         with(binding) {
@@ -212,10 +216,11 @@ class SettingOptionsActivitys : AppCompatActivity(), SettingOptionsContract.View
                 Toast(">0")
             }
         } else {
-          Toast("do not leave blank")
+            Toast("do not leave blank")
         }
     }
-    override fun Toast(s:String){
+
+    override fun Toast(s: String) {
         Toast.makeText(this@SettingOptionsActivitys, s, Toast.LENGTH_SHORT).show()
     }
 }

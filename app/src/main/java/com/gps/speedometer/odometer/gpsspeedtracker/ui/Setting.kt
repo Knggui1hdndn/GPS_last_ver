@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.KeyEvent
@@ -82,11 +83,17 @@ class Setting : BaseActivity(), SettingInterface.View, View.OnKeyListener {
         initView()
         setUpActivity()
         setBackgroundALL()
+        if (!proApplication.isSubVip) {
+            binding.premium.visibility=View.VISIBLE
+         } else {
+            binding.premium.visibility=View.GONE
+        }
+
         binding.btnSub.setOnClickListener {
-            startActivity(Intent(this@Setting,SubVipActivity::class.java))
+            startActivity(Intent(this@Setting, SubVipActivity::class.java))
         }
         showNativeAds(binding.nativeContainer) {
-         }
+        }
         swtAlarm.setOnCheckedChangeListener { _, isChecked ->
             saveSettingBoolean(SettingConstants.SPEED_ALARM, isChecked, swtAlarm)
         }
@@ -248,6 +255,13 @@ class Setting : BaseActivity(), SettingInterface.View, View.OnKeyListener {
                 dialogBinding.mRcy.setBackgroundColor(getColor(R.color.unchanged))
                 dialogBinding.txt1.setTextColor(Color.WHITE)
                 dialogBinding.txt2.setTextColor(Color.WHITE)
+            }
+            dialogBinding.btnRate.setOnClickListener {
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://play.google.com/store/apps/details?id=com.gps.speedometer.odometer.gpsspeedtracker")
+                )
+                startActivity(intent)
             }
         }
         return dialog

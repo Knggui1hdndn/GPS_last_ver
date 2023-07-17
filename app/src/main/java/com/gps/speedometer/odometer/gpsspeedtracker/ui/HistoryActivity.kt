@@ -45,7 +45,8 @@ class HistoryActivity : BaseActivity(), sendHashMapChecked {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setUpActivity()
-        showNativeAds(binding.nativeContainer1) { }
+        showBannerAds(binding.bannerContainer)
+        showBannerAds(binding.bannerContainer1)
     }
 
     private fun setUpActivity() {
@@ -58,7 +59,7 @@ class HistoryActivity : BaseActivity(), sendHashMapChecked {
         val mng = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         adapter = HistoryAdapter(this)
         list = mutableListMovementData.map { it to false }.toMap().toMutableMap()
-        binding.txtNoti.visibility= if (list.isNotEmpty()) View.GONE else View.VISIBLE
+        binding.txtNoti.visibility = if (list.isNotEmpty()) View.GONE else View.VISIBLE
         val direction = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
         with(binding) {
             rcy.addItemDecoration(direction)
@@ -88,6 +89,13 @@ class HistoryActivity : BaseActivity(), sendHashMapChecked {
     }
 
     private fun setUpActionBar() {
+        binding.mToolBar.setTitleTextColor(
+            if (ColorUtils.isThemeDark()) {
+                Color.WHITE
+            } else {
+                Color.BLACK
+            }
+        )
         setSupportActionBar(binding.mToolBar)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

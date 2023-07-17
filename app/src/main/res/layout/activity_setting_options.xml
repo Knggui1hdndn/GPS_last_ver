@@ -16,7 +16,7 @@
             android:id="@+id/nativeContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#ffffff" />
+       />
         <LinearLayout
             android:id="@+id/mLinear"
             android:layout_width="match_parent"

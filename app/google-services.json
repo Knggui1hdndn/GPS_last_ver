@@ -1,0 +1,150 @@
+{
+  "project_info": {
+    "project_number": "493973144830",
+    "project_id": "my-project-1645683190602",
+    "storage_bucket": "my-project-1645683190602.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:493973144830:android:483d157b94dd122ab591af",
+        "android_client_info": {
+          "package_name": "com.example.btuvifirebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "493973144830-6u65vntbd881tkfdr0kq34mj7rq6slnm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOIyBAG_ULzXccqSFx0K-J7c1w7Kvgtig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "493973144830-6u65vntbd881tkfdr0kq34mj7rq6slnm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:493973144830:android:1238fcdd8b3c90c9b591af",
+        "android_client_info": {
+          "package_name": "com.gps.speedometer.odometer.gpsspeedtracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "493973144830-o51bjv80db1tdr3d3tbm2gqtlovb8le3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gps.speedometer.odometer.gpsspeedtracker",
+            "certificate_hash": "e245740e1a825f2a32151b43737dc99e7d4d3a69"
+          }
+        },
+        {
+          "client_id": "493973144830-6u65vntbd881tkfdr0kq34mj7rq6slnm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOIyBAG_ULzXccqSFx0K-J7c1w7Kvgtig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "493973144830-6u65vntbd881tkfdr0kq34mj7rq6slnm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:493973144830:android:7f79bfc99e7834f9b591af",
+        "android_client_info": {
+          "package_name": "com.s.k"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "493973144830-qht318n4q9cbb70chndihanggnil160n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.s.k",
+            "certificate_hash": "e245740e1a825f2a32151b43737dc99e7d4d3a69"
+          }
+        },
+        {
+          "client_id": "493973144830-6u65vntbd881tkfdr0kq34mj7rq6slnm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOIyBAG_ULzXccqSFx0K-J7c1w7Kvgtig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "493973144830-6u65vntbd881tkfdr0kq34mj7rq6slnm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:493973144830:android:cb6d607692f07958b591af",
+        "android_client_info": {
+          "package_name": "com.wasticker.emojianimesticker.lovegifmemesticker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "493973144830-lo678ucaqf3etqsl7ugm10cai05qhd45.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wasticker.emojianimesticker.lovegifmemesticker",
+            "certificate_hash": "e245740e1a825f2a32151b43737dc99e7d4d3a69"
+          }
+        },
+        {
+          "client_id": "493973144830-6u65vntbd881tkfdr0kq34mj7rq6slnm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOIyBAG_ULzXccqSFx0K-J7c1w7Kvgtig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "493973144830-6u65vntbd881tkfdr0kq34mj7rq6slnm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

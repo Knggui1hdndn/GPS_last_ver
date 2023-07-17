@@ -52,13 +52,12 @@ class MainActivity2 : BaseActivity(), onRecever, RequestListener<GifDrawable> {
         const val REQUEST_CHECK_SETTING = 1
 
     }
-
     private var x = 1
     private var y = 1
 
     lateinit var binding: ActivityMain2Binding
     private lateinit var tabAdapter: TabAdapter
-      lateinit var viewPager: ViewPager2
+    lateinit var viewPager: ViewPager2
     private lateinit var sharedPreferences: SharedPreferences
     var color = if (ColorUtils.isThemeDark()) Color.WHITE else Color.BLACK
 
@@ -72,31 +71,12 @@ class MainActivity2 : BaseActivity(), onRecever, RequestListener<GifDrawable> {
                     "You cannot use this feature without granting the necessary permissions.",
                     Toast.LENGTH_SHORT
                 ).show()
-                when (binding.viewPager2.currentItem) {
-                    0 -> {
-                        val frag =
-                            supportFragmentManager.findFragmentByTag("f0")?.childFragmentManager!!.findFragmentById(
-                                R.id.frag
-                            ) as ParameterFragment
-                        frag.stopService()
-                    }
+                val frag =
+                    supportFragmentManager.findFragmentByTag("f" + binding.viewPager2.currentItem)?.childFragmentManager!!.findFragmentById(
+                        R.id.frag
+                    ) as ParameterFragment
+                frag.stopService()
 
-                    1 -> {
-                        val frag =
-                            supportFragmentManager.findFragmentByTag("f1")?.childFragmentManager!!.findFragmentById(
-                                R.id.frag
-                            ) as ParameterFragment
-                        frag.stopService()
-                    }
-
-                    2 -> {
-                        val frag =
-                            supportFragmentManager.findFragmentByTag("f2")?.childFragmentManager!!.findFragmentById(
-                                R.id.frag
-                            ) as ParameterFragment
-                        frag.stopService()
-                    }
-                }
                 getSharedPreferences("state", Service.MODE_PRIVATE).edit().putString(
                     MyLocationConstants.STATE, MyLocationConstants.STOP
                 ).apply()
@@ -146,8 +126,9 @@ class MainActivity2 : BaseActivity(), onRecever, RequestListener<GifDrawable> {
             }
         }.attach()
         val viewMode = sharedPreferences.getInt(SettingConstants.ViEW_MODE, 0)
-        if (MyApplication.check) binding.viewPager2.currentItem = viewMode - 1;MyApplication.check = false
-     }
+        if (MyApplication.check) binding.viewPager2.currentItem = viewMode - 1;MyApplication.check =
+            false
+    }
 
 
     private fun getColorRes(): Int {
@@ -235,18 +216,18 @@ class MainActivity2 : BaseActivity(), onRecever, RequestListener<GifDrawable> {
         super.onResume()
         binding.mess.visibility = View.GONE
         val shared = getSharedPreferences("state", MODE_PRIVATE)
-        val speed=SharedData.currentSpeedLiveData.value?.keys?.first()
+        val speed = SharedData.currentSpeedLiveData.value?.keys?.first()
         if (shared.getString(
                 MyLocationConstants.STATE,
                 null
-            ) == MyLocationConstants.START || SharedData.convertSpeed(speed!!).toInt()>= 1
+            ) == MyLocationConstants.START || SharedData.convertSpeed(speed!!).toInt() >= 1
         ) {
             showWhenRun()
         }
         if (shared.getString(
                 MyLocationConstants.STATE,
                 null
-            ) == MyLocationConstants.START &&SharedData.convertSpeed(speed!!).toInt()  == 0
+            ) == MyLocationConstants.START && SharedData.convertSpeed(speed!!).toInt() == 0
         ) {
             showWhenStart()
         }
@@ -257,11 +238,11 @@ class MainActivity2 : BaseActivity(), onRecever, RequestListener<GifDrawable> {
         y = 1
         SharedData.currentSpeedLiveData.observe(this) {
 
-            it.keys.first() .let { it1 ->
-                 if (y == 1 && SharedData.convertSpeed(it1).toInt() >= 1) {
+            it.keys.first().let { it1 ->
+                if (y == 1 && SharedData.convertSpeed(it1).toInt() >= 1) {
                     showWhenRun()
                     y = 2
-                } else if ( SharedData.convertSpeed(it1).toInt()  == 0 && x == 1) {
+                } else if (SharedData.convertSpeed(it1).toInt() == 0 && x == 1) {
                     showWhenStart()
                     x = 2
                 }
@@ -280,7 +261,7 @@ class MainActivity2 : BaseActivity(), onRecever, RequestListener<GifDrawable> {
     @SuppressLint("CheckResult")
     fun showWhenStart() {
         x = 1
-         val glide = Glide.with(this).asGif()
+        val glide = Glide.with(this).asGif()
         glide.load(R.drawable.not_start)
         binding.mess.visibility = View.VISIBLE
         glide.listener(this).into(binding.mess)

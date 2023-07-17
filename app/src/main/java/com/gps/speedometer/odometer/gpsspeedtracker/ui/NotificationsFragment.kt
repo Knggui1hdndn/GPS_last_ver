@@ -49,7 +49,9 @@ class NotificationsFragment : Fragment(R.layout.fragment_notifications), MapInte
         measurement.timeChange()
         measurement.currentSpeedChange()
         measurement.setVisibilityTime()
-        (requireActivity() as MainActivity2).showBannerAds(binding!!.bannerContainer!!)
+        if(binding!!.bannerContainer!=null)   (requireActivity() as MainActivity2).showBannerAds(
+            binding!!.bannerContainer!!)
+
 
         with(binding) {
             this!!.imgCurrent.setOnClickListener {
