@@ -56,8 +56,7 @@ object SharedData {
     )
 
 
-    // Hàm chuyển đổi vận tốc
-    fun convertSpeed(speed: Double): Double {
+     fun convertSpeed(speed: Double): Double {
         var sp = speed * conversionRates[fromUnit]!![toUnit]!!
         return sp
 

@@ -35,8 +35,7 @@ class Map(
     private val motion: MotionCalculatorPresenter,
     locationChangeListener: LocationChangeListener
 ) : MotionCalculatorInterface.MapInterFace {
-    private val REQUEST_CHECK_SETTING = 1
-    private var fusedLocationClient: FusedLocationProviderClient =
+     private var fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
     private var checkStart: Boolean = false
     private var checkStop: Boolean = false

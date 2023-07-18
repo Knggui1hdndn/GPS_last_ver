@@ -23,6 +23,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import com.access.pro.config.ConfigModel
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.MyLocationConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.dao.MyDataBase
@@ -83,14 +84,16 @@ class Setting : BaseActivity(), SettingInterface.View, View.OnKeyListener {
         initView()
         setUpActivity()
         setBackgroundALL()
-        if (!proApplication.isSubVip) {
+        if (!proApplication.isSubVip || !ConfigModel.showSub) {
             binding.premium.visibility=View.VISIBLE
          } else {
             binding.premium.visibility=View.GONE
         }
 
         binding.btnSub.setOnClickListener {
-            startActivity(Intent(this@Setting, SubVipActivity::class.java))
+            val intent=Intent(this@Setting, SubVipActivity::class.java)
+            intent.putExtra("activity","setting")
+            startActivity(intent)
         }
         showNativeAds(binding.nativeContainer) {
         }

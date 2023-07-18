@@ -12,7 +12,9 @@ import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.access.pro.config.ConfigModel
 import com.google.android.gms.ads.MobileAds
+import com.google.firebase.FirebaseApp
 import com.gps.speedometer.odometer.gpsspeedtracker.R
 import com.gps.speedometer.odometer.gpsspeedtracker.biiling.BaseActivity
 import com.gps.speedometer.odometer.gpsspeedtracker.biiling.SubVipActivity
@@ -30,10 +32,10 @@ class SplashActivity : BaseActivity() {
         setContentView(R.layout.activity_splash)
 //        setupBilling{p0,p1-> }
         // Force a crash
-        //     proApplication.isSubVip=true
+         getConfigData(true)
         createTimer(3L)
         MobileAds.initialize(this)
-
+        FirebaseApp.initializeApp(applicationContext)
         sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         with(SharedData) {
             onShowTime.value = if (sharedPreferences.getBoolean(
@@ -69,8 +71,24 @@ class SplashActivity : BaseActivity() {
             }
 
             override fun onFinish() {
-                startActivity(Intent(this@SplashActivity, SubVipActivity::class.java))
-                finish()
+                Log.d("sssssssssssssss",ConfigModel.showSub.toString())
+                if (ConfigModel.showSub){
+                    startActivity(Intent(this@SplashActivity, SubVipActivity::class.java))
+                    finish()
+                }else{
+                    if (!getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE).getBoolean(
+                            SettingConstants.CHECK_OPEN,
+                            false
+                        )
+                    ) {
+                        val intent = Intent(this@SplashActivity , SettingOptionsActivitys::class.java)
+                        startActivity(intent)
+                    } else {
+                        val intent = Intent(this@SplashActivity, MainActivity2::class.java)
+                        startActivity(intent)
+                    }
+                }
+
 //                val application = application as? MyApplication
 //                // If the application is not an instance of MyApplication, log an error message and
 //                // start the MainActivity without showing the app open ad.

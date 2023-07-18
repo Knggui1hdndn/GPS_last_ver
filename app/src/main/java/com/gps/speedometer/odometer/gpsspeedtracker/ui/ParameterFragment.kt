@@ -98,8 +98,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun handleOrientationClickAll() {
         binding.btnStart.setOnClickListener {
-            throw RuntimeException("Test Crash")
-            if (!CheckPermission.hasLocationPermission(requireContext())) {
+             if (!CheckPermission.hasLocationPermission(requireContext())) {
                 showDialog()
             } else {
                startActivity(Intent(requireContext(),ConfirmActivity::class.java))

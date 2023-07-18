@@ -26,6 +26,8 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.appopen.AppOpenAd
+import com.google.firebase.FirebaseApp
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.CheckPermission
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
 import com.gps.speedometer.odometer.gpsspeedtracker.service.MyService
@@ -33,12 +35,12 @@ import java.util.Date
 
 
 class MyApplication :
-   ProApplication() {
+    ProApplication() {
     companion object {
         var check = true
     }
 
-     private fun setUnitSpeedAndDistance() {
+    private fun setUnitSpeedAndDistance() {
         try {
             SharedData.toUnit =
                 getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE).getString(
@@ -55,12 +57,13 @@ class MyApplication :
     }
 
     override fun onCreate() {
+        super.onCreate();
+
         AdsConfigModel.GG_APP_OPEN = BuildConfig.GG_APP_OPEN
         AdsConfigModel.GG_BANNER = BuildConfig.GG_BANNER
         AdsConfigModel.GG_NATIVE = BuildConfig.GG_NATIVE
         AdsConfigModel.GG_FULL = BuildConfig.GG_FULL
         AdsConfigModel.GG_REWARDED = BuildConfig.GG_REWARDED
-        super.onCreate()
         setUnitSpeedAndDistance()
         SharedData.color.value = getSharedPreferences(
             SettingConstants.SETTING,
@@ -77,6 +80,7 @@ class MyApplication :
         createChannelId()
 
     }
+
     private fun createChannelId() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel =

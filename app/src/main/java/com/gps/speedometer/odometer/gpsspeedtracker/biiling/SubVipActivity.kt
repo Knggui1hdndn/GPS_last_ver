@@ -56,18 +56,23 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
                 showPurchaseDialog()
             }
             close.setOnClickListener {
-                finish()
-//                if (getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE).getBoolean(
-//                        SettingConstants.CHECK_OPEN,
-//                        false
-//                    )
-//                ) {
-//                    val intent = Intent(this, SettingOptionsActivitys::class.java)
-//                    startActivity(intent)
-//                } else {
-//                    val intent = Intent(this, MainActivity2::class.java)
-//                    startActivity(intent)
-//                }
+                if (intent.getStringExtra("activity")=="setting"){
+                    finish()
+                }else{
+                    finish()
+                    if (!getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE).getBoolean(
+                            SettingConstants.CHECK_OPEN,
+                            false
+                        )
+                    ) {
+                        val intent = Intent(this@SubVipActivity, SettingOptionsActivitys::class.java)
+                        startActivity(intent)
+                    } else {
+                        val intent = Intent(this@SubVipActivity, MainActivity2::class.java)
+                        startActivity(intent)
+                    }
+                }
+
 
             }
             restore.setOnClickListener {

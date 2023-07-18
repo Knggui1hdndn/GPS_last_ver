@@ -1,10 +1,12 @@
 package com.gps.speedometer.odometer.gpsspeedtracker.biiling
 
+import android.util.Log
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import com.access.pro.adcontrol.AdsBannerView
 import com.access.pro.callBack.OnShowInterstitialListener
 import com.access.pro.callBack.OnShowNativeListener
+import com.access.pro.config.ConfigModel
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingResult
@@ -13,7 +15,14 @@ import com.android.billingclient.api.QueryPurchasesParams
 import com.android.billingclient.api.queryPurchasesAsync
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.ktx.get
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
+import com.gps.speedometer.odometer.gpsspeedtracker.BuildConfig
 import kotlinx.coroutines.launch
+import java.util.logging.Handler
 
 
 open class BaseActivity : com.access.pro.activity.BaseActivity() {
@@ -72,6 +81,8 @@ open class BaseActivity : com.access.pro.activity.BaseActivity() {
                     call(hasAds)
                 }
             })
+        }else{
+            call(true)
         }
     }
 
@@ -85,5 +96,41 @@ open class BaseActivity : com.access.pro.activity.BaseActivity() {
                 }
             }, viewContainer)
         }
+    }
+    fun getConfigData(isSplash: Boolean) {
+        var delayTime = if (isSplash) {
+            1000L
+        } else {
+            0L
+        }
+//        if (!myApp.remoteDone) {
+        android.os.Handler(mainLooper).postDelayed({
+            val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
+            val configSettings = remoteConfigSettings {
+                minimumFetchIntervalInSeconds = 10
+            }
+            remoteConfig.setConfigSettingsAsync(configSettings)
+            remoteConfig.fetchAndActivate().addOnCompleteListener(this) {
+                if (it.isSuccessful) {
+                    ConfigModel.timeInter = remoteConfig["time_inter"].asLong().toInt()
+                    ConfigModel.forceUpdate = remoteConfig["force_update"].asBoolean()
+                    ConfigModel.showSub = remoteConfig["show_sub"].asBoolean()
+                    Log.d("sssssssssssssssssssssssa",remoteConfig["show_sub"].asBoolean().toString())
+                    ConfigModel.showCloseButton = remoteConfig["show_close_button"].asBoolean()
+                    ConfigModel.forceUpdateVer =
+                        remoteConfig["force_update_vercode"].asLong()
+                            .toInt()                    //  myApp.remoteDone = true
+                    if (ConfigModel.timeInter == 0) {
+                        ConfigModel.timeInter = 20
+                    }
+                    if (ConfigModel.forceUpdate && ConfigModel.forceUpdateVer > BuildConfig.VERSION_CODE && !isSplash) {
+                        // Hien diglog bat phai update, tu code lay 1 cai
+                    }
+                } else {
+                    // myApp.remoteDone = false
+                }
+            }
+        }, delayTime)
+        //  }
     }
 }

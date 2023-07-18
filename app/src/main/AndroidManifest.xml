@@ -52,7 +52,7 @@
         </provider>
 
         <receiver
-            android:name=".broadcast.MyReceiver"
+            android:name=".ui.broadcast.MyReceiver"
             android:enabled="true"
             android:exported="true" />
 

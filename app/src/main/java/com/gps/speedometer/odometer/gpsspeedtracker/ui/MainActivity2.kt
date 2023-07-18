@@ -92,6 +92,7 @@ class MainActivity2 : BaseActivity(), onRecever, RequestListener<GifDrawable> {
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        getConfigData(false)
         setUpActivity()
     }
 

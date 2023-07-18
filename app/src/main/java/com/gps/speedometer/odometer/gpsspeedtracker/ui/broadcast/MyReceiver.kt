@@ -1,4 +1,4 @@
-package com.gps.speedometer.odometer.gpsspeedtracker.broadcast
+package com.gps.speedometer.odometer.gpsspeedtracker.ui.broadcast
 
 import android.content.BroadcastReceiver
 import android.content.Context
