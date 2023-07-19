@@ -32,6 +32,7 @@
             app:sv_speedometerColor="@color/black"
             app:sv_speedometerMode="NORMAL"
             app:sv_trianglesColor="@color/black" />
+
     </FrameLayout>
 
     <com.google.android.material.button.MaterialButton

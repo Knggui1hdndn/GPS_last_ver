@@ -19,8 +19,8 @@
 
         <ImageView
             android:id="@+id/close"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
@@ -36,6 +36,7 @@
             android:layout_marginRight="20dp"
             android:layout_alignParentEnd="true"
             android:text="Restore"
+            android:textSize="16sp"
             android:layout_centerVertical="true"
             android:textColor="@color/white"
             app:layout_constraintRight_toRightOf="parent"
@@ -61,7 +62,7 @@
                 android:gravity="center"
                 android:text="@string/title_sup"
                 android:textColor="@color/white"
-                android:textSize="25sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -69,14 +70,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:gravity="center"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
+                android:paddingStart="45dp"
+                android:paddingEnd="45dp"
                 android:text="@string/mess_sup"
                 android:textColor="@color/white"
-                android:textSize="18sp"
+                android:textSize="15sp"
 
                 />
 
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/img_sup_2"
+                android:tint="@null"
+                app:tint="@null" />
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
@@ -89,7 +96,7 @@
                 android:gravity="center"
                 android:text="@string/title_sup_2"
                 android:textColor="@color/white"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <ImageView
@@ -102,35 +109,31 @@
                 app:tint="@null" />
 
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:src="@drawable/img_sup_2"
-                android:tint="@null"
-                app:tint="@null" />
 
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/viewPager2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
+
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
 
-
     <LinearLayout
+        android:id="@+id/a"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/a"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
+
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-             android:background="@color/CCCCCC" />
+            android:background="@color/CCCCCC" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -143,7 +146,7 @@
             <RelativeLayout
                 android:id="@+id/mLinearMonth"
                 android:layout_width="0dp"
-                android:layout_height="130dp"
+                android:layout_height="120dp"
                 android:layout_marginRight="5dp"
                 android:layout_weight="3"
                 android:background="@drawable/border_buy_click"
@@ -157,7 +160,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/title_buy_1"
                     android:textColor="@color/white"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
 
@@ -171,12 +174,14 @@
 
                     <TextView
                         android:id="@+id/txtPriceMonth"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:text="Tiền"
                         android:textColor="@color/white"
+                        android:textSize="13sp"
                         android:textStyle="bold" />
+
 
                 </LinearLayout>
             </RelativeLayout>
@@ -184,7 +189,8 @@
             <RelativeLayout
                 android:id="@+id/mLinearWeek"
                 android:layout_width="0dp"
-                android:layout_height="130dp"
+                android:layout_height="120dp"
+
                 android:layout_marginRight="5dp"
                 android:layout_weight="3"
                 android:background="@drawable/boder_buy_unclick"
@@ -198,7 +204,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/title_buy_2"
                     android:textColor="@color/white"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
 
@@ -212,12 +218,15 @@
 
                     <TextView
                         android:id="@+id/txtPriceWeek"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:text="Tiền"
+                        android:textSize="13sp"
+
                         android:textColor="@color/white"
                         android:textStyle="bold" />
+
 
                 </LinearLayout>
             </RelativeLayout>
@@ -225,7 +234,7 @@
             <RelativeLayout
                 android:id="@+id/mLinearLifeTime"
                 android:layout_width="0dp"
-                android:layout_height="130dp"
+                android:layout_height="120dp"
                 android:layout_weight="3"
                 android:background="@drawable/boder_buy_unclick"
                 android:gravity="center"
@@ -238,7 +247,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/title_buy_2"
                     android:textColor="@color/white"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
 
@@ -256,6 +265,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:text="Tiền"
+                        android:textSize="13sp"
+
                         android:textColor="@color/white"
                         android:textStyle="bold" />
 
@@ -264,9 +275,11 @@
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnStart"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:layout_margin="20sp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:backgroundTint="@color/backGroundTip"
             android:gravity="center"
             android:outlineProvider="paddedBounds"
@@ -274,7 +287,6 @@
             android:text="@string/start_free_trial"
             android:textColor="@color/yellow"
             android:textStyle="bold"
-            android:id="@+id/btnStart"
             app:cornerRadius="10dp"
             app:icon="@drawable/baseline_arrow_forward_24"
             app:iconGravity="end"
@@ -286,6 +298,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:textSize="13sp"
+            android:layout_marginTop="15sp"
+            android:layout_marginStart="20sp"
+            android:layout_marginEnd="20sp"
             android:textColor="@color/white" />
 
         <TextView
@@ -298,4 +314,5 @@
             android:text="@string/privacy_policy"
             android:textColor="#4D7DC3" />
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

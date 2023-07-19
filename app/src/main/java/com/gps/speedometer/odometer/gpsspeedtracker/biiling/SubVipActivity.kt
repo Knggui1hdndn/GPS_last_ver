@@ -51,29 +51,28 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
         with(binding)
         {
             setupBilling()
-            handelClick(1)
+
             btnStart.setOnClickListener {
                 showPurchaseDialog()
             }
             close.setOnClickListener {
-                if (intent.getStringExtra("activity")=="setting"){
+                if (intent.getStringExtra("activity") == "setting") {
                     finish()
-                }else{
+                } else {
                     finish()
                     if (!getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE).getBoolean(
                             SettingConstants.CHECK_OPEN,
                             false
                         )
                     ) {
-                        val intent = Intent(this@SubVipActivity, SettingOptionsActivitys::class.java)
+                        val intent =
+                            Intent(this@SubVipActivity, SettingOptionsActivitys::class.java)
                         startActivity(intent)
                     } else {
                         val intent = Intent(this@SubVipActivity, MainActivity2::class.java)
                         startActivity(intent)
                     }
                 }
-
-
             }
             restore.setOnClickListener {
                 this@SubVipActivity.restore = true
@@ -157,8 +156,6 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
             2 -> currentProduct = subWeekProduct
             3 -> currentProduct = lifeTimeProduct
         }
-
-
     }
 
 
@@ -250,31 +247,24 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
         lifeTimeProduct =
             getPurchasesProductDetail("pack_life_time", BillingClient.ProductType.INAPP)
         currentProduct = subWeekProduct
-//         when (ConfigModel.subDefaultPack) {
-//
-//         }
-//            "pack_sub_week" -> {
-//                currentProduct = subWeekProduct
-//                listSubItem[0].setSelected(false)
-//                listSubItem[1].setSelected(true)
-//                listSubItem[2].setSelected(false)
-//            }
-//            "pack_sub_month" -> {
-//                currentProduct = subMonthProduct
-//                listSubItem[0].setSelected(true)
-//                listSubItem[1].setSelected(false)
-//                listSubItem[2].setSelected(false)
-//            }
-//            "pack_life_time" -> {
-//                currentProduct = lifeTimeProduct
-//                listSubItem[0].setSelected(false)
-//                listSubItem[1].setSelected(false)
-//                listSubItem[2].setSelected(true)
-//            }
-//            else -> {
-//                currentProduct = subWeekProduct
-//            }
-//        }
+         when (ConfigModel.subDefaultPack) {
+             "pack_sub_week" -> {
+                 currentProduct = subWeekProduct
+                  handelClick(2)
+             }
+             "pack_sub_month" -> {
+                 currentProduct = subMonthProduct
+                 handelClick(1)
+
+             }
+             "pack_life_time" -> {
+                 currentProduct = lifeTimeProduct
+                 handelClick(3)
+
+             }
+         }
+
+
         //  runOnUiThread {
         fillDataToUI()
         // }
@@ -285,16 +275,16 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
             var product = subMonthProduct!!.subscriptionOfferDetails!!.first()
             var pricingPhase = product.pricingPhases.pricingPhaseList
             if (pricingPhase.size > 1) {
-                binding.txtPriceMonth.text = "Then ".plus(
-                    product.pricingPhases.pricingPhaseList[1].formattedPrice
-                )
+                binding.txtPriceMonth.text = "Then\n" .plus (
+                        product.pricingPhases.pricingPhaseList[1].formattedPrice
+                        ).plus("/month")
                 binding.txtMonth.text =
                     product.pricingPhases.pricingPhaseList[0].formattedPrice.plus("\nFor 3 Day")
             } else if (pricingPhase.isNotEmpty()) {
                 binding.txtPriceMonth.text =
-                    "Then ".plus(
+                    "Then\n".plus(
                         product.pricingPhases.pricingPhaseList[0].formattedPrice
-                    )
+                    ).plus("/month")
                 binding.txtMonth.text =
                     product.pricingPhases.pricingPhaseList[0].formattedPrice
             }
@@ -303,15 +293,15 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
             var product = subWeekProduct!!.subscriptionOfferDetails!!.first()
             var pricingPhase = product.pricingPhases.pricingPhaseList
             if (pricingPhase.size > 1) {
-                binding.txtPriceWeek.text = "Then ".plus(
+                binding.txtPriceWeek.text = "Then\n".plus(
                     product.pricingPhases.pricingPhaseList[1].formattedPrice
-                )
+                ).plus("/week")
                 binding.txtWeek.text =
                     product.pricingPhases.pricingPhaseList[0].formattedPrice.plus("\nFor 3 Day")
             } else if (pricingPhase.isNotEmpty()) {
-                binding.txtPriceWeek.text = "Then ".plus(
+                binding.txtPriceWeek.text = "Then\n".plus(
                     product.pricingPhases.pricingPhaseList[0].formattedPrice
-                )
+                ).plus("/week")
                 binding.txtWeek.text =
                     product.pricingPhases.pricingPhaseList[0].formattedPrice
             }

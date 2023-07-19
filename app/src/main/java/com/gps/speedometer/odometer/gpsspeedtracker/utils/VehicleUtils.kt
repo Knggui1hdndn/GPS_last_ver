@@ -12,9 +12,9 @@ class VehicleUtils {
         }
         fun getVehicle(type: Int): String {
             when (type) {
-                3 -> return "Bicycle"
+                1 -> return "Bicycle"
                 2 -> return "Motorbike"
-                1 -> return "Car"
+                3 -> return "Car"
             }
             return ""
         }

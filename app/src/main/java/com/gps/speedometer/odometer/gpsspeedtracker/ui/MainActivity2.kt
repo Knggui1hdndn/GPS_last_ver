@@ -21,6 +21,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.viewpager2.widget.ViewPager2
+import com.access.pro.config.ConfigModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -31,6 +32,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.gps.speedometer.odometer.gpsspeedtracker.MyApplication
 import com.gps.speedometer.odometer.gpsspeedtracker.R
 import com.gps.speedometer.odometer.gpsspeedtracker.biiling.BaseActivity
+import com.gps.speedometer.odometer.gpsspeedtracker.biiling.SubVipActivity
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.MyLocationConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.ActivityMain2Binding
@@ -52,6 +54,7 @@ class MainActivity2 : BaseActivity(), onRecever, RequestListener<GifDrawable> {
         const val REQUEST_CHECK_SETTING = 1
 
     }
+
     private var x = 1
     private var y = 1
 
@@ -94,6 +97,7 @@ class MainActivity2 : BaseActivity(), onRecever, RequestListener<GifDrawable> {
         super.onCreate(savedInstanceState)
         getConfigData(false)
         setUpActivity()
+
     }
 
     @SuppressLint("MissingPermission", "ResourceType")
@@ -154,18 +158,23 @@ class MainActivity2 : BaseActivity(), onRecever, RequestListener<GifDrawable> {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            menu!!.getItem(1).isVisible = false
-            menu.getItem(0).isVisible = true
+            menu?.getItem(0)?.isVisible = true
         }
         for (i in 0 until menu!!.size()) {
-            if (menu.getItem(i).itemId != R.id.subcribe) menu.getItem(i).iconTintList =
-                ColorStateList.valueOf(color)
+            if (menu.getItem(i).itemId != R.id.subcribe) {
+                menu.getItem(i).iconTintList = ColorStateList.valueOf(color)
+            } else {
+                var check = ConfigModel.showSub
+                if (check) {
+                    check =  !proApplication.isSubVip
+                }
+                menu.getItem(i).isVisible = check
+            }
         }
 
         return true
     }
 
-    private var checkRotation = false
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.settings -> startActivity(Intent(this, Setting::class.java))
@@ -174,6 +183,11 @@ class MainActivity2 : BaseActivity(), onRecever, RequestListener<GifDrawable> {
 //                val intent = Intent         (this, MoreTipActivity::class.java)
 //                intent.putExtra("activityLaunchedFrom", "Main2")
 //                startActivity(intent)
+            }
+
+            R.id.subcribe -> {
+                val intent = Intent(this, SubVipActivity::class.java)
+                startActivity(intent)
             }
 
             R.id.rotation -> {

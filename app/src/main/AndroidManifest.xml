@@ -72,9 +72,8 @@
             android:name=".ui.ShowActivity"
             android:exported="false" />
 
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-7922493569434903~3298955218" />
+        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAE9PxJdBbbOcxb65_tKdateOZ-HD8kNZ4" />

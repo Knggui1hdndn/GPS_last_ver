@@ -22,7 +22,7 @@ class ConfirmActivity : BaseActivity() {
         setContentView(binding.root)
         val myDataBase = MyDataBase.getInstance(this).vehicleDao()
         binding.txtConfirm.text = "Phương tiện:${VehicleUtils.getVehicle(myDataBase.getVehicleChecked().type)}" +
-                    "\nTốc độ tối đa:${myDataBase.getVehicleChecked().clockSpeed}" +
+                    "\nTốc độ tối đa:${myDataBase.getVehicleChecked().limitWarning}" +
                     "\nĐơn vị đo:${SharedData.toUnit}\n"
         binding.btnOK.setOnClickListener {
             showInterstitial(true) {

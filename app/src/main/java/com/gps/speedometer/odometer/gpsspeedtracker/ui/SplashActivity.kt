@@ -30,8 +30,9 @@ class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-//        setupBilling{p0,p1-> }
+        setupBilling{p0,p1-> }
         // Force a crash
+
          getConfigData(true)
         createTimer(3L)
         MobileAds.initialize(this)

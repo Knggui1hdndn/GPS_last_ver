@@ -10,6 +10,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -84,15 +85,17 @@ class Setting : BaseActivity(), SettingInterface.View, View.OnKeyListener {
         initView()
         setUpActivity()
         setBackgroundALL()
-        if (!proApplication.isSubVip || !ConfigModel.showSub) {
-            binding.premium.visibility=View.VISIBLE
-         } else {
-            binding.premium.visibility=View.GONE
+        var check = ConfigModel.showSub
+        if (check) {
+            check =!proApplication.isSubVip
         }
 
+            binding.premium.visibility = if (check) View.VISIBLE else View.GONE
+
+
         binding.btnSub.setOnClickListener {
-            val intent=Intent(this@Setting, SubVipActivity::class.java)
-            intent.putExtra("activity","setting")
+            val intent = Intent(this@Setting, SubVipActivity::class.java)
+            intent.putExtra("activity", "setting")
             startActivity(intent)
         }
         showNativeAds(binding.nativeContainer) {

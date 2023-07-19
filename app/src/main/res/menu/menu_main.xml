@@ -13,7 +13,6 @@
         android:icon="@drawable/subcribe"
         android:title="Subcribe"
         app:showAsAction="always"
-        android:visible="false"
 
         />
     <item

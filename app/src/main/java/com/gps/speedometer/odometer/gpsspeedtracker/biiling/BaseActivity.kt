@@ -87,8 +87,9 @@ open class BaseActivity : com.access.pro.activity.BaseActivity() {
     }
 
     open fun showNativeAds(viewContainer: ViewGroup, call: () -> Unit) {
-        nativeRender.prepareNative()
+
         if (!proApplication.isSubVip) {
+            nativeRender.prepareNative()
             nativeRender.loadNativeAds(object : OnShowNativeListener {
                 override fun onLoadDone(hasAds: Boolean, currentNativeAd: NativeAd?) {
                     // load dc native

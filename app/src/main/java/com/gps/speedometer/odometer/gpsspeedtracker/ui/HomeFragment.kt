@@ -58,7 +58,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), MeasurementInterFace.View
             SharedData.speedAnalog.observe(viewLifecycleOwner) {
                 binding.speed.maxSpeed = it.toFloat()
             }
-        }
+         }
 
 
     }
@@ -67,7 +67,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), MeasurementInterFace.View
     override fun onResume() {
         super.onResume()
         binding.speed.unit = SharedData.toUnit
-    }
+     }
 
     override fun onVisibilityTime(visibility: Int) {
         binding.time?.visibility = visibility

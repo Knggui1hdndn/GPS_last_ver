@@ -5,6 +5,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
@@ -23,6 +24,7 @@ import androidx.core.text.HtmlCompat
 import com.access.pro.callBack.OnShowInterstitialListener
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.MyLocationConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.R
+import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.dao.MyDataBase
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.DialogPermissionDescriptionBinding
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
@@ -42,6 +44,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
     private var check = false
     private var sharedPreferences: SharedPreferences? = null
     private var shareShow: SharedPreferences? = null
+    private lateinit var sharedPreferencesSetting: SharedPreferences
 
     private val permissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
@@ -59,6 +62,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
         binding = FragmentParameterBinding.bind(view)
         sharedPreferences = requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
         shareShow = requireActivity().getSharedPreferences("show", AppCompatActivity.MODE_PRIVATE)
+        sharedPreferencesSetting = requireContext().getSharedPreferences(SettingConstants.SETTING, Context.MODE_PRIVATE)
         presenter = ParameterPresenter(this, this)
         presenter.updateUIState()
         presenter.getDistance()
@@ -232,7 +236,7 @@ class ParameterFragment : Fragment(R.layout.fragment_parameter),
     }
 
     override fun onShowReset() {
-        binding.imgReset.visibility = SharedData.onShowResetButton.value!!
+        binding.imgReset.visibility =if (sharedPreferencesSetting.getBoolean(SettingConstants.SHOW_RESET_BUTTON,true)) View.VISIBLE else View.INVISIBLE
 
     }
 
