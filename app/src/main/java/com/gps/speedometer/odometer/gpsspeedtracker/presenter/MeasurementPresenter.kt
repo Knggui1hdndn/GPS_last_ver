@@ -23,7 +23,6 @@ class MeasurementPresenter(val view: MeasurementInterFace.View, val fragment: Fr
 
     override fun colorChange() {
         SharedData.color.observe(fragment) {
-            Log.d("okokodds",it.toString())
          view.displayColorChange(it)
         }
     }

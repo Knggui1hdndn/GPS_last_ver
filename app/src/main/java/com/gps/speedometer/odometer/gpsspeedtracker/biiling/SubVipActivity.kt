@@ -51,7 +51,22 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
         with(binding)
         {
             setupBilling()
+            when (ConfigModel.subDefaultPack) {
+                "pack_sub_week" -> {
+                    currentProduct = subWeekProduct
+                    handelClick(2)
+                }
+                "pack_sub_month" -> {
+                    currentProduct = subMonthProduct
+                    handelClick(1)
 
+                }
+                "pack_life_time" -> {
+                    currentProduct = lifeTimeProduct
+                    handelClick(3)
+
+                }
+            }
             btnStart.setOnClickListener {
                 showPurchaseDialog()
             }
@@ -250,16 +265,13 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
          when (ConfigModel.subDefaultPack) {
              "pack_sub_week" -> {
                  currentProduct = subWeekProduct
-                  handelClick(2)
-             }
+              }
              "pack_sub_month" -> {
                  currentProduct = subMonthProduct
-                 handelClick(1)
 
              }
              "pack_life_time" -> {
                  currentProduct = lifeTimeProduct
-                 handelClick(3)
 
              }
          }
@@ -315,10 +327,10 @@ class SubVipActivity : BaseActivity(), SubVipInterface.View {
         binding.description.text =
             getString(R.string.billing_starts)
                 .plus(" ")
-                .plus(binding.txtWeek.text.toString().replace("Then ", ""))
-                .plus("/week or ")
+                .plus(binding.txtPriceWeek.text.toString().replace("Then ", ""))
+                .plus("or ")
                 .plus(binding.txtPriceMonth.text.toString().replace("Then ", ""))
-                .plus("/month or ")
+                .plus(" or ")
                 .plus(binding.txtPriceLifeTime.text.toString().replace("Then ", ""))
                 .plus(" for LifeTime. ")
                 .plus(getString(R.string.billing_end))

@@ -1,5 +1,5 @@
 package com.gps.speedometer.odometer.gpsspeedtracker.biiling
-
+import com.gps.speedometer.odometer.gpsspeedtracker.BuildConfig
 import android.util.Log
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
@@ -20,7 +20,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.get
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
-import com.gps.speedometer.odometer.gpsspeedtracker.BuildConfig
+
 import kotlinx.coroutines.launch
 import java.util.logging.Handler
 
@@ -87,7 +87,6 @@ open class BaseActivity : com.access.pro.activity.BaseActivity() {
     }
 
     open fun showNativeAds(viewContainer: ViewGroup, call: () -> Unit) {
-
         if (!proApplication.isSubVip) {
             nativeRender.prepareNative()
             nativeRender.loadNativeAds(object : OnShowNativeListener {
@@ -116,7 +115,7 @@ open class BaseActivity : com.access.pro.activity.BaseActivity() {
                     ConfigModel.timeInter = remoteConfig["time_inter"].asLong().toInt()
                     ConfigModel.forceUpdate = remoteConfig["force_update"].asBoolean()
                     ConfigModel.showSub = remoteConfig["show_sub"].asBoolean()
-                    Log.d("sssssssssssssssssssssssa",remoteConfig["show_sub"].asBoolean().toString())
+                    ConfigModel.subDefaultPack = remoteConfig["sub_default_pack"].asString()
                     ConfigModel.showCloseButton = remoteConfig["show_close_button"].asBoolean()
                     ConfigModel.forceUpdateVer =
                         remoteConfig["force_update_vercode"].asLong()

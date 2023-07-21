@@ -37,6 +37,7 @@ import com.google.android.material.button.MaterialButton
 import com.gps.speedometer.odometer.gpsspeedtracker.R
 import com.gps.speedometer.odometer.gpsspeedtracker.biiling.BaseActivity
 import com.gps.speedometer.odometer.gpsspeedtracker.biiling.SubVipActivity
+import com.gps.speedometer.odometer.gpsspeedtracker.constants.ColorConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.ActivitySettingBinding
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.DialogRateBinding
 
@@ -130,7 +131,7 @@ class Setting : BaseActivity(), SettingInterface.View, View.OnKeyListener {
         }
 
         binding.resetColor.setOnClickListener {
-            sharedPreferences.edit().putInt(SettingConstants.COLOR_DISPLAY, 0).apply()
+            sharedPreferences.edit().putInt(SettingConstants.COLOR_DISPLAY,  ColorConstants.COLOR_DEFAULT).apply()
             SharedData.color.value = 0
             recreate()
         }
@@ -201,7 +202,7 @@ class Setting : BaseActivity(), SettingInterface.View, View.OnKeyListener {
 
     fun setBackGroundButtonAppTheme() {
 
-        val isLightTheme = sharedPreferences.getBoolean(SettingConstants.THEME, true)
+        val isLightTheme = sharedPreferences.getBoolean(SettingConstants.THEME, false)
         val themeButton = if (isLightTheme) binding.light else binding.dark
         val themeColor = ColorUtils.checkColor(colorPosition)
         themeButton.setBackgroundColor(themeColor)
@@ -224,7 +225,7 @@ class Setting : BaseActivity(), SettingInterface.View, View.OnKeyListener {
         sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         myDataBase = MyDataBase.getInstance(this)
         vehicleDao = myDataBase.vehicleDao()
-        colorPosition = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, 0)
+        colorPosition = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY,  ColorConstants.COLOR_DEFAULT)
         distance = getSharedPreferences("state", Service.MODE_PRIVATE)
             .getInt(MyLocationConstants.DISTANCE, 0)
     }
@@ -276,8 +277,7 @@ class Setting : BaseActivity(), SettingInterface.View, View.OnKeyListener {
     fun setThemeClickListener(button: MaterialButton, theme: Boolean) {
         //theme true là sáng
 
-        val nightMode =
-            if (theme) AppCompatDelegate.MODE_NIGHT_NO else AppCompatDelegate.MODE_NIGHT_YES
+        val nightMode = if (!theme) AppCompatDelegate.MODE_NIGHT_NO else AppCompatDelegate.MODE_NIGHT_YES
         AppCompatDelegate.setDefaultNightMode(nightMode)
         sharedPreferences.edit().putBoolean(SettingConstants.THEME, theme).apply()
         button.setBackgroundColor(ColorUtils.checkColor(colorPosition))

@@ -32,12 +32,9 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard), MeasurementInte
     @SuppressLint("SetTextI18n", "SuspiciousIndentation")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentDashboardBinding.bind(view)
-        check =
-            requireActivity().resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
-        sharedPreferencesStates =
-            requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
-        sharedPreferences =
-            requireActivity().getSharedPreferences(SettingConstants.SETTING, Service.MODE_PRIVATE)
+        check =requireActivity().resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
+        sharedPreferencesStates = requireActivity().getSharedPreferences("state", Service.MODE_PRIVATE)
+        sharedPreferences = requireActivity().getSharedPreferences(SettingConstants.SETTING, Service.MODE_PRIVATE)
         val measurement = MeasurementPresenter(this, this)
         measurement.colorChange()
         measurement.timeChange()

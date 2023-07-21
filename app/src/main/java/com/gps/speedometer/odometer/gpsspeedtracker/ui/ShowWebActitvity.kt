@@ -19,7 +19,6 @@ class ShowWebActitvity : AppCompatActivity() {
         web.settings.javaScriptEnabled=true
         web.setWebViewClient(MyWebViewClient())
         intent.getStringExtra("link")?.let { web.loadUrl(it)  }
-
     }
     private class MyWebViewClient : WebViewClient() {
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {

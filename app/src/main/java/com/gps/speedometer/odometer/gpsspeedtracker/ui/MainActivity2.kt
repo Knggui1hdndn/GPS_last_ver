@@ -33,6 +33,7 @@ import com.gps.speedometer.odometer.gpsspeedtracker.MyApplication
 import com.gps.speedometer.odometer.gpsspeedtracker.R
 import com.gps.speedometer.odometer.gpsspeedtracker.biiling.BaseActivity
 import com.gps.speedometer.odometer.gpsspeedtracker.biiling.SubVipActivity
+import com.gps.speedometer.odometer.gpsspeedtracker.constants.ColorConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.MyLocationConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.ActivityMain2Binding
@@ -140,7 +141,7 @@ class MainActivity2 : BaseActivity(), onRecever, RequestListener<GifDrawable> {
         val intColor = getSharedPreferences(
             SettingConstants.SETTING,
             Service.MODE_PRIVATE
-        ).getInt(SettingConstants.COLOR_DISPLAY, 0)
+        ).getInt(SettingConstants.COLOR_DISPLAY, ColorConstants.COLOR_DEFAULT)
         if (intColor == 0) {
             return if (ColorUtils.isThemeDark()) R.color.white else R.color.black
         }

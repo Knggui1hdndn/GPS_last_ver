@@ -3,6 +3,7 @@ package com.gps.speedometer.odometer.gpsspeedtracker.presenter
 import android.content.Context
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import com.gps.speedometer.odometer.gpsspeedtracker.constants.ColorConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.dao.MyDataBase
 import com.gps.speedometer.odometer.gpsspeedtracker.interfaces.SettingOptionsContract
@@ -17,7 +18,7 @@ class SettingOptionsPresenter(val context:Context):SettingOptionsContract.Presen
         sharedPreferences.edit().apply {
             putString(SettingConstants.UNIT, unitClick)
             putInt(SettingConstants.ViEW_MODE, viewModeClick)
-            putInt(SettingConstants.COLOR_DISPLAY, 0)
+            putInt(SettingConstants.COLOR_DISPLAY,  ColorConstants.COLOR_DEFAULT)
             putBoolean(SettingConstants.DISPLAY_SPEED, true)
             putBoolean(SettingConstants.TRACK_ON_MAP, true)
             putBoolean(SettingConstants.SHOW_RESET_BUTTON, true)

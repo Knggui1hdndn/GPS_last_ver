@@ -6,7 +6,7 @@ import com.gps.speedometer.odometer.gpsspeedtracker.R
 class ColorConstants {
     @SuppressLint("NonConstantResourceId")
     companion object {
-
+const val COLOR_DEFAULT=2
         const val COLOR_1 = "#FF000000"
         const val COLOR_1_1 = "#FFFFFFFF"
         const val COLOR_2 = "#50EAFF"

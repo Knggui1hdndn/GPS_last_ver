@@ -1,7 +1,10 @@
 package com.gps.speedometer.odometer.gpsspeedtracker.ui
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import com.access.pro.callBack.OnShowInterstitialListener
 import com.gps.speedometer.odometer.gpsspeedtracker.R
 import com.gps.speedometer.odometer.gpsspeedtracker.biiling.BaseActivity
@@ -20,22 +23,21 @@ class ConfirmActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityConfirmBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val myDataBase = MyDataBase.getInstance(this).vehicleDao()
-        binding.txtConfirm.text = "Phương tiện:${VehicleUtils.getVehicle(myDataBase.getVehicleChecked().type)}" +
-                    "\nTốc độ tối đa:${myDataBase.getVehicleChecked().limitWarning}" +
-                    "\nĐơn vị đo:${SharedData.toUnit}\n"
-        binding.btnOK.setOnClickListener {
-            showInterstitial(true) {
+        Handler(Looper.getMainLooper()).postDelayed({
+            val mainActivity2 = SharedData.activity as MainActivity2
+            mainActivity2.sendDataToSecondFragment()
+            val notificationsFragment = mainActivity2.supportFragmentManager.findFragmentByTag("f2")
+            if (notificationsFragment != null) (notificationsFragment as NotificationsFragment).onClearMap(
+                false
+            )
+            showInterstitial(true){
                 finish()
-                val frag =
-                    (SharedData.activity as MainActivity2).supportFragmentManager.findFragmentByTag(
-                        "f" + (SharedData.activity as MainActivity2).viewPager.currentItem
-                    )?.childFragmentManager!!.findFragmentById(
-                        R.id.frag
-                    ) as ParameterFragment
-                frag.startService()
-                (SharedData.activity as MainActivity2).showMess()
+                val myDataBase = MyDataBase.getInstance(mainActivity2)
+                val i = Intent(this@ConfirmActivity, ShowActivity::class.java)
+                i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                i.putExtra("movementData", myDataBase.movementDao().getLastMovementData())
+                startActivity(i)
             }
-        }
+        }, 5000)
     }
 }

@@ -45,6 +45,7 @@ import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.gps.speedometer.odometer.gpsspeedtracker.R
 import com.gps.speedometer.odometer.gpsspeedtracker.biiling.BaseActivity
+import com.gps.speedometer.odometer.gpsspeedtracker.constants.ColorConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.databinding.ActivityShowBinding
 import com.gps.speedometer.odometer.gpsspeedtracker.ui.adpater.HistoryAdapter
 import java.io.File
@@ -149,8 +150,13 @@ class ShowActivity : BaseActivity() {
         binding = ActivityShowBinding.inflate(layoutInflater)
         setContentView(binding.root)
         myDataBase = MyDataBase.getInstance(this)
-
-
+        binding.mToolBar.setTitleTextColor(
+            if (ColorUtils.isThemeDark()) {
+                Color.WHITE
+            } else {
+                Color.BLACK
+            }
+        )
         setSupportActionBar(binding.mToolBar)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -267,7 +273,7 @@ class ShowActivity : BaseActivity() {
         val intColor = getSharedPreferences(
             SettingConstants.SETTING,
             Service.MODE_PRIVATE
-        ).getInt(SettingConstants.COLOR_DISPLAY, 2)
+        ).getInt(SettingConstants.COLOR_DISPLAY,  ColorConstants.COLOR_DEFAULT)
         with(binding) {
             FontUtils.setTextColor(intColor, txtSpeed, txtAverageSpeed, txtTime, txtDistance)
         }

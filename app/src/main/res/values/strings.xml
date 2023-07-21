@@ -31,15 +31,16 @@ This app collects location data in the background to enable&lt;br>
     <string name="title_sup">GPS Odometer &amp; Speedometer</string>
     <string name="mess_sup">Accurately measure distance &amp; provide overspeed warning, accompanying you every step of the way</string>
     <string name="title_sup_2">What GPS Odometer &amp; Speedometer\nPremium brings you</string>
-    <string name="title_buy_1">Get Your\n3-Day Free</string>
-    <string name="title_buy_2">3-Day
-Free Trial</string>
+    <string name="title_buy_1">Get Your 3-Day Free</string>
+    <string name="title_buy_2">3-Day Free Trial</string>
     <string name="title_buy_3">Lifetime</string>
     <string name="mess_buy">Then</string>
     <string name="mess_buy_3">Never miss out on new updates</string>
     <string name="billing_end">You can cancel at anytime on Google Play.</string>
-    <string name="billing_starts">Billing starts at the end of the 3-day free trail </string>
+    <string name="billing_starts">Billing starts at the end of the 3-day free trial </string>
     <string name="start_free_trial">Start free trial</string>
     <string name="privacy_policy"><u>Privacy Policy</u></string>
+    <string name="please_wait_for_a_moment_we_are_calculating_your_trip_including">Please wait for a moment. We are calculating your trip, including:</string>
+    <string name="distance_n_average_speed_n_max_speed_n">.Distance\n .Average Speed\n .Max Speed\n</string>
 
 </resources>

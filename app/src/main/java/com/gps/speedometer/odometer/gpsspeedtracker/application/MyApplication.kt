@@ -28,6 +28,7 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.appopen.AppOpenAd
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.gps.speedometer.odometer.gpsspeedtracker.constants.ColorConstants
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.CheckPermission
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
 import com.gps.speedometer.odometer.gpsspeedtracker.service.MyService
@@ -58,7 +59,6 @@ class MyApplication :
 
     override fun onCreate() {
         super.onCreate();
-
         AdsConfigModel.GG_APP_OPEN = BuildConfig.GG_APP_OPEN
         AdsConfigModel.GG_BANNER = BuildConfig.GG_BANNER
         AdsConfigModel.GG_NATIVE = BuildConfig.GG_NATIVE
@@ -68,17 +68,15 @@ class MyApplication :
         SharedData.color.value = getSharedPreferences(
             SettingConstants.SETTING,
             MODE_PRIVATE
-        ).getInt(SettingConstants.COLOR_DISPLAY, 0)
+        ).getInt(SettingConstants.COLOR_DISPLAY, ColorConstants.COLOR_DEFAULT)
 
         val sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
-        if (!sharedPreferences.getBoolean(SettingConstants.THEME, true)) {
+        if (!sharedPreferences.getBoolean(SettingConstants.THEME, false)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
-
         createChannelId()
-
     }
 
     private fun createChannelId() {
@@ -90,7 +88,6 @@ class MyApplication :
             notificationManager.createNotificationChannel(notificationChannel)
         }
     }
-
 }
 
 
