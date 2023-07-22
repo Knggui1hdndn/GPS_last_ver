@@ -1,6 +1,7 @@
 package com.gps.speedometer.odometer.gpsspeedtracker.`object`
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -30,12 +31,10 @@ object CheckPermission {
         return (result == PackageManager.PERMISSION_GRANTED || result1 == PackageManager.PERMISSION_GRANTED)
     }
 
+    @SuppressLint("SuspiciousIndentation")
     fun hasLocationSetting(context: Context): Boolean {
         val locationSystem =
             context.getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager
-
-            return locationSystem.isProviderEnabled(LocationManager.GPS_PROVIDER)
-
+        return locationSystem.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
-
- }
+}

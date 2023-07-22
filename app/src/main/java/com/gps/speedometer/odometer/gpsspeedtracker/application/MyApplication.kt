@@ -71,7 +71,7 @@ class MyApplication :
         ).getInt(SettingConstants.COLOR_DISPLAY, ColorConstants.COLOR_DEFAULT)
 
         val sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
-        if (!sharedPreferences.getBoolean(SettingConstants.THEME, false)) {
+        if (sharedPreferences.getBoolean(SettingConstants.THEME, true)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);

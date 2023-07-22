@@ -88,10 +88,9 @@ class Setting : BaseActivity(), SettingInterface.View, View.OnKeyListener {
         setBackgroundALL()
         var check = ConfigModel.showSub
         if (check) {
-            check =!proApplication.isSubVip
+            check = !proApplication.isSubVip
         }
-
-            binding.premium.visibility = if (check) View.VISIBLE else View.GONE
+        binding.premium.visibility = if (check) View.VISIBLE else View.GONE
 
 
         binding.btnSub.setOnClickListener {
@@ -131,7 +130,8 @@ class Setting : BaseActivity(), SettingInterface.View, View.OnKeyListener {
         }
 
         binding.resetColor.setOnClickListener {
-            sharedPreferences.edit().putInt(SettingConstants.COLOR_DISPLAY,  ColorConstants.COLOR_DEFAULT).apply()
+            sharedPreferences.edit()
+                .putInt(SettingConstants.COLOR_DISPLAY, ColorConstants.COLOR_DEFAULT).apply()
             SharedData.color.value = 0
             recreate()
         }
@@ -193,8 +193,8 @@ class Setting : BaseActivity(), SettingInterface.View, View.OnKeyListener {
         }
 
 
-        binding.dark.setOnClickListener { setThemeClickListener(binding.dark, false) }
-        binding.light.setOnClickListener { setThemeClickListener(binding.light, true) }
+        binding.dark.setOnClickListener { setThemeClickListener(binding.dark, true) }
+        binding.light.setOnClickListener { setThemeClickListener(binding.light, false) }
 
 
         onClickBtnColor(btnColor2, btnColor3, btnColor4, btnColor5, btnColor6, btnColor7)
@@ -202,8 +202,9 @@ class Setting : BaseActivity(), SettingInterface.View, View.OnKeyListener {
 
     fun setBackGroundButtonAppTheme() {
 
-        val isLightTheme = sharedPreferences.getBoolean(SettingConstants.THEME, false)
-        val themeButton = if (isLightTheme) binding.light else binding.dark
+        val isLightTheme = sharedPreferences.getBoolean(SettingConstants.THEME, true)
+        Log.e("ssssssssssssssss",isLightTheme.toString())
+        val themeButton = if (!isLightTheme) binding.light else binding.dark
         val themeColor = ColorUtils.checkColor(colorPosition)
         themeButton.setBackgroundColor(themeColor)
         removeTextWhenColorPositionIs0(themeButton, "theme")
@@ -225,7 +226,8 @@ class Setting : BaseActivity(), SettingInterface.View, View.OnKeyListener {
         sharedPreferences = getSharedPreferences(SettingConstants.SETTING, MODE_PRIVATE)
         myDataBase = MyDataBase.getInstance(this)
         vehicleDao = myDataBase.vehicleDao()
-        colorPosition = sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY,  ColorConstants.COLOR_DEFAULT)
+        colorPosition =
+            sharedPreferences.getInt(SettingConstants.COLOR_DISPLAY, ColorConstants.COLOR_DEFAULT)
         distance = getSharedPreferences("state", Service.MODE_PRIVATE)
             .getInt(MyLocationConstants.DISTANCE, 0)
     }
@@ -277,7 +279,8 @@ class Setting : BaseActivity(), SettingInterface.View, View.OnKeyListener {
     fun setThemeClickListener(button: MaterialButton, theme: Boolean) {
         //theme true là sáng
 
-        val nightMode = if (!theme) AppCompatDelegate.MODE_NIGHT_NO else AppCompatDelegate.MODE_NIGHT_YES
+        val nightMode =
+            if (!theme) AppCompatDelegate.MODE_NIGHT_NO else AppCompatDelegate.MODE_NIGHT_YES
         AppCompatDelegate.setDefaultNightMode(nightMode)
         sharedPreferences.edit().putBoolean(SettingConstants.THEME, theme).apply()
         button.setBackgroundColor(ColorUtils.checkColor(colorPosition))
