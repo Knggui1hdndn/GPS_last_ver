@@ -11,14 +11,11 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.HorizontalScrollView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.viewpager2.widget.ViewPager2
 import com.access.pro.config.ConfigModel
@@ -29,7 +26,7 @@ import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.tabs.TabLayoutMediator
-import com.gps.speedometer.odometer.gpsspeedtracker.MyApplication
+import com.gps.speedometer.odometer.gpsspeedtracker.application.MyApplication
 import com.gps.speedometer.odometer.gpsspeedtracker.R
 import com.gps.speedometer.odometer.gpsspeedtracker.biiling.BaseActivity
 import com.gps.speedometer.odometer.gpsspeedtracker.biiling.SubVipActivity

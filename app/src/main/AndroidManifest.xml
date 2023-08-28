@@ -12,7 +12,7 @@
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
     <application
-        android:name=".MyApplication"
+        android:name=".application.MyApplication"
         android:allowBackup="true"
         android:appCategory="audio"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -76,7 +76,7 @@
             android:value="ca-app-pub-3940256099942544~3347511713"/>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAE9PxJdBbbOcxb65_tKdateOZ-HD8kNZ4" />
+            android:value="keygg" />
 
         <service
             android:name=".service.MyService"

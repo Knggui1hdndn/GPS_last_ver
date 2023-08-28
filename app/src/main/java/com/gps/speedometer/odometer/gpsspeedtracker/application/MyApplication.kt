@@ -1,38 +1,15 @@
-package com.gps.speedometer.odometer.gpsspeedtracker
+package com.gps.speedometer.odometer.gpsspeedtracker.application
 
-import android.app.Activity
-import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
-import android.content.Intent
 import android.os.Build
-import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
-import androidx.lifecycle.ProcessLifecycleOwner
-import androidx.multidex.MultiDexApplication
 import com.access.pro.application.ProApplication
 import com.access.pro.config.AdsConfigModel
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.SettingConstants
-import com.gps.speedometer.odometer.gpsspeedtracker.ui.MainActivity2
-import com.google.android.gms.ads.AdError
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.FullScreenContentCallback
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.ads.appopen.AppOpenAd
-import com.google.firebase.FirebaseApp
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.gps.speedometer.odometer.gpsspeedtracker.BuildConfig
 import com.gps.speedometer.odometer.gpsspeedtracker.constants.ColorConstants
-import com.gps.speedometer.odometer.gpsspeedtracker.`object`.CheckPermission
 import com.gps.speedometer.odometer.gpsspeedtracker.`object`.SharedData
-import com.gps.speedometer.odometer.gpsspeedtracker.service.MyService
-import java.util.Date
 
 
 class MyApplication :
